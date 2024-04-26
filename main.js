@@ -23,4 +23,5 @@ app.post('/submit', (req, res) => {
 // 啟動伺服器
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}/`);
+  console.log("test")
 });
