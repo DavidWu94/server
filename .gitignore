@@ -3,3 +3,4 @@ package-lock.json
 data.db
 node_modules
 .env
+databases
