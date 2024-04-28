@@ -17,7 +17,15 @@ class sql{
         // console.log(a)
         if(pwd==realPwd["pwd"]){
             // call for data
-            const hash = crypto.randomBytes(5).toString('hex');
+            var hash = "";
+            const loginHashData = this.login_db.prepare(`SELECT * FROM logininfo WHERE id='${user}';`).all()[0];
+            if(loginHashData==undefined){   // time expire havent added
+                hash = crypto.randomBytes(5).toString('hex');
+                this.login_db.prepare(`INSERT INTO logininfo (id,sKey) VALUES ('${user}','${hash}');`).run();
+            }else{
+                hash = loginHashData["sKey"];
+                this.login_db.prepare(`UPDATE logininfo SET createTime = CURRENT_TIMESTAMP WHERE id='${user}';`).run();
+            }
             return {msg:"success",accountType:realPwd["type"],sessionKey:hash};
         }else{
             return {msg:"wrong pwd"};
