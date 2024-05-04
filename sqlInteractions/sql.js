@@ -13,7 +13,7 @@ class sql{
         //     return {msg:"success",accountType:realPwd["type"]};
         // }
         let realPwd = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0];
-        if (realPwd==undefined) return {msg:"wrong account"}
+        if (realPwd==undefined) return {msg:"wrong account"};
         // console.log(a)
         if(pwd==realPwd["pwd"]){
             // call for data
@@ -43,4 +43,4 @@ class sql{
 
 }
 
-module.exports = sql
+module.exports = sql;
