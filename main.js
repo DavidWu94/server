@@ -4,7 +4,7 @@ const PORT = 3000;
 const bodyParser = require('body-parser')
 const cors = require("cors");
 const sql = require("./sqlInteractions/sql.js")
-const a = new sql()
+const sqlPlugin = new sql()
 
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
@@ -37,27 +37,68 @@ app.post('/login', (req, res) => {
     res.sendStatus(403);
     return;
   }
-  
-  let b = a.login(account,password,cookie);
-  res.json(b);
+
+  // FIXME: Prevent SQL Injection.
+  let ret = sqlPlugin.login(account,password,cookie);
+  res.json(ret);
 });
 
+// TODO: features haven't been implemented.
 app.post('/employee', (req, res) => {
   /**
    * @type {object}
    */
   const dataReceived = req.body;
-  res.sendStatus(403);
+
+  const account = dataReceived["account"];
+  const cookie = dataReceived["cookie"];
+
+  let ret = sqlPlugin.checkHash(account,cookie);
+  if (ret==null){
+    res.json({
+      "status":403
+    })
+  }else{
+    // if(ret["accountType"]=="admin"){
+
+    // }
+    // TODO: fetching data.
+    res.json({
+      "status":200,
+    })
+  }
+  // res.sendStatus(403);s
 });
 
+// TODO: features haven't been implemented.
 app.post('/admin', (req, res) => {
   /**
    * @type {object}
    */
   const dataReceived = req.body;
-  res.sendStatus(403);
+  const account = dataReceived["account"];
+  const cookie = dataReceived["cookie"];
+
+  let ret = sqlPlugin.checkHash(account,cookie);
+  if (ret==null){
+    res.json({
+      "status":403
+    })
+  }else{
+    if(ret["accountType"]=="empolyee"){
+      res.json({
+        "status":403
+      })
+    }else{
+      // TODO: fetching data.
+      res.json({
+        "status":200,
+      })
+    }
+  }
 });
 
+// TODO: features haven't been implemented.
 app.post('/register', (req, res) => {
   /**
    * @type {object}

@@ -1,7 +1,7 @@
 # database setup
 userinfo for storing account and password:
 
-`CREATE TABLE userinfo (id TEXT PRIMARY KEY,pwd TEXT NOT NULL,type TEXT DEFAULT employee,email TEXT NOT NULL,name TEXT NOT NULL);`
+`CREATE TABLE userinfo (id TEXT PRIMARY KEY,pwd TEXT NOT NULL,type TEXT DEFAULT employee,email TEXT NOT NULL,name TEXT NOT NULL,joinTime DATETIME DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', '+8 hours')),totalSpDayOff INT NOT NULL,usedSpDayOff INT DEFAULT 0, otherDayOff INT DEFAULT 0);`
 
 logininfo for storing session key:
 
@@ -12,10 +12,10 @@ logininfo for storing session key:
 # account setup
 
 for admin account registering:
-
+<!-- FIXME -->
 `INSERT INTO userinfo (id,pwd,type,email,name) VALUES ('010049','test123','admin','something@mail.com','黃阿明');`
 
 
 for employee account registering:
-
+<!-- FIXME -->
 `INSERT INTO userinfo (id,pwd,email,name) VALUES ('010049','test123','test@mail.com','丁一二');`
