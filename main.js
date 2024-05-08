@@ -18,6 +18,9 @@ app.use(cors({
   "Access-Control-Allow-Origin": "*"
 }))
 
+app.all('/',(req,res)=>{
+  res.send("System online.");
+});
 
 app.post('/login', (req, res) => {
   /**
@@ -25,12 +28,17 @@ app.post('/login', (req, res) => {
    */
   const dataReceived = req.body;
 
-  if(dataReceived["account"]==null || dataReceived["pwd"]==null){
+  const account = dataReceived["account"];
+  const password = dataReceived["pwd"];
+  const cookie = dataReceived["cookie"];
+
+  if(cookie==null && (account==null || password==null)){
     console.warn("Lack of info")
     res.sendStatus(403);
     return;
   }
-  let b = a.login(dataReceived["account"],dataReceived["pwd"],dataReceived["cookie"]);
+  
+  let b = a.login(account,password,cookie);
   res.json(b);
 });
 
@@ -56,7 +64,6 @@ app.post('/register', (req, res) => {
    */
   const dataReceived = req.body;
   res.sendStatus(403);
-
 });
 
 // 啟動伺服器

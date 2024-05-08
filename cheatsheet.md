@@ -5,7 +5,7 @@ userinfo for storing account and password:
 
 logininfo for storing session key:
 
-`CREATE TABLE logininfo (id TEXT NOT NULL,sKey TEXT PRIMARY KEY,createTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`
+`CREATE TABLE logininfo (id TEXT NOT NULL,sKey TEXT PRIMARY KEY,createTime DATETIME DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', '+8 hours')));`
 <!-- forget password db:
 `CREATE TABLE logininfo (id TEXT PRIMARY KEY,createTime DATETIME DEFAULT datetime('now','+1 hour'))` -->
 ---
