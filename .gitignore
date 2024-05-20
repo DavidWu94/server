@@ -4,3 +4,4 @@ data.db
 node_modules
 .env
 databases
+logs

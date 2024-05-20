@@ -3,9 +3,11 @@ const { exec } = require('child_process');
 const app = express();
 const PORT = 3000;
 const bodyParser = require('body-parser')
+const logger = require("./plugins/logger.js")
 const cors = require("cors");
-const sql = require("./sqlInteractions/sql.js")
-const sqlPlugin = new sql()
+const sql = require("./plugins/sql.js")
+const sqlPlugin = new sql();
+const log = new logger("./logs/log.log");
 
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
