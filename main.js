@@ -2,24 +2,26 @@ const express = require('express');
 const { exec } = require('child_process');
 const app = express();
 const PORT = 3000;
-const bodyParser = require('body-parser')
-const logger = require("./plugins/logger.js")
+const bodyParser = require('body-parser');
+const logger = require("./plugins/logger.js");
 const cors = require("cors");
-const sql = require("./plugins/sql.js")
+const sql = require("./plugins/sql.js");
 const sqlPlugin = new sql();
-const log = new logger("./logs/log.log");
+const log = new logger(`./logs/${new Date().toDateString()}.log`);
 
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
+
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
+
 app.use(cors({
   "origin": "*",
   "methods": "GET,POST",
   "preflightContinue": false,
   "optionsSuccessStatus": 204,
   "Access-Control-Allow-Origin": "*"
-}))
+}));
 
 app.all('/',(req,res)=>{
   res.send("System online.");
@@ -36,14 +38,19 @@ app.post('/login', (req, res) => {
   const cookie = dataReceived["cookie"];
 
   if(cookie==null && (account==null || password==null)){
-    console.warn("Lack of info")
+    log.logFormat(`Someone tried to login but was lack of info.`);
     res.sendStatus(403);
     return;
   }
 
   // FIXME: Prevent SQL Injection.
   let ret = sqlPlugin.login(account,password,cookie);
-  res.json(ret);
+  if(ret.msg=="success"){
+    // log.logFormat(`${account} logged in successfully.`);
+    res.json(ret);
+  }else{
+    res.sendStatus(403);
+  }
 });
 
 // TODO: features haven't been implemented.
@@ -60,7 +67,7 @@ app.post('/employee', (req, res) => {
   if (ret==null){
     res.json({
       "status":403
-    })
+    });
   }else{
     // if(ret["accountType"]=="admin"){
 
@@ -68,7 +75,7 @@ app.post('/employee', (req, res) => {
     // TODO: fetching data.
     res.json({
       "status":200,
-    })
+    });
   }
   // res.sendStatus(403);s
 });
@@ -86,17 +93,17 @@ app.post('/admin', (req, res) => {
   if (ret==null){
     res.json({
       "status":403
-    })
+    });
   }else{
     if(ret["accountType"]=="empolyee"){
       res.json({
         "status":403
-      })
+      });
     }else{
       // TODO: fetching data.
       res.json({
         "status":200,
-      })
+      });
     }
   }
 });
@@ -113,4 +120,5 @@ app.post('/register', (req, res) => {
 // 啟動伺服器
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}/`);
+  log.logFormat("Server online.");
 });
