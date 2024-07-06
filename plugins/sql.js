@@ -73,7 +73,12 @@ class sql{
 
     }
 
-
+    /**
+     * 
+     * @param {string} user 
+     * @param {string} cookie 
+     * @returns 
+     */
     checkHash(user,cookie){
         const sqldata = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0];
         const loginHashData = this.login_db.prepare(`SELECT * FROM logininfo WHERE id='${user}';`).all()[0];
