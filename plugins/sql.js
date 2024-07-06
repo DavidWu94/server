@@ -63,8 +63,9 @@ class sql{
     }
 
     // TODO: feature haven't been implemented.
-    register(user,password,mail,name,type="employee"){
-        // id,pwd,type,email,name
+    register(user,password,mail,name,type,mgroup){
+        // id,pwd,type,email,name,type,mgroup
+        this.login_db.prepare(`INSERT INTO userinfo (id,pwd,type,email,name,mgroup) VALUES ('${user}','${password}','${type}','${mail}','${name}',${mgroup});`).run();
         return;
     }
 
