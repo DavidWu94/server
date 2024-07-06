@@ -1,5 +1,4 @@
 const express = require('express');
-const { exec } = require('child_process');
 const app = express();
 const PORT = 3000;
 const bodyParser = require('body-parser');
@@ -27,95 +26,13 @@ app.all('/',(req,res)=>{
   res.send("System online.");
 });
 
-app.post('/login', (req, res) => {
-  /**
-   * @type {object}
-   */
-  const dataReceived = req.body;
+const posts = ['login','employee','admin','register'];
+(()=>{
+  posts.forEach(v=>{
+    app.post(`/${v}`,require(`./system/${v}.js`).bind(null,sqlPlugin,log));
+  })
+})();
 
-  const account = dataReceived["account"];
-  const password = dataReceived["pwd"];
-  const cookie = dataReceived["cookie"];
-
-  if(cookie==null && (account==null || password==null)){
-    log.logFormat(`Someone tried to login but was lack of info.`);
-    res.sendStatus(403);
-    return;
-  }
-
-  // FIXME: Prevent SQL Injection.
-  let ret = sqlPlugin.login(account,password,cookie);
-  if(ret.msg=="success"){
-    // log.logFormat(`${account} logged in successfully.`);
-    res.json(ret);
-  }else{
-    res.sendStatus(403);
-  }
-});
-
-// TODO: features haven't been implemented.
-app.post('/employee', (req, res) => {
-  /**
-   * @type {object}
-   */
-  const dataReceived = req.body;
-
-  const account = dataReceived["account"];
-  const cookie = dataReceived["cookie"];
-
-  let ret = sqlPlugin.checkHash(account,cookie);
-  if (ret==null){
-    res.json({
-      "status":403
-    });
-  }else{
-    // if(ret["accountType"]=="admin"){
-
-    // }
-    // TODO: fetching data.
-    res.json({
-      "status":200,
-    });
-  }
-  // res.sendStatus(403);s
-});
-
-// TODO: features haven't been implemented.
-app.post('/admin', (req, res) => {
-  /**
-   * @type {object}
-   */
-  const dataReceived = req.body;
-  const account = dataReceived["account"];
-  const cookie = dataReceived["cookie"];
-
-  let ret = sqlPlugin.checkHash(account,cookie);
-  if (ret==null){
-    res.json({
-      "status":403
-    });
-  }else{
-    if(ret["accountType"]=="empolyee"){
-      res.json({
-        "status":403
-      });
-    }else{
-      // TODO: fetching data.
-      res.json({
-        "status":200,
-      });
-    }
-  }
-});
-
-// TODO: features haven't been implemented.
-app.post('/register', (req, res) => {
-  /**
-   * @type {object}
-   */
-  const dataReceived = req.body;
-  res.sendStatus(403);
-});
 
 // 啟動伺服器
 app.listen(PORT, () => {
