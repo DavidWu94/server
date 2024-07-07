@@ -19,6 +19,8 @@ module.exports = (sqlPlugin,log,req,res)=>{
     if (ret==null){
         res.sendStatus(403);
     }else{
-        res.sendStatus(200);
+        res.json({
+            "status":200
+        });
     }
 }
