@@ -1,7 +1,7 @@
 # database setup
 userinfo for storing account and password:
 
-`CREATE TABLE userinfo (id TEXT PRIMARY KEY,pwd TEXT NOT NULL,type TEXT DEFAULT employee,email TEXT NOT NULL,name TEXT NOT NULL,joinTime DATETIME DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', '+8 hours')),totalSpDayOff INT DEFAULT 0,usedSpDayOff INT DEFAULT 0, otherDayOff INT DEFAULT 0, mgroup INT NOT NULL);`
+`CREATE TABLE userinfo (id TEXT PRIMARY KEY,pwd TEXT NOT NULL,type TEXT DEFAULT employee,email TEXT NOT NULL,name TEXT NOT NULL,joinTime DATETIME DEFAULT (strftime('%Y-%m-%d', 'now', '+8 hours')),totalSpDayOff INT DEFAULT 0,usedSpDayOff INT DEFAULT 0, otherDayOff INT DEFAULT 0, mgroup INT NOT NULL);`
 
 logininfo for storing session key:
 
