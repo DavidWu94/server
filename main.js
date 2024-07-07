@@ -26,7 +26,7 @@ app.all('/',(req,res)=>{
   res.send("System online.");
 });
 
-const posts = ['login','employee','admin','register'];
+const posts = ['login','employee','admin','register','session'];
 (()=>{
   posts.forEach(v=>{
     app.post(`/${v}`,require(`./system/${v}.js`).bind(null,sqlPlugin,log));
