@@ -27,9 +27,15 @@ module.exports = (sqlPlugin,log,req,res)=>{
             "status":403
         });
     }else{
-        sqlPlugin.register(user,password,mail,name,type,mgroup);
-        res.json({
-            "status":200,
-        });
+        try{
+            sqlPlugin.register(user,password,mail,name,type,mgroup);
+            res.json({
+                "status":200,
+            });
+        }catch{
+            res.json({
+                "status":501,
+            });
+        }
     }
 }
