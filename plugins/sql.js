@@ -29,8 +29,8 @@ class sql{
             else expired=true;
         }
         if(pwd==sqldata["pwd"]){
-            // Checking database if the user have logined before. Or hash expired.
-            if(loginHashData==undefined||expired){
+            // Checking database if the user have logined before.
+            if(loginHashData==undefined){
                 // Generating hash.
                 hash = crypto.randomBytes(5).toString('hex');
                 while(this.login_db.prepare(`SELECT * FROM logininfo WHERE sKey='${hash}';`).all()[0]){
@@ -38,6 +38,15 @@ class sql{
                     // console.log(this.login_db.prepare(`SELECT * FROM logininfo WHERE sKey='${hash}';`).all())
                 }
                 this.login_db.prepare(`INSERT INTO logininfo (id,sKey) VALUES ('${user}','${hash}');`).run();
+            }else if(expired){
+                // hash expired.
+                hash = crypto.randomBytes(5).toString('hex');
+                while(this.login_db.prepare(`SELECT * FROM logininfo WHERE sKey='${hash}';`).all()[0]){
+                    hash = crypto.randomBytes(5).toString('hex');
+                    // console.log(this.login_db.prepare(`SELECT * FROM logininfo WHERE sKey='${hash}';`).all())
+                }
+                // this.login_db.prepare(`INSERT INTO logininfo (id,sKey) VALUES ('${user}','${hash}');`).run();
+                this.login_db.prepare(`UPDATE logininfo SET createTime = strftime('%Y-%m-%d %H:%M:%S', 'now', '+8 hours'),sKey='${hash}' WHERE id='${user}';`).run();
             }else{
                 // Have logined before. Refresh the time cooldown.
                 hash = loginHashData["sKey"];
