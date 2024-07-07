@@ -72,9 +72,9 @@ class sql{
     }
 
     // TODO: feature haven't been implemented.
-    register(user,password,mail,name,type,mgroup){
+    register(user,password,mail,name,type,jointime,mgroup){
         // id,pwd,type,email,name,type,mgroup
-        this.login_db.prepare(`INSERT INTO userinfo (id,pwd,type,email,name,mgroup) VALUES ('${user}','${password}','${type}','${mail}','${name}',${mgroup});`).run();
+        this.login_db.prepare(`INSERT INTO userinfo (id,pwd,type,email,name,joinTime,mgroup) VALUES ('${user}','${password}','${type}','${mail}','${name}',(strftime('%Y-%m-%d', '${jointime}')),${mgroup});`).run();
         return;
     }
 

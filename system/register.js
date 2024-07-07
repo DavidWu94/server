@@ -18,6 +18,7 @@ module.exports = (sqlPlugin,log,req,res)=>{
     const password = dataReceived["pwd"];
     const mail = dataReceived["mail"];
     const name = dataReceived["name"];
+    const jointime = dataReceived["date"];
     const type = dataReceived["type"]?dataReceived["type"]:"employee";
     const mgroup = dataReceived["mgroup"];
 
@@ -26,12 +27,15 @@ module.exports = (sqlPlugin,log,req,res)=>{
         res.sendStatus(403);
     }else{
         try{
-            sqlPlugin.register(user,password,mail,name,type,mgroup);
+            sqlPlugin.register(user,password,mail,name,type,jointime,mgroup);
             res.json({
                 "status":200,
             });
         }catch{
-            res.sendStatus(500);
+            res.json({
+                "status":200,
+                "msg":"Account already taken"
+            });
         }
     }
 }
