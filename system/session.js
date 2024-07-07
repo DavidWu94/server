@@ -14,7 +14,7 @@ module.exports = (sqlPlugin,log,req,res)=>{
 
     const account = dataReceived["account"];
     const cookie = dataReceived["cookie"];
-    console.log(dataReceived)
+    // console.log(dataReceived)
     let ret = sqlPlugin.checkHash(account,cookie);
     if (ret==null){
         res.sendStatus(403);

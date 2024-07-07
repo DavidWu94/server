@@ -30,11 +30,12 @@ module.exports = (sqlPlugin,log,req,res)=>{
             sqlPlugin.register(user,password,mail,name,type,jointime,mgroup);
             res.json({
                 "status":200,
+                "success":1
             });
         }catch{
             res.json({
                 "status":200,
-                "msg":"Account already taken"
+                "success":0
             });
         }
     }

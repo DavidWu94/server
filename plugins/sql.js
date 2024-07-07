@@ -102,7 +102,7 @@ class sql{
                 // if cookie correct.
                 this.login_db.prepare(`UPDATE logininfo SET createTime = strftime('%Y-%m-%d %H:%M:%S', 'now', '+8 hours') WHERE id='${user}';`).run();
                 log.logFormat(`${user} has logined with cookie successfully.`,current);
-                return {msg:"success",accountType:sqldata["type"]};
+                return {msg:"success",accountType:sqldata["type"],sessionKey:cookie};
             }else{
                 return null;
             }
