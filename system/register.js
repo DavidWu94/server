@@ -28,6 +28,7 @@ module.exports = (sqlPlugin,log,req,res)=>{
     }else{
         try{
             sqlPlugin.register(user,password,mail,name,type,jointime,mgroup);
+            log.logFormat(`${account} successfully created an account with id: ${user}`);
             res.json({
                 "status":200,
                 "success":1
