@@ -23,9 +23,7 @@ module.exports = (sqlPlugin,log,req,res)=>{
 
     let ret = sqlPlugin.checkHash(account,cookie);
     if (ret==null){
-        res.json({
-            "status":403
-        });
+        res.sendStatus(403);
     }else{
         try{
             sqlPlugin.register(user,password,mail,name,type,mgroup);
@@ -33,9 +31,7 @@ module.exports = (sqlPlugin,log,req,res)=>{
                 "status":200,
             });
         }catch{
-            res.json({
-                "status":501,
-            });
+            res.sendStatus(500);
         }
     }
 }
