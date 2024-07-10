@@ -1,4 +1,6 @@
 const nodemailer = require("nodemailer");
+const dotenv = require('dotenv');
+dotenv.config();
 
 class mailer{
 
@@ -7,20 +9,21 @@ class mailer{
          * @type {nodemailer.Transporter}
          */
         this.transporter = nodemailer.createTransport({
-            host: "eucan.com.tw",
-            port: 465,
-            secure: true,
+            host: "biz-mx2-6.hinet.net",
+            port: 25,
+            secure: false,
             auth: {
-                user: "username",
-                pass: "password",
+                user: process.env.USER_MAIL,
+                pass: process.env.USER_PWD,
             },
+            tls: {rejectUnauthorized: false}
         });
     }
 
     verify(){
-        transporter.verify(function (error, success) {
+        this.transporter.verify(function (error, success) {
             if (error) {
-                console.warn(error);
+                console.error(error);
                 return null;
             } else {
                 console.log("Server is ready to take our messages");
@@ -29,8 +32,17 @@ class mailer{
         });
     }
 
+    async send(mail,title,text){
+        var message = {
+            from: process.env.USER_MAIL,
+            to: mail,
+            subject: title,
+            text: text,
+        };
+        const ret = await this.transporter.sendMail(message);
+        return ret
+    }
+
 }
-
-
 
 module.exports = mailer;

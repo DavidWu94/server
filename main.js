@@ -7,6 +7,8 @@ const cors = require("cors");
 const sql = require("./plugins/sql.js");
 const sqlPlugin = new sql();
 const log = new logger(`./logs/${new Date().toDateString()}.log`);
+const nMailer = require("./plugins/mailer.js");
+const mailer = new nMailer();
 
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
@@ -38,4 +40,6 @@ const posts = ['login','employee','admin','register','session'];
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}/`);
   log.logFormat("Server online.");
+  mailer.verify();
+  mailer.send("tobydog0501@gmail.com","Testing mail","Nice one!");
 });
