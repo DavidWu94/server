@@ -8,8 +8,10 @@ class mailer{
         /**
          * @type {nodemailer.Transporter}
          */
-        this.transporter = nodemailer.createTransport({
-            host: "biz-mx2-6.hinet.net",
+        const option = {
+            // "biz-mx2-6.hinet.net"
+            host: process.env.SMTP_SERVER,
+            // pool: true,
             port: 25,
             secure: false,
             auth: {
@@ -17,7 +19,8 @@ class mailer{
                 pass: process.env.USER_PWD,
             },
             tls: {rejectUnauthorized: false}
-        });
+        }
+        this.transporter = nodemailer.createTransport(option);
     }
 
     verify(){
@@ -33,13 +36,14 @@ class mailer{
     }
 
     async send(mail,title,text){
-        var message = {
-            from: process.env.USER_MAIL,
-            to: mail,
+        var message = {    
+            from: `"系統訊息" <${process.env.USER_MAIL}>`, // listed in rfc822 message header
+            to: `${mail}`, // listed in rfc822 message header
             subject: title,
             text: text,
         };
         const ret = await this.transporter.sendMail(message);
+        // console.log(ret)
         return ret
     }
 

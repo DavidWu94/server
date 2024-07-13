@@ -40,6 +40,11 @@ const posts = ['login','employee','admin','register','session'];
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}/`);
   log.logFormat("Server online.");
-  mailer.verify();
-  mailer.send("tobydog0501@gmail.com","Testing mail","Nice one!");
+  const mailerStatus = mailer.verify();
+  if(!mailerStatus){
+    console.error("")
+  }
+  // mailer.send("catherine@eucan.com.tw","Testing mail","Sent by nodemailer").then(ret=>{
+  //   console.log(`Success. ${ret}`)
+  // });
 });
