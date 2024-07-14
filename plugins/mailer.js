@@ -49,7 +49,9 @@ class mailer{
                 user: process.env.USER_MAIL,
                 pass: process.env.USER_PWD,
             },
-            tls: {rejectUnauthorized: false}
+            tls: {
+                rejectUnauthorized: false
+            }
         }
         this.transporter = nodemailer.createTransport(this.option);
     }
