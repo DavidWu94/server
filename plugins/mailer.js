@@ -8,7 +8,7 @@ class mailer{
         /**
          * @type {nodemailer.Transporter}
          */
-        const option = {
+        this.option = {
             // "biz-mx2-6.hinet.net"
             host: process.env.SMTP_SERVER,
             // pool: true,
@@ -20,7 +20,7 @@ class mailer{
             },
             tls: {rejectUnauthorized: false}
         }
-        this.transporter = nodemailer.createTransport(option);
+        this.transporter = nodemailer.createTransport(this.option);
     }
 
     verify(){
@@ -35,9 +35,28 @@ class mailer{
         });
     }
 
+    relogin(){
+        /**
+         * @type {nodemailer.Transporter}
+         */
+        this.option = {
+            // "biz-mx2-6.hinet.net"
+            host: process.env.SMTP_SERVER,
+            // pool: true,
+            port: 25,
+            secure: false,
+            auth: {
+                user: process.env.USER_MAIL,
+                pass: process.env.USER_PWD,
+            },
+            tls: {rejectUnauthorized: false}
+        }
+        this.transporter = nodemailer.createTransport(this.option);
+    }
+
     async send(mail,title,text){
-        var message = {    
-            from: `"系統訊息" <${process.env.USER_MAIL}>`, // listed in rfc822 message header
+        var message = {
+            from: `"祐肯企業請假系統訊息" <${process.env.USER_MAIL}>`, // listed in rfc822 message header
             to: `${mail}`, // listed in rfc822 message header
             subject: title,
             text: text,

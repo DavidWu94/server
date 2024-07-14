@@ -6,7 +6,7 @@ const sql = require("../plugins/sql");
  * @param {*} req 
  * @param {*} res 
  */
-module.exports = (sqlPlugin,log,req,res)=>{
+module.exports = (sqlPlugin,log,mailer,req,res)=>{
     /**
      * @type {object}
      */

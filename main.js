@@ -31,7 +31,7 @@ app.all('/',(req,res)=>{
 const posts = ['login','employee','admin','register','session'];
 (()=>{
   posts.forEach(v=>{
-    app.post(`/${v}`,require(`./system/${v}.js`).bind(null,sqlPlugin,log));
+    app.post(`/${v}`,require(`./system/${v}.js`).bind(null,sqlPlugin,log,mailer));
   })
 })();
 
