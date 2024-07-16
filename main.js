@@ -44,7 +44,4 @@ app.listen(PORT, () => {
   if(!mailerStatus){
     console.error("")
   }
-  // mailer.send("catherine@eucan.com.tw","Testing mail","Sent by nodemailer").then(ret=>{
-  //   console.log(`Success. ${ret}`)
-  // });
 });
