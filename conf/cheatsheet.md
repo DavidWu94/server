@@ -13,7 +13,7 @@ workinginfo for sign in
 
 dayoffinfo
 
-`CREATE TABLE dayoffinfo (id TEXT PRIMARY KEY,annual INT DEFAULT 0,personal INT DEFAULT 0,care INT DEFAULT 0,sick INT DEFAULT 0,wedding INT DEFAULT 0,funeral INT DEFAULT 0,birth INT DEFAULT 0,pcheckup INT DEFAULT 0,miscarriage INT DEFAULT 0,paternity INT DEFAULT 0,maternity INT DEFAULT 0,other INT DEFAULT 0,total INT DEFAULT 0,year DATETIME DEFAULT (strftime('%Y', 'now', '+8 hours')));`
+`CREATE TABLE dayoffinfo (id TEXT NOT NULL,annual INT DEFAULT 0,personal INT DEFAULT 0,care INT DEFAULT 0,sick INT DEFAULT 0,wedding INT DEFAULT 0,funeral INT DEFAULT 0,birth INT DEFAULT 0,pcheckup INT DEFAULT 0,miscarriage INT DEFAULT 0,paternity INT DEFAULT 0,maternity INT DEFAULT 0,other INT DEFAULT 0,total INT DEFAULT 0,year DATETIME DEFAULT (strftime('%Y', 'now', '+8 hours')));`
 
 <!-- forget password db:
 `CREATE TABLE logininfo (id TEXT PRIMARY KEY,createTime DATETIME DEFAULT datetime('now','+1 hour'))` -->

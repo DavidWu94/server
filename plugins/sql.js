@@ -64,14 +64,20 @@ class sql{
     }
 
     // TODO: feature haven't been implemented.
-    getEmployeeDayOffList(){
-
+    getEmployeeDayOffList(user,year){
+        try{
+            const dayoffData = this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${user}' AND year='${year}';`).all()[0];
+            console.log(dayoffData);
+            return dayoffData;
+        }catch{
+            return null;
+        }
     }
 
     // TODO: feature haven't been implemented.
-    register(user,password,mail,name,type,jointime,mgroup){
+    register(user,password,mail,name,type,jointime,mgroup,permit){
         // id,pwd,type,email,name,type,mgroup
-        this.login_db.prepare(`INSERT INTO userinfo (id,pwd,type,email,name,joinTime,mgroup) VALUES ('${user}','${password}','${type}','${mail}','${name}',(strftime('%Y-%m-%d', '${jointime}')),${mgroup});`).run();
+        this.login_db.prepare(`INSERT INTO userinfo (id,pwd,type,email,name,joinTime,mgroup,permit) VALUES ('${user}','${password}','${type}','${mail}','${name}',(strftime('%Y-%m-%d', '${jointime}')),${mgroup},${permit});`).run();
         return;
     }
 
