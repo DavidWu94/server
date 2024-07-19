@@ -23,6 +23,7 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
     const jointime = dataReceived["date"];
     const type = dataReceived["type"]?dataReceived["type"]:"employee";
     const mgroup = dataReceived["mgroup"];
+    // permit:1 == NEED permition
     const permit = dataReceived["permit"]?1:0;
 
     let ret = sqlPlugin.checkHash(account,cookie);
