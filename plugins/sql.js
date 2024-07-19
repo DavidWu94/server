@@ -115,6 +115,38 @@ class sql{
         }
     }
 
+    init(user,data){
+        // {
+        //     "annual":0,
+        //     "personal":0,
+        //     "care":0,
+        //     "sick":0,
+        //     "wedding":0,
+        //     "funeral":0,
+        //     "birth":0,
+        //     "pcheckup":0,
+        //     "miscarriage":0,
+        //     "paternity":0,
+        //     "maternity":0,
+        //     "other":0,
+        //     "total":0,
+        //     "year":0,
+        // }
+        // ["annual","personal","care","sick","wedding","funeral","birth","pcheckup","miscarriage","paternity","maternity","other","total","year"]
+        this.login_db.prepare(`INSERT INTO userinfo (id) VALUES ('${user}');`).run();
+
+    }
+
+    dayoff(user,year){
+        try{
+            const sqldata = this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${user}' AND year='${year}'`).all()[0];
+            console.log(sqldata);
+            return sqldata;
+        }catch(e){
+            console.warn(e);
+        }
+    }
+
 
 }
 
