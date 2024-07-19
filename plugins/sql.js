@@ -133,7 +133,7 @@ class sql{
         //     "year":0,
         // }
         // ["annual","personal","care","sick","wedding","funeral","birth","pcheckup","miscarriage","paternity","maternity","other","total","year"]
-        this.login_db.prepare(`INSERT INTO userinfo (id) VALUES ('${user}');`).run();
+        this.login_db.prepare(`INSERT INTO dayoffinfo (id) VALUES ('${user}');`).run();
 
     }
 
