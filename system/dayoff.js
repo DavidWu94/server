@@ -19,10 +19,10 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
   
       // }
       // TODO: fetching data.
-      sqlPlugin.dayoff(user,year);
+      const dayoffdata = sqlPlugin.dayoff(user,year);
       res.json({
         "status":200,
-      
+        "data": dayoffdata
       });
     }
     // res.sendStatus(403);s

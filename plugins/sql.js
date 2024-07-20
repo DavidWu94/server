@@ -140,7 +140,7 @@ class sql{
     dayoff(user,year){
         try{
             const sqldata = this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${user}' AND year='${year}'`).all()[0];
-            console.log(sqldata);
+            // console.log(sqldata);
             return sqldata;
         }catch(e){
             console.warn(e);
