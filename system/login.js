@@ -11,7 +11,7 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
     const account = dataReceived["account"];
     const password = dataReceived["pwd"];
     const cookie = dataReceived["cookie"];
-    const twoFA = dataReceived["2FA"];
+    const twoFA = dataReceived["twoFA"];
 
     if(cookie==null && (account==null || password==null)){
         log.logFormat(`Someone tried to login but was lack of info.`);
