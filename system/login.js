@@ -33,6 +33,8 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
                     res.sendStatus(403);
                 }
             })
+        }else{
+            res.json(ret);
         }
     }else{
         res.sendStatus(403);
