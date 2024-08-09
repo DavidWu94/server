@@ -38,8 +38,8 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
       }
 
       let man = ["jeff@eucan.com.tw","catherine@eucan.com.tw"]
-      console.log(man[mgroup])
-      mailer.send(man[mgroup],"請假審核要求",`您好，員工編號${account}於剛才發送請假要求。\n詳細內容請登入請假系統審核。\n\n<此信為系統自動發送，請勿回覆>`)
+      console.log(man[parseInt(mgroup)])
+      mailer.send(man[parseInt(mgroup)],"請假審核要求",`您好，員工編號${account}於剛才發送請假要求。\n詳細內容請登入請假系統審核。\n\n<此信為系統自動發送，請勿回覆>`)
       res.json({
         "status":200,
       });
