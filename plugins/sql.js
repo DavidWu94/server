@@ -167,7 +167,7 @@ class sql{
         const currentYear = new Date().getFullYear()
         const count = this.login_db.prepare(`SELECT COUNT(*) FROM requestquery WHERE year=${currentYear}`).all()[0];
         console.log(count)
-        this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,type,start,end,mgroup) VALUES ('${currentYear}${count}','${user}','${type}',(strftime('%Y-%m-%d', '${start}')),(strftime('%Y-%m-%d', '${end}')),${mgroup["mgroup"]});`).run();
+        this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,type,start,end,mgroup) VALUES ('${currentYear}${count["COUNT(*)"]}','${user}','${type}',(strftime('%Y-%m-%d', '${start}')),(strftime('%Y-%m-%d', '${end}')),${mgroup["mgroup"]});`).run();
         return mgroup;
     }
 
