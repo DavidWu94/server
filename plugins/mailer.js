@@ -40,9 +40,7 @@ class mailer{
          * @type {nodemailer.Transporter}
          */
         this.option = {
-            // "biz-mx2-6.hinet.net"
             host: process.env.SMTP_SERVER,
-            // pool: true,
             port: 25,
             secure: false,
             auth: {
@@ -64,7 +62,6 @@ class mailer{
             text: text,
         };
         const ret = await this.transporter.sendMail(message);
-        // console.log(ret)
         return ret
     }
 

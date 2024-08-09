@@ -25,6 +25,5 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
         "data": dayoffdata
       });
     }
-    // res.sendStatus(403);s
-    
+    // res.sendStatus(403);
 }

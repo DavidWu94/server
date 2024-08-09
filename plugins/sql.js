@@ -170,8 +170,6 @@ class sql{
         this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,type,start,end,mgroup) VALUES ('${currentYear}${count["COUNT(*)"]}','${user}','${type}',(strftime('%Y-%m-%d', '${start}')),(strftime('%Y-%m-%d', '${end}')),${mgroup["mgroup"]});`).run();
         return mgroup;
     }
-
-
 }
 
 module.exports = sql;

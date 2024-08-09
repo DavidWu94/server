@@ -22,7 +22,6 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
     const end = dataReceived["end"];
 
     // TODO: Add permission check
-    
 
     let ret = sqlPlugin.checkHash(account,cookie);
     if (ret==null){
@@ -43,6 +42,4 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
         "status":200,
       });
     }
-    // res.sendStatus(403);s
-    
 }

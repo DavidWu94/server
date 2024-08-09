@@ -21,6 +21,5 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
         "status":200,
       });
     }
-    // res.sendStatus(403);s
-    
+    // res.sendStatus(403);
 }
