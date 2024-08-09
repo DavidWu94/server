@@ -30,9 +30,9 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
         "status":403
       });
     }else{
-      const dayoffdata = sqlPlugin.newRequest(account,type,start,end);
+      const mgroup = sqlPlugin.newRequest(account,type,start,end);
 
-      if (!dayoffdata){
+      if (!mgroup){
         res.sendStatus(501);
         return;
       }
