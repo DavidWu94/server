@@ -15,6 +15,12 @@ dayoffinfo
 
 `CREATE TABLE dayoffinfo (id TEXT NOT NULL,annual INT DEFAULT 0,personal INT DEFAULT 0,care INT DEFAULT 0,sick INT DEFAULT 0,wedding INT DEFAULT 0,funeral INT DEFAULT 0,birth INT DEFAULT 0,pcheckup INT DEFAULT 0,miscarriage INT DEFAULT 0,paternity INT DEFAULT 0,maternity INT DEFAULT 0,other INT DEFAULT 0,total INT DEFAULT 0,year DATETIME DEFAULT (strftime('%Y', 'now', '+8 hours')));`
 
+requestquery
+
+`CREATE TABLE requestquery (serialnum INT PRIMARY KEY,id TEXT NOT NULL,type TEXT NOT NULL,start DATETIME NOT NULL,end DATETIME NOT NULL,mgroup INT NOT NULL,state INT DEFAULT 0);`
+
+(state 0 = Havent permitted, 1 = Accepted, -1 = Rejected)
+
 <!-- forget password db:
 `CREATE TABLE logininfo (id TEXT PRIMARY KEY,createTime DATETIME DEFAULT datetime('now','+1 hour'))` -->
 ---
