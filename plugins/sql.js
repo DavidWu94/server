@@ -137,6 +137,12 @@ class sql{
 
     }
 
+    /**
+     * Get dayoff info
+     * @param {*} user 
+     * @param {*} year 
+     * @returns 
+     */
     dayoff(user,year){
         try{
             const sqldata = this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${user}' AND year='${year}'`).all()[0];
@@ -145,6 +151,24 @@ class sql{
         }catch(e){
             console.warn(e);
         }
+    }
+
+    /**
+     * 
+     * @param {*} user 
+     * @param {*} type 
+     * @param {*} start 
+     * @param {*} end 
+     * @param {*} mgroup 
+     * @returns 
+     */
+    newRequest(user,type,start,end){
+        const mgroup = this.login_db.prepare(`SELECT mgroup FROM userinfo WHERE id='${user}'`).all()[0];
+        console.log(mgroup)
+        const currentYear = new Date().getFullYear()
+        const count = this.login_db.prepare(`SELECT COUNT(*) FROM requestquery WHERE year=${currentYear}`).all()[0];
+        this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,type,start,end,mgroup) VALUES ('${currentYear}${count}','${user}','${type}',(strftime('%Y-%m-%d', '${start}')),(strftime('%Y-%m-%d', '${end}')),'${mgroup}');`).run();
+        return true;
     }
 
 
