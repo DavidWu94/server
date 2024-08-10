@@ -29,15 +29,15 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
         "status":403
       });
     }else{
-      const mgroup = sqlPlugin.newRequest(account,type,start,end);
+      const ret = sqlPlugin.newRequest(account,type,start,end);
 
-      if (!mgroup){
+      if (!ret){
         res.sendStatus(501);
         return;
       }
 
       var man = ["jeff@eucan.com.tw","catherine@eucan.com.tw"]
-      mailer.send(man[mgroup["mgroup"]],"請假審核要求",`您好，員工編號${account}於剛才發送請假要求。\n詳細內容請登入請假系統審核。\n\n<此信為系統自動發送，請勿回覆>`)
+      mailer.send(man[ret["mgroup"]],"請假審核要求",`您好，員工 ${ret["name"]}於剛才發送請假要求。\n詳細內容請登入請假系統審核。\n\n<此信為系統自動發送，請勿回覆>`)
       res.json({
         "status":200,
       });
