@@ -9,11 +9,13 @@ const sqlPlugin = new sql();
 const log = new logger(`./logs/${new Date().toDateString()}.log`);
 const nMailer = require("./plugins/mailer.js");
 const mailer = new nMailer();
+var uploadRouter = require('./routes/upload');
 
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
 
+app.use('/upload', uploadRouter);
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 
 app.use(cors({
@@ -40,8 +42,8 @@ const posts = ['login','employee','admin','register','session','dayoff','request
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}/`);
   log.logFormat("Server online.");
-  const mailerStatus = mailer.verify();
-  if(!mailerStatus){
-    console.error("")
-  }
+  // const mailerStatus = mailer.verify();
+  // if(!mailerStatus){
+  //   console.error("")
+  // }
 });
