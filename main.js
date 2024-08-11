@@ -28,12 +28,15 @@ app.all('/',(req,res)=>{
   res.send("System online.");
 });
 
-const posts = ['login','employee','admin','register','session','dayoff','request'];
+const posts = ['login','employee','admin','register','session','dayoff','request','upload'];
 (()=>{
   posts.forEach(v=>{
     app.post(`/${v}`,require(`./system/${v}.js`).bind(null,sqlPlugin,log,mailer));
   })
 })();
+
+
+// Set up a route for file uploads
 
 
 // 啟動伺服器
