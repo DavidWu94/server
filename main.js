@@ -9,13 +9,11 @@ const sqlPlugin = new sql();
 const log = new logger(`./logs/${new Date().toDateString()}.log`);
 const nMailer = require("./plugins/mailer.js");
 const mailer = new nMailer();
-var uploadRouter = require('./routes/upload');
 
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
 
-app.use('/upload', uploadRouter);
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 
 app.use(cors({
@@ -30,12 +28,15 @@ app.all('/',(req,res)=>{
   res.send("System online.");
 });
 
-const posts = ['login','employee','admin','register','session','dayoff','request'];
+const posts = ['login','employee','admin','register','session','dayoff','request','upload'];
 (()=>{
   posts.forEach(v=>{
     app.post(`/${v}`,require(`./system/${v}.js`).bind(null,sqlPlugin,log,mailer));
   })
 })();
+
+
+// Set up a route for file uploads
 
 
 // 啟動伺服器
