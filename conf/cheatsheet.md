@@ -13,7 +13,7 @@ workinginfo for sign in
 
 dayoffinfo
 
-`CREATE TABLE dayoffinfo (id TEXT NOT NULL,annual INT DEFAULT 0,personal INT DEFAULT 0,care INT DEFAULT 0,sick INT DEFAULT 0,wedding INT DEFAULT 0,funeral INT DEFAULT 0,birth INT DEFAULT 0,pcheckup INT DEFAULT 0,miscarriage INT DEFAULT 0,paternity INT DEFAULT 0,maternity INT DEFAULT 0,other INT DEFAULT 0,total INT DEFAULT 0,year DATETIME DEFAULT (strftime('%Y', 'now', '+8 hours')));`
+`CREATE TABLE dayoffinfo (id TEXT NOT NULL,annual FLOAT DEFAULT 0,personal FLOAT DEFAULT 0,care FLOAT DEFAULT 0,sick FLOAT DEFAULT 0,wedding FLOAT DEFAULT 0,funeral FLOAT DEFAULT 0,birth FLOAT DEFAULT 0,pcheckup FLOAT DEFAULT 0,miscarriage FLOAT DEFAULT 0,paternity FLOAT DEFAULT 0,maternity FLOAT DEFAULT 0,other FLOAT DEFAULT 0,total FLOAT DEFAULT 0,year DATETIME DEFAULT (strftime('%Y', 'now', '+8 hours')));`
 
 requestquery
 
