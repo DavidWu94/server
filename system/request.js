@@ -1,5 +1,6 @@
 const sql = require("../plugins/sql")
 const mail = require("../plugins/mailer")
+const upload = require('../plugins/multer');
 /**
  * 
  * @param {sql} sqlPlugin 

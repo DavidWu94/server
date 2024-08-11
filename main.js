@@ -43,8 +43,8 @@ const posts = ['login','employee','admin','register','session','dayoff','request
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}/`);
   log.logFormat("Server online.");
-  const mailerStatus = mailer.verify();
-  if(!mailerStatus){
-    console.error("")
-  }
+  // const mailerStatus = mailer.verify();
+  // if(!mailerStatus){
+  //   console.error("")
+  // }
 });
