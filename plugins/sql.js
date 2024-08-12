@@ -163,13 +163,19 @@ class sql{
      */
     newRequest(user,type,start,end){
         const mgroup = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0];
-        console.log(mgroup["mgroup"])
         const currentYear = new Date().getFullYear()
         const count = this.login_db.prepare(`SELECT COUNT(*) FROM requestquery WHERE year=${currentYear}`).all()[0];
         console.log(count)
         this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,type,start,end,mgroup) VALUES ('${currentYear}${count["COUNT(*)"]}','${user}','${type}',(strftime('%Y-%m-%d', '${start}')),(strftime('%Y-%m-%d', '${end}')),${mgroup["mgroup"]});`).run();
         return {"mgroup":mgroup["mgroup"],"name":mgroup["name"]};
     }
+
+    showQuery(user){
+        const mgroup = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0]["mgroup"];
+        const query = this.login_db.prepare(`SELECT * FROM requestquery WHERE mgroup=${mgroup} AND permit=0`).all();
+        return query;
+    }
+
 }
 
 module.exports = sql;
