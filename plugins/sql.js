@@ -165,14 +165,15 @@ class sql{
         const mgroup = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0];
         const currentYear = new Date().getFullYear()
         const count = this.login_db.prepare(`SELECT COUNT(*) FROM requestquery WHERE year=${currentYear}`).all()[0];
+        const name = mgroup["name"];
         console.log(count)
-        this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,type,start,end,mgroup) VALUES ('${currentYear}${count["COUNT(*)"]}','${user}','${type}',(strftime('%Y-%m-%d', '${start}')),(strftime('%Y-%m-%d', '${end}')),${mgroup["mgroup"]});`).run();
-        return {"mgroup":mgroup["mgroup"],"name":mgroup["name"]};
+        this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,type,start,end,mgroup) VALUES ('${currentYear}${count["COUNT(*)"]}','${name}','${type}',(strftime('%Y-%m-%d', '${start}')),(strftime('%Y-%m-%d', '${end}')),${mgroup["mgroup"]});`).run();
+        return {"mgroup":mgroup["mgroup"],"name":name};
     }
 
     showQuery(user){
         const mgroup = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0]["mgroup"];
-        const query = this.login_db.prepare(`SELECT * FROM requestquery WHERE mgroup=${mgroup} AND state=0`).all();
+        const query = this.login_db.prepare(`SELECT id,type,start,end FROM requestquery WHERE mgroup=${mgroup} AND state=0`).all();
         return query;
     }
 
