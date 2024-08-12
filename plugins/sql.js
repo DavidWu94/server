@@ -172,7 +172,7 @@ class sql{
 
     showQuery(user){
         const mgroup = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0]["mgroup"];
-        const query = this.login_db.prepare(`SELECT * FROM requestquery WHERE mgroup=${mgroup} AND permit=0`).all();
+        const query = this.login_db.prepare(`SELECT * FROM requestquery WHERE mgroup=${mgroup} AND state=0`).all();
         return query;
     }
 
