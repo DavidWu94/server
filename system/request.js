@@ -35,6 +35,7 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
       res.json({
         "status":403
       });
+      return;
     }else{
       const ret = sqlPlugin.newRequest(account,type,start,end);
 
