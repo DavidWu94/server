@@ -177,6 +177,29 @@ class sql{
         return query;
     }
 
+    setPermit(num,state){
+        const query = this.login_db.prepare(`SELECT * FROM requestquery WHERE serialnum='${num}'`).all()[0];
+        
+        const table = {
+            "特休假":"annual",
+            "事假":"personal",
+            "家庭照顧假":"care",
+            "普通傷病假":"sick",
+            "婚假":"wedding",
+            "喪假":"funeral",
+            "分娩假":"birth",
+            "產檢假":"pcheckup",
+            "流產假":"miscarriage",
+            "陪產假":"paternity",
+            "產假":"maternity",
+            "其他":"other"
+        };
+            
+        this.login_db.prepare(`UPDATE dayoffinfo SET ${table[query["type"]]}=${table[query["type"]]}+${query["totalTime"]} WHERE serialnum='${num}';`).run();
+        this.login_db.prepare(`UPDATE requestquery SET state=${state} WHERE serialnum='${num}';`).run();
+        return this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${que["id"]}'`).all()[0]["email"];
+    }
+
 }
 
 module.exports = sql;
