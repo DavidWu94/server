@@ -28,6 +28,7 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
     // data below requires front-end format time into 2024-01-01
     const start = dataReceived["start"];
     const end = dataReceived["end"];  
+    const totalTime = dataReceived["totalTime"];  
     // TODO: Add permission check
 
     let ret = sqlPlugin.checkHash(account,cookie);
@@ -37,7 +38,7 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
       });
       return;
     }else{
-      const ret = sqlPlugin.newRequest(account,type,start,end);
+      const ret = sqlPlugin.newRequest(account,type,start,end,totalTime);
 
       if (!ret){
         res.sendStatus(501);

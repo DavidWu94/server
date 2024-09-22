@@ -161,13 +161,13 @@ class sql{
      * @param {*} end 
      * @returns 
      */
-    newRequest(user,type,start,end){
+    newRequest(user,type,start,end,totalTime){
         const mgroup = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0];
         const currentYear = new Date().getFullYear()
         const count = this.login_db.prepare(`SELECT COUNT(*) FROM requestquery WHERE year=${currentYear}`).all()[0];
         const name = mgroup["name"];
         // console.log(count)
-        this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup) VALUES ('${currentYear}${count["COUNT(*)"]}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${mgroup["mgroup"]});`).run();
+        this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime) VALUES ('${currentYear}${count["COUNT(*)"]}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${mgroup["mgroup"]},${totalTime});`).run();
         return {"mgroup":mgroup["mgroup"],"name":name};
     }
 
