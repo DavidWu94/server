@@ -17,7 +17,7 @@ dayoffinfo
 
 requestquery
 
-`CREATE TABLE requestquery (serialnum TEXT PRIMARY KEY,id TEXT NOT NULL,type TEXT NOT NULL,start DATETIME NOT NULL,end DATETIME NOT NULL,mgroup INT NOT NULL,state INT DEFAULT 0,year DATETIME DEFAULT (strftime('%Y', 'now', '+8 hours')),totalTime FLOAT NOT NULL);`
+`CREATE TABLE requestquery (serialnum TEXT PRIMARY KEY,id TEXT NOT NULL,name TEXT NOT NULL,type TEXT NOT NULL,start DATETIME NOT NULL,end DATETIME NOT NULL,mgroup INT NOT NULL,state INT DEFAULT 0,year DATETIME DEFAULT (strftime('%Y', 'now', '+8 hours')),totalTime FLOAT NOT NULL);`
 
 (state 0 = Havent permitted, 1 = Accepted, -1 = Rejected)
 
