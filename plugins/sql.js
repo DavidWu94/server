@@ -195,7 +195,7 @@ class sql{
             "其他":"other"
         };
             
-        this.login_db.prepare(`UPDATE dayoffinfo SET ${table[query["type"]]}=${table[query["type"]]}+${query["totalTime"]} WHERE serialnum='${num}';`).run();
+        this.login_db.prepare(`UPDATE dayoffinfo SET ${table[query["type"]]}=${table[query["type"]]}+${query["totalTime"]} WHERE id='${query["id"]}';`).run();
         this.login_db.prepare(`UPDATE requestquery SET state=${state} WHERE serialnum='${num}';`).run();
         return this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${que["id"]}'`).all()[0]["email"];
     }
