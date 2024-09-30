@@ -53,7 +53,7 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
         res.sendStatus(501);
         return;
       }
-      if(permission==1){
+      if(permission==0){
         sqlPlugin.setPermit(ret["num"],1);
       }else{
         var man = ["jeff@eucan.com.tw","catherine@eucan.com.tw"]
