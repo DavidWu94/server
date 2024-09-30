@@ -179,7 +179,6 @@ class sql{
 
     setPermit(num,state){
         const query = this.login_db.prepare(`SELECT * FROM requestquery WHERE serialnum='${num}'`).all()[0];
-        console.log(query)
         
         const table = {
             "特休假":"annual",
@@ -195,6 +194,7 @@ class sql{
             "產假":"maternity",
             "其他":"other"
         };
+        console.log(`UPDATE dayoffinfo SET ${table[query["type"]]}=${table[query["type"]]}+${query["totalTime"]} WHERE id='${query["id"]}';`)
         if(state==1) this.login_db.prepare(`UPDATE dayoffinfo SET ${table[query["type"]]}=${table[query["type"]]}+${query["totalTime"]} WHERE id='${query["id"]}';`).run();
         this.login_db.prepare(`UPDATE requestquery SET state=${state} WHERE serialnum='${num}';`).run();
         return this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${query["id"]}'`).all()[0]["email"];
