@@ -179,6 +179,7 @@ class sql{
 
     setPermit(num,state){
         const query = this.login_db.prepare(`SELECT * FROM requestquery WHERE serialnum='${num}'`).all()[0];
+        console.log(query)
         
         const table = {
             "特休假":"annual",
