@@ -54,6 +54,7 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
         return;
       }
       if(permission==0){
+        console.log(ret);
         sqlPlugin.setPermit(ret["num"],1);
       }else{
         var man = ["jeff@eucan.com.tw","catherine@eucan.com.tw"]
