@@ -2,6 +2,7 @@
 userinfo for storing account and password:
 
 `CREATE TABLE userinfo (id TEXT PRIMARY KEY,pwd TEXT NOT NULL,type TEXT DEFAULT employee,email TEXT NOT NULL,name TEXT NOT NULL,joinTime DATETIME DEFAULT (strftime('%Y-%m-%d', 'now', '+8 hours')), mgroup INT NOT NULL,permit INT DEFAULT 1);`
+<!-- dayoff permit requirement: 1 = requeire permission, 0 = no requeirement -->
 
 logininfo for storing session key:
 
