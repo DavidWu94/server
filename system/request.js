@@ -111,7 +111,7 @@ function caculateTime(time1,time2){
 }
 
 function validTime(time){
-	const T = time.split(":");
+	const T = time.split(" ")[1].split(":");
 	// if(0<=date.getHours()<=8)
 	if(8 <= parseInt(T[0]) &&  parseInt(T[0]) <= 17){
 		if(T[0]=='08' && T[1]=="00"){
