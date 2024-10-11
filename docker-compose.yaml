@@ -1,0 +1,23 @@
+services:
+  node:
+    build: .
+    ports:
+      - "3000:3000"
+    cpus: 2
+    mem_limit: 200M
+    restart: always
+    volumes:
+      - "./databases:/app/databases/"
+      - "./proofs:/app/proofs/"
+    networks:
+      backend: 
+        ipv4_address: "192.168.8.100"
+
+
+networks:
+  backend:
+    ipam:
+      driver: default
+      config:
+        - subnet: "192.168.8.0/24"
+    

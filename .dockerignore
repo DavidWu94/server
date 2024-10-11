@@ -1,0 +1,6 @@
+node_modules
+server
+.git
+conf
+.gitignore
+run.bat

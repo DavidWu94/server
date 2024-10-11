@@ -1,6 +1,7 @@
 const sql = require("../plugins/sql")
 const mail = require("../plugins/mailer")
-const upload = require('../plugins/multer');
+const fs = require("fs")
+// const upload = require('../plugins/multer');
 
 /**
  * 
@@ -10,13 +11,11 @@ const upload = require('../plugins/multer');
  * @param {*} req 
  * @param {*} res 
  */
-module.exports = (sqlPlugin,log,mailer,req,res)=>{
-  // Handle the uploaded file
-  upload(req,res,(err)=>{
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: err });
-     }
+module.exports = (sqlPlugin,log,mailer,req,res,file)=>{
+    // if (err) {
+    //   console.error(err);
+    //   return res.status(500).json({ error: err });
+    //  }
     /**
      * @type {object}
      */
@@ -36,12 +35,14 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
     // TODO: Add permission check
     const permission = sqlPlugin.getPermission(account);
     if(permission===null){
+	  fs.rm(`./proofs/${file.originalname.split(".")[0].zip}`,(err)=>console.log);
       res.sendStatus(403);
       return;
     }
 
     let ret1 = sqlPlugin.checkHash(account,cookie);
     if (ret1==null){
+	  fs.rm(`./proofs/${file.originalname.split(".")[0].zip}`,(err)=>console.log);
       res.json({
         "status":403
       });
@@ -54,8 +55,10 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
         return;
       }
       if(permission==0){
-        console.log(ret);
+        // console.log(ret);
         sqlPlugin.setPermit(ret["num"],1);
+		fs.rename(`./proofs/${file.originalname.split(".")[0].zip}`,`./proofs/${ret["num"]}.zip}`);
+		res.send("已成功請假");
       }else{
         var man = ["jeff@eucan.com.tw","catherine@eucan.com.tw"]
         mailer.send(man[ret["mgroup"]],"請假審核要求",`您好，\n員工 ${ret["name"]}於剛才發送請假要求。\n詳細內容請登入請假系統審核。\n\n<此信為系統自動發送，請勿回覆>`)
@@ -63,7 +66,6 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
       }
     }
     // console.log(req.body)
-  })
 }
 
 function caculateTime(time1,time2){

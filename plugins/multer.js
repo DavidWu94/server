@@ -5,14 +5,14 @@ const path = require('path');
 const storage = multer.diskStorage({
   destination: './proofs/',
   filename: function(req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    cb(null, file.originalname);
   }
 });
 
 // Create the multer instance
 const upload = multer({ 
   storage: storage,
-  limits: { fileSize: 10000000 }
-}).single('file') // 10MB file size limit});
+  limits: { fileSize: 100*1024*1024 }
+}).single("file")
 
 module.exports = upload;
