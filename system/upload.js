@@ -1,7 +1,7 @@
 const sql = require("../plugins/sql")
 const mail = require("../plugins/mailer")
-const upload = require('../plugins/multer');
 const fs = require("fs")
+// const upload = require('../plugins/multer');
 
 /**
  * 
@@ -12,63 +12,68 @@ const fs = require("fs")
  * @param {*} res 
  */
 module.exports = (sqlPlugin,log,mailer,req,res,file)=>{
-    // Handle the uploaded file
-    upload(req,res,(err)=>{
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ error: err });
-       }
-      /**
-       * @type {object}
-       */
-      const dataReceived = req.body;
-  
-      const account = dataReceived["account"];
-      const cookie = dataReceived["cookie"];
-      const type = dataReceived["type"];
-      // data below requires front-end format time into 2024-01-01
-      const start = dataReceived["start"];
-      const end = dataReceived["end"];
-    //   const file = req.files
-      if(!(validTime(start) && validTime(end))){
-        res.sendStatus(403);
-        return;
-      }
-      const totalTime = caculateTime(start,end);  
-      // TODO: Add permission check
+    // if (err) {
+    //   console.error(err);
+    //   return res.status(500).json({ error: err });
+    //  }
+    /**
+     * @type {object}
+     */
+    const dataReceived = req.body;
+
+    const account = dataReceived["account"];
+    const cookie = dataReceived["cookie"];
+    const type = dataReceived["type"];
+    // data below requires front-end format time into 2024-01-01
+    const start = dataReceived["start"];
+    const end = dataReceived["end"];
+    if(!(validTime(start) && validTime(end))){
+	  if(file)
+	  fs.rm(`./proofs/${file.originalname.split(".")[0]}.zip`,(err)=>console.log);
+      res.sendStatus(403);
+      return;
+    }
+    const totalTime = caculateTime(start,end);  
+    
     const permission = sqlPlugin.getPermission(account);
-    if(permission===null){	
-	  fs.rm(`./proofs/${file.originalname.split(".")[0].zip}`,(err)=>console.log);
+    if(permission===null){
+	  if(file)
+	  	fs.rm(`./proofs/${file.originalname.split(".")[0]}.zip`,(err)=>console.log);
       res.sendStatus(403);
       return;
     }
 
-      let ret1 = sqlPlugin.checkHash(account,cookie);
-      if (ret1==null){
-		fs.rm(`./proofs/${file.originalname.split(".")[0].zip}`,(err)=>console.log);
-        res.json({
-          "status":403
-        });
-        return;
-      }else{
-        const ret = sqlPlugin.newRequest(account,type,start,end,totalTime);
+    let ret1 = sqlPlugin.checkHash(account,cookie);
+    if (ret1==null){
+	  if(file)
+	  	fs.rm(`./proofs/${file.originalname.split(".")[0]}.zip`,(err)=>console.log);
+      res.json({
+        "status":403
+      });
+      return;
+    }else{
+      const ret = sqlPlugin.newRequest(account,type,start,end,totalTime);
 
-        if (!ret){
-          res.sendStatus(501);
-          return;
-        }
-        if(permission==0){
-          console.log(ret);
-		  
-          sqlPlugin.setPermit(ret["num"],1);
-        }else{
-          var man = ["jeff@eucan.com.tw","catherine@eucan.com.tw"]
-          mailer.send(man[ret["mgroup"]],"請假審核要求",`您好，\n員工 ${ret["name"]}於剛才發送請假要求。\n詳細內容請登入請假系統審核。\n\n<此信為系統自動發送，請勿回覆>`)
-          res.send("已向主管提出請假申請，請點擊上一頁回到請假頁面")
-        }
+      if (!ret){
+        res.sendStatus(501);
+        return;
       }
-      // console.log(req.body)
-    })
+      if(permission==0){
+        // console.log(ret);
+        sqlPlugin.setPermit(ret["num"],1);
+		if(file)
+			fs.rename(`./proofs/${file.originalname.split(".")[0]}.zip`,`./proofs/${ret["num"]}.zip`,(err)=>console.log);
+		// fs.rename(`./proofs/${file.originalname.split(".")[0]}.zip`,`./proofs/${ret["num"]}}.zip`);
+		res.send("已成功請假");
+      }else{
+		if(file)
+			fs.rename(`./proofs/${file.originalname.split(".")[0]}.zip`,`./proofs/${ret["num"]}.zip`,(err)=>console.log);
+        var man = ["jeff@eucan.com.tw","catherine@eucan.com.tw"]
+        mailer.send(man[ret["mgroup"]],"請假審核要求",`您好，\n員工 ${ret["name"]}於剛才發送請假要求。\n詳細內容請登入請假系統審核。\n\n<此信為系統自動發送，請勿回覆>`)
+        res.send("已向主管提出請假申請，請點擊上一頁回到請假頁面")
+      }
+    }
+    // console.log(req.body)
 }
 
 function caculateTime(time1,time2){

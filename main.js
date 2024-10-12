@@ -31,12 +31,29 @@ app.all('/',(req,res)=>{
   res.send("System online.");
 });
 
-const posts = ['login','employee','admin','register','session','dayoff','request','query','permit','init'];
+const posts = ['login','employee','admin','session','dayoff','request','query','permit','init'];
 (()=>{
   posts.forEach(v=>{
     app.post(`/${v}`,require(`./system/${v}.js`).bind(null,sqlPlugin,log,mailer));
   })
 })();
+
+/* ====================================== DEPRECATED ================================================= */
+const deprecated = ["register"];
+(()=>{
+  posts.forEach(v=>{
+    app.all(`/${v}`,(req,res)=>{
+      res.send({
+        "status": 404,
+        "msg": "page deprecated."
+      })
+    });
+  })
+})();
+
+
+
+/* ====================================== MULTIER FILE HANDLING ================================================= */
 
 /**
  * @type {multer()}
@@ -45,17 +62,15 @@ const upload = require("./plugins/multer.js");
 
 app.post("/upload",upload,(req, res, next) => {
   const file = req.file;
-  if (!file) {
-    return res.status(400).send('Please upload a file');
+  if (file) {
+    var zip = new AdmZip();
+    // console.log(`${file.originalname}`)
+    zip.addLocalFile(`./proofs/${file.originalname}`);
+    zip.writeZip(`./proofs/${file.originalname.split(".")[0]}.zip`);
+    fs.rm(`./proofs/${file.originalname}`,(err)=>console.log);
   }
 
-  
-  var zip = new AdmZip();
-  // console.log(`${file.originalname}`)
-  zip.addLocalFile(`./proofs/${file.originalname}`);
-  zip.writeZip(`./proofs/${file.originalname.split(".")[0]}.zip`);
-  fs.rm(`./proofs/${file.originalname}`,(err)=>console.log);
-  require("./system/request.js")(sqlPlugin,log,mailer,req,res,file);
+  require("./system/upload.js")(sqlPlugin,log,mailer,req,res,file);
   // res.send("awa");
 
 })

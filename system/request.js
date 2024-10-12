@@ -11,7 +11,7 @@ const fs = require("fs")
  * @param {*} req 
  * @param {*} res 
  */
-module.exports = (sqlPlugin,log,mailer,req,res,file)=>{
+module.exports = (sqlPlugin,log,mailer,req,res)=>{
     // if (err) {
     //   console.error(err);
     //   return res.status(500).json({ error: err });
@@ -20,7 +20,7 @@ module.exports = (sqlPlugin,log,mailer,req,res,file)=>{
      * @type {object}
      */
     const dataReceived = req.body;
-
+	console.log(req.account);
     const account = dataReceived["account"];
     const cookie = dataReceived["cookie"];
     const type = dataReceived["type"];
@@ -32,17 +32,15 @@ module.exports = (sqlPlugin,log,mailer,req,res,file)=>{
       return;
     }
     const totalTime = caculateTime(start,end);  
-    // TODO: Add permission check
+    
     const permission = sqlPlugin.getPermission(account);
     if(permission===null){
-	  fs.rm(`./proofs/${file.originalname.split(".")[0].zip}`,(err)=>console.log);
       res.sendStatus(403);
       return;
     }
 
     let ret1 = sqlPlugin.checkHash(account,cookie);
     if (ret1==null){
-	  fs.rm(`./proofs/${file.originalname.split(".")[0].zip}`,(err)=>console.log);
       res.json({
         "status":403
       });
@@ -57,7 +55,7 @@ module.exports = (sqlPlugin,log,mailer,req,res,file)=>{
       if(permission==0){
         // console.log(ret);
         sqlPlugin.setPermit(ret["num"],1);
-		fs.rename(`./proofs/${file.originalname.split(".")[0].zip}`,`./proofs/${ret["num"]}.zip}`);
+		// fs.rename(`./proofs/${file.originalname.split(".")[0].zip}`,`./proofs/${ret["num"]}.zip}`);
 		res.send("已成功請假");
       }else{
         var man = ["jeff@eucan.com.tw","catherine@eucan.com.tw"]
