@@ -18,7 +18,7 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
       // if(ret["accountType"]=="admin"){
   
       // }
-      // TODO: fetching data.
+      
       const dayoffdata = sqlPlugin.dayoff(user,year);
       res.json({
         "status":200,
