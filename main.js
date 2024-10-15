@@ -31,7 +31,7 @@ app.all('/',(req,res)=>{
   res.send("System online.");
 });
 
-const posts = ['login','employee','admin','session','dayoff','request','query','permit','init'];
+const posts = ['login','employee','admin','session',"register",'dayoff','request','query','permit','init'];
 (()=>{
   posts.forEach(v=>{
     app.post(`/${v}`,require(`./system/${v}.js`).bind(null,sqlPlugin,log,mailer));
@@ -39,9 +39,9 @@ const posts = ['login','employee','admin','session','dayoff','request','query','
 })();
 
 /* ====================================== DEPRECATED ================================================= */
-const deprecated = ["register"];
+const deprecated = ["upload"];
 (()=>{
-  posts.forEach(v=>{
+  deprecated.forEach(v=>{
     app.all(`/${v}`,(req,res)=>{
       res.send({
         "status": 404,
