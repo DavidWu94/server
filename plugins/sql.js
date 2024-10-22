@@ -63,6 +63,11 @@ class sql{
 
     }
 
+    getAllUsers(){
+        const data = this.login_db.prepare(`SELECT * FROM userinfo;`).all();
+        return data;
+    }
+
     getEmployeeDayOffList(user,year){
         try{
             const dayoffData = this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${user}' AND year='${year}';`).all()[0];

@@ -13,12 +13,13 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
         "status":403
       });
     }else{
-      // if(ret["accountType"]=="admin"){
-  
-      // }
-      // TODO: fetching data.
+      if(ret["accountType"]!="admin"){
+        res.sendStatus(403);
+      }
+      var returnList = sqlPlugin.getAllUsers();
+
       res.json({
-        "status":200,
+        data:returnList
       });
     }
     // res.sendStatus(403);
