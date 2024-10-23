@@ -164,13 +164,13 @@ class sql{
      * @param {*} end 
      * @returns 
      */
-    newRequest(user,type,start,end,totalTime){
+    newRequest(user,type,start,end,totalTime,reason){
         const query = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0];
         const currentYear = new Date().getFullYear()
         const count = this.login_db.prepare(`SELECT COUNT(*) FROM requestquery WHERE year=${currentYear}`).all()[0];
         const name = query["name"];
         // console.log(count)
-        this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime) VALUES ('${currentYear}${count["COUNT(*)"]}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime});`).run();
+        this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason) VALUES ('${currentYear}${count["COUNT(*)"]}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},${reason});`).run();
         return {"mgroup":query["mgroup"],"name":name,"num":`${currentYear}${count["COUNT(*)"]}`};
     }
 

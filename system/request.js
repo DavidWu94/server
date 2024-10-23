@@ -25,6 +25,7 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
     const cookie = dataReceived["cookie"];
     const type = dataReceived["type"];
     // data below requires front-end format time into 2024-01-01
+	const reason = dataReceived["reason"]
     const start = dataReceived["start"];
     const end = dataReceived["end"];
     if(!(validTime(start) && validTime(end))){
@@ -46,7 +47,7 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
       });
       return;
     }else{
-      const ret = sqlPlugin.newRequest(account,type,start,end,totalTime);
+      const ret = sqlPlugin.newRequest(account,type,start,end,totalTime,reason);
 
       if (!ret){
         res.sendStatus(501);
