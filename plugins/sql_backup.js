@@ -7,7 +7,6 @@ class sql{
 
     constructor(){
         this.login_db = require('better-sqlite3')('./databases/loginDatabase.db');
-        this.login_db.pragma('journal_mode = WAL');
     }
 
     login(user,pwd,cookie){
@@ -72,7 +71,7 @@ class sql{
     getEmployeeDayOffList(user,year){
         try{
             const dayoffData = this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${user}' AND year='${year}';`).all()[0];
-            // console.log(dayoffData);
+            console.log(dayoffData);
             return dayoffData;
         }catch{
             return null;
