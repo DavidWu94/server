@@ -1,5 +1,6 @@
 const dotenv = require('dotenv');
 const request = require("request");
+const valid = require("../plugins/checkvalid");
 dotenv.config();
 
 module.exports = (sqlPlugin,log,mailer,req,res)=>{
@@ -12,6 +13,11 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
     const password = dataReceived["pwd"];
     const cookie = dataReceived["cookie"];
     const twoFA = dataReceived["twoFA"];
+
+    if(!valid(dataReceived,["account","pwd"])){
+        res.sendStatus(400);
+        return;
+      }
 
     if(cookie==null && (account==null || password==null)){
         log.logFormat(`Someone tried to login but was lack of info.`);

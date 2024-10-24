@@ -1,3 +1,5 @@
+const valid = require("../plugins/checkvalid");
+
 module.exports = (sqlPlugin,log,mailer,req,res)=>{
     /**
      * @type {object}
@@ -5,7 +7,10 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
     const dataReceived = req.body;
     const account = dataReceived["account"];
     const cookie = dataReceived["cookie"];
-  
+    if(!valid(dataReceived,["account","cookie"])){
+      res.sendStatus(400);
+      return;
+    }
     let ret = sqlPlugin.checkHash(account,cookie);
     if (ret==null){
       res.json({

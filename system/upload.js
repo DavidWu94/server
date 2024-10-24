@@ -1,6 +1,7 @@
-const sql = require("../plugins/sql_backup")
-const mail = require("../plugins/mailer")
-const fs = require("fs")
+const sql = require("../plugins/sql");
+const mail = require("../plugins/mailer");
+const fs = require("fs");
+const valid = require("../plugins/checkvalid");
 // const upload = require('../plugins/multer');
 
 /**
@@ -27,6 +28,12 @@ module.exports = (sqlPlugin,log,mailer,req,res,file)=>{
     // data below requires front-end format time into 2024-01-01
     const start = dataReceived["start"];
     const end = dataReceived["end"];
+
+	if(!valid(dataReceived,["account","cookie","type","start","end"])){
+		res.sendStatus(400);
+		return;
+	}
+
     if(!(validTime(start) && validTime(end))){
 	  if(file)
 	  fs.rm(`./proofs/${file.originalname.split(".")[0]}.zip`,(err)=>console.log);

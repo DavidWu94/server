@@ -1,6 +1,7 @@
-const sql = require("../plugins/sql")
-const mail = require("../plugins/mailer")
-const fs = require("fs")
+const sql = require("../plugins/sql");
+const mail = require("../plugins/mailer");
+const fs = require("fs");
+const valid = require("../plugins/checkvalid");
 // const upload = require('../plugins/multer');
 
 /**
@@ -28,6 +29,12 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
 	const reason = dataReceived["reason"]
     const start = dataReceived["start"];
     const end = dataReceived["end"];
+
+	if(!valid(dataReceived,["account","cookie","type","reason","start","end"])){
+		res.sendStatus(400);
+		return;
+	}
+
     if(!(validTime(start) && validTime(end))){
       res.sendStatus(403);
       return;
