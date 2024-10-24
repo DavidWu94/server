@@ -30,7 +30,7 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
     if(ret.msg=="success"){
         // log.logFormat(`${account} logged in successfully.`);
         if(account=='root'){
-            if(parseInt(twoFA)==NaN){
+            if(isNaN(parseInt(twoFA))){
                 res.sendStatus(400);
                 return;
             }
