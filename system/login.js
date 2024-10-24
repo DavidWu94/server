@@ -30,6 +30,10 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
     if(ret.msg=="success"){
         // log.logFormat(`${account} logged in successfully.`);
         if(account=='root'){
+            if(parseInt(twoFA)==NaN){
+                res.sendStatus(400);
+                return;
+            }
             request.get(`https://www.authenticatorApi.com/Validate.aspx?Pin=${twoFA}&SecretCode=${process.env.SECRET}`,(err,resp,body)=>{
                 // console.log(body)
                 if(body=="True"){
