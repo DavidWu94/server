@@ -43,10 +43,18 @@ const deprecated = ["upload"];
 (()=>{
   deprecated.forEach(v=>{
     app.all(`/${v}`,(req,res)=>{
-      res.send({
-        "status": 404,
-        "msg": "page deprecated."
-      })
+      res.statusCode(410);
+    });
+  })
+})();
+
+
+/* ====================================== UNDERMAINTAINENCE ================================================= */
+const maintainence = [];
+(()=>{
+  deprecated.forEach(v=>{
+    app.all(`/${v}`,(req,res)=>{
+      res.statusCode(423);
     });
   })
 })();
