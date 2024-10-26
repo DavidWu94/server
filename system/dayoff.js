@@ -18,9 +18,7 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
 
     let ret = sqlPlugin.checkHash(account,cookie);
     if (ret==null){
-      res.json({
-        "status":403
-      });
+      res.sendStatus(403);
     }else{
       // if(ret["accountType"]=="admin"){
   

@@ -49,9 +49,7 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
 
     let ret1 = sqlPlugin.checkHash(account,cookie);
     if (ret1==null){
-      res.json({
-        "status":403
-      });
+		res.sendStatus(403);
       return;
     }else{
       const ret = sqlPlugin.newRequest(account,type,start,end,totalTime,reason);
