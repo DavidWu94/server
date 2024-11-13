@@ -38,7 +38,8 @@ const posts = ['login','users','admin','session',"register",'dayoff','request','
     app.post(`/${v}`,(req,res)=>{
       try{
         utils(req,res);
-      }catch{
+      }catch(e){
+        log.logFormat(e,new Date());
         res.sendStatus(500);
       }
     });
