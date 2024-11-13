@@ -34,7 +34,14 @@ app.all('/',(req,res)=>{
 const posts = ['login','users','admin','session',"register",'dayoff','request','query','permit','init'];
 (()=>{
   posts.forEach(v=>{
-    app.post(`/${v}`,require(`./system/${v}.js`).bind(null,sqlPlugin,log,mailer));
+    const utils = require(`./system/${v}.js`).bind(null,sqlPlugin,log,mailer);
+    app.post(`/${v}`,(req,res)=>{
+      try{
+        utils(req,res);
+      }catch{
+        res.sendStatus(500);
+      }
+    });
   })
 })();
 
