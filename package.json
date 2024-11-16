@@ -1,0 +1,25 @@
+{
+  "name": "david_server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "dependencies": {
+    "adm-zip":"^0.5.16",
+    "better-sqlite3":"^10.0.0",
+    "body-parser":"^1.20.3",
+    "dotenv":"^16.4.5",
+    "cors":"^2.8.5",
+    "crypto":"^1.0.1",
+    "express":"^4.21.1",
+    "fs":"^0.0.1-security",
+    "request":"^2.88.2",
+    "multer":"^1.4.5-lts.1",
+    "nodemailer":"^6.9.15",
+    "path":"^0.12.7"
+  },
+  "license": "ISC"
+}
