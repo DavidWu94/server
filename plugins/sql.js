@@ -8,6 +8,7 @@ class sql{
     constructor(){
         this.login_db = require('better-sqlite3')('./databases/loginDatabase.db');
         this.login_db.pragma('journal_mode = WAL');
+        log.logFormat("Database is connected with server.",new Date());
     }
 
     login(user,pwd,cookie){
@@ -26,7 +27,10 @@ class sql{
         var expired = false;
         if(cookie&&loginHashData!=undefined){   // if u got a cookie, there must be ur data in the database.
             const ret = this.checkHash(user,cookie);
-            if (ret) return ret;
+            if (ret){
+                log.logFormat(`${user} has logined with cookie successfully.`,current);
+                return {msg:"success",accountType:sqldata["type"],sessionKey:hash,name:sqldata["name"]};
+            }
             else expired=true;
         }
         if(pwd==sqldata["pwd"]){
@@ -108,7 +112,6 @@ class sql{
             if (loginHashData["sKey"]==cookie){
                 // if cookie correct.
                 this.login_db.prepare(`UPDATE logininfo SET createTime = strftime('%Y-%m-%d %H:%M:%S', 'now', '+8 hours') WHERE id='${user}';`).run();
-                log.logFormat(`${user} has logined with cookie successfully.`,current);
                 return {msg:"success",accountType:sqldata["type"],sessionKey:cookie};
             }else{
                 return null;
@@ -138,6 +141,7 @@ class sql{
         // }
         // ["annual","personal","care","sick","wedding","funeral","birth","pcheckup","miscarriage","paternity","maternity","other","total","year"]
         this.login_db.prepare(`INSERT INTO dayoffinfo (id) VALUES ('${user}');`).run();
+        log.logFormat(`${user}'s dayoffinfo has been initialize.`,new Date());
 
     }
 
@@ -172,6 +176,7 @@ class sql{
         const name = query["name"];
         // console.log(count)
         this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason) VALUES ('${currentYear}${count["COUNT(*)"]}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},'${reason}');`).run();
+        log.logFormat(`${user} just request a new dayoff.`,new Date())
         return {"mgroup":query["mgroup"],"name":name,"num":`${currentYear}${count["COUNT(*)"]}`};
     }
 
@@ -201,6 +206,7 @@ class sql{
         
         if(state==1) this.login_db.prepare(`UPDATE dayoffinfo SET ${table[query["type"]]}=${table[query["type"]]}+${query["totalTime"]} WHERE id='${query["id"]}';`).run();
         this.login_db.prepare(`UPDATE requestquery SET state=${state} WHERE serialnum='${num}';`).run();
+        log.logFormat(`Dayoff ticket #${num} has been set to ${state?"accepted":"denied"}.`);
         return this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${query["id"]}'`).all()[0]["email"];
     }
 
