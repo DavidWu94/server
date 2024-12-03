@@ -20,12 +20,12 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
         res.sendStatus(400);
         return;
     }
-
+    
     let ret = sqlPlugin.checkHash(account,cookie);
     if (ret==null){
         res.sendStatus(403);
     }else{
-        const ret = sqlPlugin.showQuery(account,0);
+        const ret = sqlPlugin.showQuery(account,1);
         res.send({"data":ret});
     }
 }
