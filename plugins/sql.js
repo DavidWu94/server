@@ -182,7 +182,7 @@ class sql{
 
     showQuery(user,state=0){
         const mgroup = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0]["mgroup"];
-        const query = this.login_db.prepare(`SELECT serialnum,name,type,start,end,reason FROM requestquery WHERE mgroup=${mgroup} AND state=${state}`).all();
+        const query = this.login_db.prepare(`SELECT serialnum,name,type,start,end,reason,totalTime FROM requestquery WHERE mgroup=${mgroup} AND state=${state}`).all();
         return query;
     }
 

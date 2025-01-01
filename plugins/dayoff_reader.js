@@ -25,9 +25,11 @@ async function sleep(ms) {
 
 async function scrapeAndDownload(rocYear) {
   // 建立 Firefox WebDriver
+  const options = new firefox.Options();
+  options.addArguments("--headless");
   const driver = await new Builder()
     .forBrowser('firefox')
-    .setFirefoxOptions(new firefox.Options())
+    .setFirefoxOptions(options)
     .build();
 
   try {
@@ -102,7 +104,7 @@ async function scrapeAndDownload(rocYear) {
             const resp = await axios.get(downloadHref);
 
             // 儲存至本地檔案
-            const filename = `../api/office_calendar_${rocYear}.json`;
+            const filename = `./api/office_calendar_${rocYear}.json`;
             fs.writeFileSync(filename, JSON.stringify(resp.data, null, 2), 'utf8');
 
             console.log(`成功下載: ${filename}`);
@@ -137,7 +139,7 @@ async function scrapeAndDownload(rocYear) {
 }
 
 async function rewriteJSON(rocYear) {
-  let rawdata = fs.readFileSync(`../api/office_calendar_${rocYear}.json`);
+  let rawdata = fs.readFileSync(`./api/office_calendar_${rocYear}.json`);
   let rd= JSON.parse(rawdata);
   // console.log(punishments);
   let newData = {}
@@ -155,14 +157,14 @@ async function rewriteJSON(rocYear) {
   }
 
   let data = JSON.stringify(newData);
-  fs.writeFileSync(`../api/office_calendar_${rocYear}.json`, data);
-  
+  fs.writeFileSync(`./api/office_calendar_${rocYear}.json`, data);
+  return new Promise(res=>res());
 }
 
 async function downloadJSON(rocYearArg) {
   await scrapeAndDownload(rocYearArg);
   await rewriteJSON(rocYearArg);
-  return new Promise(res=>res);
+  return new Promise(res=>res());
 }
 
 async function dayoff_count(start,end) {

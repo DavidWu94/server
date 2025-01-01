@@ -10,6 +10,7 @@ services:
       - "./databases:/app/databases/"
       - "./proofs:/app/proofs/"
       - "./logs:/app/logs"
+      - "./api:/app/api"
     networks:
       backend: 
         ipv4_address: "192.168.8.100"

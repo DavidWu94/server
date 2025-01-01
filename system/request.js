@@ -2,6 +2,7 @@ const sql = require("../plugins/sql");
 const mail = require("../plugins/mailer");
 const fs = require("fs");
 const valid = require("../plugins/checkvalid");
+const caculateTime = require("../plugins/dayoff_calculate");
 // const upload = require('../plugins/multer');
 
 /**
@@ -12,7 +13,7 @@ const valid = require("../plugins/checkvalid");
  * @param {*} req 
  * @param {*} res 
  */
-module.exports = (sqlPlugin,log,mailer,req,res)=>{
+module.exports = async (sqlPlugin,log,mailer,req,res)=>{
     // if (err) {
     //   console.error(err);
     //   return res.status(500).json({ error: err });
@@ -21,12 +22,12 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
      * @type {object}
      */
     const dataReceived = req.body;
-	console.log(req.account);
+	  // console.log(req.account);
     const account = dataReceived["account"];
     const cookie = dataReceived["cookie"];
     const type = dataReceived["type"];
     // data below requires front-end format time into 2024-01-01
-	const reason = dataReceived["reason"]
+	  const reason = dataReceived["reason"]
     const start = dataReceived["start"];
     const end = dataReceived["end"];
 
@@ -39,7 +40,7 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
       res.sendStatus(403);
       return;
     }
-    const totalTime = caculateTime(start,end);  
+    const totalTime = await caculateTime(start,end);
     
     const permission = sqlPlugin.getPermission(account);
     if(permission===null){
@@ -72,50 +73,50 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
     // console.log(req.body)
 }
 
-function caculateTime(time1,time2){
-	const date1 = new Date(Date.parse(time1));
-	const date2 = new Date(Date.parse(time2));
-	const spl = [date1.getHours()>12?1:0,date2.getHours()>12?1:0];
-	console.log(spl)
-	const n = date2.getDay()-date1.getDay();
-	const sum = spl[0]+spl[1];
-	var timeElapse = (date2.getTime()-date1.getTime())/1000/60/60;
-	if(n==0){
-		// same day
-		switch(sum){
-			case 0:
-				return timeElapse>3?4:timeElapse;
-				// break;
-			case 1:
-				if(date1.getHours()==8){
-					timeElapse += 0.5
-				}
-				return (timeElapse-1.5);
-				// break;
-			case 2:
-				return timeElapse;
-		}
-	}else{
-		switch(sum){
-			case 0:
-				if(date2.getHours()==12)
-					timeElapse+=0.5;
-				if(date1.getHours()==8){
-					return timeElapse-16*(n);
-				}else{
-					return timeElapse-16.5*(n);
-				}
-			case 1:
-				if(spl[0]==0){
-					return timeElapse-16*n-1.5+(date1.getHours()==8?0.5:0);
-				}else{
-					return timeElapse-15*n-1.5*(n-1)+(date2.getHours()==12?0.5:0);
-				}
-			case 2:
-				return timeElapse-16*n;
-		}
-	}
-}
+// function caculateTime(time1,time2){
+// 	const date1 = new Date(Date.parse(time1));
+// 	const date2 = new Date(Date.parse(time2));
+// 	const spl = [date1.getHours()>12?1:0,date2.getHours()>12?1:0];
+// 	console.log(spl)
+// 	const n = date2.getDay()-date1.getDay();
+// 	const sum = spl[0]+spl[1];
+// 	var timeElapse = (date2.getTime()-date1.getTime())/1000/60/60;
+// 	if(n==0){
+// 		// same day
+// 		switch(sum){
+// 			case 0:
+// 				return timeElapse>3?4:timeElapse;
+// 				// break;
+// 			case 1:
+// 				if(date1.getHours()==8){
+// 					timeElapse += 0.5
+// 				}
+// 				return (timeElapse-1.5);
+// 				// break;
+// 			case 2:
+// 				return timeElapse;
+// 		}
+// 	}else{
+// 		switch(sum){
+// 			case 0:
+// 				if(date2.getHours()==12)
+// 					timeElapse+=0.5;
+// 				if(date1.getHours()==8){
+// 					return timeElapse-16*(n);
+// 				}else{
+// 					return timeElapse-16.5*(n);
+// 				}
+// 			case 1:
+// 				if(spl[0]==0){
+// 					return timeElapse-16*n-1.5+(date1.getHours()==8?0.5:0);
+// 				}else{
+// 					return timeElapse-15*n-1.5*(n-1)+(date2.getHours()==12?0.5:0);
+// 				}
+// 			case 2:
+// 				return timeElapse-16*n;
+// 		}
+// 	}
+// }
 
 function validTime(time){
 	const T = time.split(" ")[1].split(":");
