@@ -12,7 +12,7 @@ class sql{
     }
 
     login(user,pwd,cookie){
-        const currentTime = new Date()
+        const currentTime = new Date();
         const sqldata = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0];
         const loginHashData = this.login_db.prepare(`SELECT * FROM logininfo WHERE id='${user}';`).all()[0];
 
@@ -42,17 +42,13 @@ class sql{
                     hash = crypto.randomBytes(5).toString('hex');
                 }
                 this.login_db.prepare(`INSERT INTO logininfo (id,sKey) VALUES ('${user}','${hash}');`).run();
-            }else if(expired){
+            }else{
                 // hash expired.
                 hash = crypto.randomBytes(5).toString('hex');
                 while(this.login_db.prepare(`SELECT * FROM logininfo WHERE sKey='${hash}';`).all()[0]){
                     hash = crypto.randomBytes(5).toString('hex');
                 }
                 this.login_db.prepare(`UPDATE logininfo SET createTime = strftime('%Y-%m-%d %H:%M:%S', 'now', '+8 hours'),sKey='${hash}' WHERE id='${user}';`).run();
-            }else{
-                // Have logined before. Refresh the time cooldown.
-                hash = loginHashData["sKey"];
-                this.login_db.prepare(`UPDATE logininfo SET createTime = strftime('%Y-%m-%d %H:%M:%S', 'now', '+8 hours') WHERE id='${user}';`).run();
             }
 
             log.logFormat(`${user} has logined with password successfully.`,currentTime);
@@ -106,7 +102,7 @@ class sql{
         const current = new Date();
         const lastLogin = Date.parse(loginHashData["createTime"]);
         const DateLastLogin = new Date(lastLogin);
-        
+
         if(((current.getTime()-DateLastLogin.getTime())/1000/60/60)<=1){    // Caculating the elapsed time
             // if elapsed time <= 1 hr
             if (loginHashData["sKey"]==cookie){
