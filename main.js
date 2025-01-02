@@ -46,6 +46,20 @@ const posts = ['login','users','admin','session',"register",'dayoff','request','
   })
 })();
 
+// const gets = ["api"];
+(()=>{
+  const utils = require(`./system/api.js`).bind(null,sqlPlugin,log,mailer);
+  app.post(/api\/\d+/,(req,res)=>{
+    // console.log("A")
+    try{
+      utils(req,res);
+    }catch(e){
+      log.logFormat(e,new Date());
+      res.sendStatus(500);
+    }
+  });
+})();
+
 /* ====================================== DEPRECATED ================================================= */
 const deprecated = ["upload"];
 (()=>{
@@ -70,26 +84,26 @@ const maintainence = [];
 
 
 /* ====================================== MULTIER FILE HANDLING ================================================= */
+// FIXME
+// /**
+//  * @type {multer()}
+//  */
+// const upload = require("./plugins/multer.js");
 
-/**
- * @type {multer()}
- */
-const upload = require("./plugins/multer.js");
+// app.post("/upload",upload,(req, res, next) => {
+//   const file = req.file;
+//   if (file) {
+//     var zip = new AdmZip();
+//     // console.log(`${file.originalname}`)
+//     zip.addLocalFile(`./proofs/${file.originalname}`);
+//     zip.writeZip(`./proofs/${file.originalname.split(".")[0]}.zip`);
+//     fs.rm(`./proofs/${file.originalname}`,(err)=>console.log);
+//   }
 
-app.post("/upload",upload,(req, res, next) => {
-  const file = req.file;
-  if (file) {
-    var zip = new AdmZip();
-    // console.log(`${file.originalname}`)
-    zip.addLocalFile(`./proofs/${file.originalname}`);
-    zip.writeZip(`./proofs/${file.originalname.split(".")[0]}.zip`);
-    fs.rm(`./proofs/${file.originalname}`,(err)=>console.log);
-  }
+//   require("./system/upload.js")(sqlPlugin,log,mailer,req,res,file);
+//   // res.send("awa");
 
-  require("./system/upload.js")(sqlPlugin,log,mailer,req,res,file);
-  // res.send("awa");
-
-})
+// })
 // Set up a route for file uploads
 
 

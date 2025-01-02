@@ -244,3 +244,27 @@ Check if the cookie is valid.
 - **500 Internal server error**: Internal server error
 
 ---
+
+## 11. Fetch Non-Working Day
+
+![GET](https://img.shields.io/badge/GET-0052CC?style=flat-square&logo=appveyor&logoColor=white) `/api/{YEAR}`
+
+**Description:**  
+{YEAR}: The year to lookup. (Can be AD Year or ROC Year)
+Get all Non-working day and working day, where non-working days have 1 as its value, and working days have 0.
+
+**Request Body:**
+```json
+{
+  "account": "string",   // The account currently logged in.
+  "cookie": "string"     // The cookie which server provides.
+}
+```
+**Response:**
+- **200 OK**: Server is online.
+- **400 Bad Request**: Invalid input data
+- **403 Forbidden**: No permission
+- **500 Internal server error**: Internal server error, usually that file haven't been publish by GOV.
+
+### Noted that this function might take a second since it will try to download the file if it wasn't exist.
+---

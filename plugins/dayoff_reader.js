@@ -147,12 +147,13 @@ async function rewriteJSON(rocYear) {
     let year = parseInt(d["西元日期"].substring(0,4));
     let month = parseInt(d["西元日期"].substring(4,6));
     let date = parseInt(d["西元日期"].substring(6));
-    if(d["是否放假"]=="0") continue;
+    var dayoff_status = (d["是否放假"]=="0")?0:1;
+    // if(d["是否放假"]=="0") continue;
     try{
-      newData[month][date] = 1;
+      newData[month][date] = dayoff_status;
     }catch{
       newData[month] = {};
-      newData[month][date] = 1;
+      newData[month][date] = dayoff_status;
     }
   }
 
@@ -165,15 +166,6 @@ async function downloadJSON(rocYearArg) {
   await scrapeAndDownload(rocYearArg);
   await rewriteJSON(rocYearArg);
   return new Promise(res=>res());
-}
-
-async function dayoff_count(start,end) {
-  try{
-    
-  }catch{
-
-  }
-  
 }
 
 // 如果從 CLI 執行，例如：node scrape-download-json-firefox.js 112

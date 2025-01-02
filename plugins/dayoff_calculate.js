@@ -20,7 +20,7 @@ async function loadNonWorkingDays(rocYear) {
     const filePath = `./api/office_calendar_${rocYear}.json`;
 
     if (!fs.existsSync(filePath)) {
-        console.log("Can't find file.");
+        // console.log("Can't find file.");
         await download(rocYear)
     }
 
@@ -31,6 +31,7 @@ async function loadNonWorkingDays(rocYear) {
     for (const month in data) {
         const days = data[month];
         for (const day in days) {
+            if(data[month][day]==0) continue;
             const monthStr = month.padStart(2, '0');
             const dayStr = day.padStart(2, '0');
             nonWorkingDays.add(`${monthStr}-${dayStr}`);
