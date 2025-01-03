@@ -1,0 +1,17 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+## [Alpha 0.0.1] 2025-01-02
+
+### Added
+- Web scraper to download JSON file from the gov.
+- A api method to request for the JSON file.
+
+### Changed
+- Fixed cookie refresh
+
+### Deprecated
+- Upload page and multer page.

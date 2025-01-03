@@ -61,7 +61,7 @@ const posts = ['login','users','admin','session',"register",'dayoff','request','
 })();
 
 /* ====================================== DEPRECATED ================================================= */
-const deprecated = ["upload"];
+const deprecated = ["upload","multer"];
 (()=>{
   deprecated.forEach(v=>{
     app.all(`/${v}`,(req,res)=>{

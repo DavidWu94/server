@@ -35,3 +35,33 @@ for admin account registering:
 for employee account registering:
 <!-- FIXME -->
 `INSERT INTO userinfo (id,pwd,email,name,mgroup,permit) VALUES ('010049','test123','test@mail.com','丁一二',1,1);`
+
+---
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+## [branch] YYYY-MM-DD
+
+### Added
+- Added 1
+- Added 2
+
+### Changed
+- Changed 1
+- Changed 2
+
+### Deprecated
+- Deprecated 1
+- Deprecated 2
+
+### Removed
+- Removed 1
+- Removed 2
+
+### Fixed
+- Fixed 1
+- Fixed 2
+
+### Security
+- Security 1
+- Security 2
