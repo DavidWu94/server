@@ -11,6 +11,13 @@ class sql{
         log.logFormat("Database is connected with server.",new Date());
     }
 
+    /**
+     * 
+     * @param {string} user 
+     * @param {string|undefined} pwd 
+     * @param {string|undefined} cookie 
+     * @returns {object}
+     */
     login(user,pwd,cookie){
         const currentTime = new Date();
         const sqldata = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0];
@@ -59,11 +66,10 @@ class sql{
         }
     }
 
-    // TODO: feature haven't been implemented.
-    getDayOffInfo(user){
-
-    }
-
+    /**
+     * 
+     * @returns {Array<object>}
+     */
     getAllUsers(){
         const data = this.login_db.prepare(`SELECT * FROM userinfo;`).all();
         return data;

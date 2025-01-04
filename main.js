@@ -31,7 +31,7 @@ app.all('/',(req,res)=>{
   res.send("System online.");
 });
 
-const posts = ['login','users','admin','session',"register",'dayoff','request','query','permit','init','approved'];
+const posts = ['login','users','admin','session',"register",'dayoff','request','query','permit','init','approved','dayoffinfo'];
 (()=>{
   posts.forEach(v=>{
     const utils = require(`./system/${v}.js`).bind(null,sqlPlugin,log,mailer);
