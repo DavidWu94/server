@@ -24,8 +24,13 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
   
       // }
       
-      const dayoffdata = sqlPlugin.dayoff(user,year);
-      res.json(dayoffdata);
+      const dayoffdata = sqlPlugin.getEmployeeDayOffList(user,year);
+      if(dayoffdata){
+        res.json(dayoffdata);
+      }
+      else{
+        res.sendStatus(500);
+      }
     }
     // res.sendStatus(403);
 }
