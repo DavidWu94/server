@@ -1,26 +1,30 @@
+## API Documentation
 
-## 1. Check Server Status
+---
 
-![GET](https://img.shields.io/badge/GET-0052CC?style=flat-square&logo=appveyor&logoColor=white) `/`
+### 1. Check Server Status
+
+**Endpoint:**
+![GET](https://img.shields.io/badge/GET-0052CC?style=flat-square&logo=appveyor&logoColor=white) `/session`
 
 **Description:**  
 Check if the server is online.
 
 **Request:**
 ```http
-GET /
+GET /session
 ```
 
 **Response:**
 - **200 OK**: Server is online.
-- **400 Bad Request**: Invalid input data
-- **403 Forbidden**: No permission
-- **500 Internal server error**: Internal server error
+- **400 Bad Request**: Invalid input data.
+- **403 Forbidden**: No permission.
 
 ---
 
-## 2. Login
+### 2. Login
 
+**Endpoint:**
 ![POST](https://img.shields.io/badge/POST-FF4136?style=flat-square&logo=appveyor&logoColor=white) `/login`
 
 **Description:**  
@@ -29,22 +33,22 @@ Login to the system.
 **Request Body:**
 ```json
 {
-  "account": "string",   // The account the user typed in.
-  "pwd": "string",       // The password the user typed in.
-  "twoFA": "string"      // Only for root account. (Optional)
+  "account": "string",   // User account.
+  "pwd": "string",       // User password.
+  "twoFA": "string"      // Optional two-factor authentication (only for root account).
 }
 ```
 
 **Response:**
-- **200 OK**: Successful login with session cookie.
-- **400 Bad Request**: Invalid input data
-- **403 Forbidden**: No permission
-- **500 Internal server error**: Internal server error
+- **200 OK**: Successful login.
+- **400 Bad Request**: Invalid input data.
+- **403 Forbidden**: No permission or invalid credentials.
 
 ---
 
-## 3. Register a New User
+### 3. Register a New User
 
+**Endpoint:**
 ![POST](https://img.shields.io/badge/POST-FF4136?style=flat-square&logo=appveyor&logoColor=white) `/register`
 
 **Description:**  
@@ -53,218 +57,243 @@ Register a new user.
 **Request Body:**
 ```json
 {
-  "account": "string",   // The account currently logged in.
-  "cookie": "string",    // The cookie which server provides.
-  "user": "string",      // The new user's ID.
-  "pwd": "string",       // The new user's password.
-  "mail": "string",      // The new user's email. (Must end with @eucan.com.tw)
-  "name": "string",      // The new user's name.
-  "date": "YYYY-MM-DD",  // Join date. (Optional, defaults to creation date)
-  "type": "string",      // Account type. (Optional, defaults to "employee")
-  "mgroup": "0 or 1",      // Manager group.
-  "permit": true         // Permission to take a day off. (Optional, defaults to true)
+  "account": "string",   // Admin account.
+  "cookie": "string",    // Session cookie.
+  "user": "string",      // New user's ID.
+  "pwd": "string",       // New user's password.
+  "mail": "string",      // New user's email.
+  "name": "string",      // New user's name.
+  "date": "YYYY-MM-DD",  // Join date (optional).
+  "type": "string",      // Account type (optional, defaults to "employee").
+  "mgroup": "0 or 1",    // Manager group.
+  "permit": true           // Permission to take a day off (optional).
 }
 ```
 
 **Response:**
-- **200 OK**: User successfully registered.
-- **400 Bad Request**: Invalid input data
-- **403 Forbidden**: No permission
-- **500 Internal server error**: Internal server error
+- **200 OK**: User registered successfully.
+- **400 Bad Request**: Invalid input data.
+- **403 Forbidden**: No permission.
 
 ---
 
-## 4. Get All Users
+### 4. Retrieve All Users
 
+**Endpoint:**
 ![POST](https://img.shields.io/badge/POST-FF4136?style=flat-square&logo=appveyor&logoColor=white) `/users`
 
 **Description:**  
-Retrieve all users.
+Retrieve a list of all users (admin-only).
 
 **Request Body:**
 ```json
 {
-  "account": "string",   // The account currently logged in.
-  "cookie": "string"     // The cookie which server provides.
+  "account": "string",   // Admin account.
+  "cookie": "string"     // Session cookie.
 }
 ```
 
 **Response:**
-- **200 OK**: Returns a list of users.
-- **400 Bad Request**: Invalid input data
-- **403 Forbidden**: No permission
-- **500 Internal server error**: Internal server error
+- **200 OK**: Returns the list of users.
+- **400 Bad Request**: Invalid input data.
+- **403 Forbidden**: No permission.
 
 ---
 
-## 5. Add a New Dayoff Request
+### 5. Delete a User
 
-![POST](https://img.shields.io/badge/POST-FF4136?style=flat-square&logo=appveyor&logoColor=white) `/request`
+**Endpoint:**
+![POST](https://img.shields.io/badge/POST-FF4136?style=flat-square&logo=appveyor&logoColor=white) `/delete`
 
 **Description:**  
-Add a new dayoff request.
+Delete a user account.
 
 **Request Body:**
 ```json
 {
-  "account": "string",        // The account currently logged in.
-  "cookie": "string",         // The cookie which server provides.
-  "type": "string",           // The dayoff type.
-  "reason": "string",         // The reason for taking a day off.
+  "account": "string",   // Admin account.
+  "cookie": "string",    // Session cookie.
+  "user": "string"       // User ID to delete.
+}
+```
+
+**Response:**
+- **200 OK**: User deleted successfully.
+- **400 Bad Request**: Invalid input data.
+- **403 Forbidden**: No permission.
+
+---
+
+### 6. Add a New Dayoff Request
+
+**Endpoint:**
+![POST](https://img.shields.io/badge/POST-FF4136?style=flat-square&logo=appveyor&logoColor=white) `/request`
+
+**Description:**  
+Submit a new dayoff request.
+
+**Request Body:**
+```json
+{
+  "account": "string",        // User account.
+  "cookie": "string",         // Session cookie.
+  "type": "string",           // Dayoff type.
+  "reason": "string",         // Reason for dayoff.
   "start": "YYYY-MM-DD HH:mm",// Start datetime.
   "end": "YYYY-MM-DD HH:mm"   // End datetime.
 }
 ```
 
 **Response:**
-- **200 OK**: Dayoff request successfully added.
-- **400 Bad Request**: Invalid input data
-- **403 Forbidden**: No permission
-- **500 Internal server error**: Internal server error
+- **200 OK**: Dayoff request submitted successfully.
+- **400 Bad Request**: Invalid input data.
+- **403 Forbidden**: No permission.
 
 ---
 
-## 6. View Approved Dayoff Requests
+### 7. View Approved Dayoff Requests
 
+**Endpoint:**
 ![POST](https://img.shields.io/badge/POST-FF4136?style=flat-square&logo=appveyor&logoColor=white) `/approved`
 
 **Description:**  
-Show all **approved** dayoff requests.
+View all approved dayoff requests.
 
 **Request Body:**
 ```json
 {
-  "account": "string",   // The account currently logged in.
-  "cookie": "string"     // The cookie which server provides.
+  "account": "string",   // User account.
+  "cookie": "string",    // Session cookie.
+  "user":"string",       // The employee to lookup.(optional)
+  "year":"string",       // The year to lookup.(optional)
+  "limit":"integer"      // The limit of the amount to retrive.(optional)
 }
 ```
 
 **Response:**
-- **200 OK**: Returns a list of approved dayoff requests.
-- **400 Bad Request**: Invalid input data
-- **403 Forbidden**: No permission
-- **500 Internal server error**: Internal server error
+- **200 OK**: Returns approved requests.
+- **400 Bad Request**: Invalid input data.
+- **403 Forbidden**: No permission.
 
 ---
 
-## 7. View Employee Dayoff Record
+### 8. View Employee Dayoff Records
 
+**Endpoint:**
 ![POST](https://img.shields.io/badge/POST-FF4136?style=flat-square&logo=appveyor&logoColor=white) `/dayoff`
 
 **Description:**  
-**Under Development.**  
 View an employee's dayoff record.
 
 **Request Body:**
 ```json
 {
-  "account": "string",   // The account currently logged in.
-  "cookie": "string",    // The cookie which server provides.
-  "user": "string",      // The user whose record is to be looked up.
-  "year": "YYYY"         // The year to search for.
+  "account": "string",   // User account.
+  "cookie": "string",    // Session cookie.
+  "user": "string",      // Target user ID (optional).
+  "year": "YYYY"         // Year to search for.
 }
 ```
 
 **Response:**
-- **200 OK**: Returns the dayoff record.
-- **400 Bad Request**: Invalid input data
-- **403 Forbidden**: No permission
-- **500 Internal server error**: Internal server error
+- **200 OK**: Returns dayoff records.
+- **400 Bad Request**: Invalid input data.
+- **403 Forbidden**: No permission.
 
 ---
 
-## 8. Permit or Deny a Request
+### 9. Permit or Deny Dayoff Requests
 
+**Endpoint:**
 ![POST](https://img.shields.io/badge/POST-FF4136?style=flat-square&logo=appveyor&logoColor=white) `/permit`
 
 **Description:**  
-Accept or deny a dayoff request.
+Approve or deny a dayoff request.
 
 **Request Body:**
 ```json
 {
-  "account": "string",   // The account currently logged in.
-  "cookie": "string",    // The cookie which server provides.
-  "num": "integer",      // The serial number of the request.
-  "permit": 1            // 1 for approval, 0 or undefined for denial.
+  "account": "string",   // Admin account.
+  "cookie": "string",    // Session cookie.
+  "num": "integer",      // Request ID.
+  "permit": 1             // 1 to approve, 0 to deny.
 }
 ```
 
 **Response:**
-- **200 OK**: Request status updated.
-- **400 Bad Request**: Invalid input data
-- **403 Forbidden**: No permission
-- **500 Internal server error**: Internal server error
+- **200 OK**: Request updated successfully.
+- **400 Bad Request**: Invalid input data.
+- **403 Forbidden**: No permission.
 
 ---
 
-## 9. Query Pending Requests
+### 10. Query Pending Requests
 
+**Endpoint:**
 ![POST](https://img.shields.io/badge/POST-FF4136?style=flat-square&logo=appveyor&logoColor=white) `/query`
 
 **Description:**  
-Show all requests that haven't been reviewed yet.
+Retrieve all unreviewed requests.
 
 **Request Body:**
 ```json
 {
-  "account": "string",   // The account currently logged in.
-  "cookie": "string"     // The cookie which server provides.
+  "account": "string",   // Admin account.
+  "cookie": "string"     // Session cookie.
 }
 ```
 
 **Response:**
-- **200 OK**: Returns a list of pending requests.
-- **400 Bad Request**: Invalid input data
-- **403 Forbidden**: No permission
-- **500 Internal server error**: Internal server error
+- **200 OK**: Returns pending requests.
+- **400 Bad Request**: Invalid input data.
+- **403 Forbidden**: No permission.
 
 ---
 
-## 10. Check Session Validity
+### 11. Fetch Non-Working Days
 
-![POST](https://img.shields.io/badge/POST-FF4136?style=flat-square&logo=appveyor&logoColor=white) `/session`
-
-**Description:**  
-**Deprecated.**  
-Check if the cookie is valid.
-
-**Request Body:**
-```json
-{
-  "account": "string",   // The account currently logged in.
-  "cookie": "string"     // The cookie which server provides.
-}
-```
-
-**Response:**
-- **200 OK**: Session is valid.
-- **400 Bad Request**: Invalid input data
-- **403 Forbidden**: No permission
-- **500 Internal server error**: Internal server error
-
----
-
-## 11. Fetch Non-Working Day
-
+**Endpoint:**
 ![GET](https://img.shields.io/badge/GET-0052CC?style=flat-square&logo=appveyor&logoColor=white) `/api/{YEAR}`
 
 **Description:**  
-{YEAR}: The year to lookup. (Can be AD Year or ROC Year)
-Get all Non-working day and working day, where non-working days have 1 as its value, and working days have 0.
+Retrieve non-working and working days for the specified year.
 
 **Request Body:**
 ```json
 {
-  "account": "string",   // The account currently logged in.
-  "cookie": "string"     // The cookie which server provides.
+  "account": "string",   // User account.
+  "cookie": "string"     // Session cookie.
 }
 ```
-**Response:**
-- **200 OK**: Server is online.
-- **400 Bad Request**: Invalid input data
-- **403 Forbidden**: No permission
-- **500 Internal server error**: Internal server error, usually that file haven't been publish by GOV.
 
-### Noted that this function might take a second since it will try to download the file if it wasn't exist.
+**Response:**
+- **200 OK**: Returns non-working day data.
+- **400 Bad Request**: Invalid input data.
+- **403 Forbidden**: No permission.
+
 ---
+
+### 12. Modify User Data
+
+**Endpoint:**
+![POST](https://img.shields.io/badge/POST-FF4136?style=flat-square&logo=appveyor&logoColor=white) `/modify`
+
+**Description:**  
+Modify an existing user’s data.
+
+**Request Body:**
+```json
+{
+  "account": "string",   // Admin account.
+  "cookie": "string",    // Session cookie.
+  "user": "string",      // User ID to modify.
+  "year": "string",      // Year of modification.
+  "data": "object"       // Data to update.
+}
+```
+
+**Response:**
+- **200 OK**: User data updated successfully.
+- **400 Bad Request**: Invalid input data.
+- **403 Forbidden**: No permission.
+
