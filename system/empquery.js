@@ -15,24 +15,8 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
 
     const account = dataReceived["account"];
     const cookie = dataReceived["cookie"];
-    const user = dataReceived["user"];
     const year = dataReceived["year"];
-    const limit = dataReceived["limit"];
 
-    var search_query = "";
-    if(user){
-        search_query += `id='${user}'`;
-        if(year){
-            search_query += ` AND year='${year}'`;
-        }
-    }else{
-        if(year){
-            search_query += `year='${year}'`;
-        }
-    }
-    if(search_query) search_query = "AND " + search_query;
-    var limit_query = "";
-    if(limit) limit_query = `ORDER BY serialnum DESC LIMIT ${limit}`;
     if(!valid(dataReceived,["account","cookie"])){
         res.sendStatus(400);
         return;
@@ -42,7 +26,9 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
     if (ret==null){
         res.sendStatus(403);
     }else{
-        const ret = sqlPlugin.showQuery(account,1,search_query,limit_query);
-        res.send({"data":ret});
+        const result = sqlPlugin.showPersonalQuery(account,year);
+        res.json({
+            "data":result
+        });
     }
 }

@@ -91,8 +91,28 @@ class sql{
         return;
     }
 
-    // TODO: feature haven't been implemented.
-    modify(user,dayoff){
+    modify(user,year,dayoff){
+        const table = {
+            "特休假":"annual",
+            "事假":"personal",
+            "家庭照顧假":"care",
+            "普通傷病假":"sick",
+            "婚假":"wedding",
+            "喪假":"funeral",
+            "分娩假":"birth",
+            "產檢假":"pcheckup",
+            "流產假":"miscarriage",
+            "陪產假":"paternity",
+            "產假":"maternity",
+            "其他":"other"
+        };
+        const entries = Object.entries(dayoff)
+        const query = entries.map((v,i,a)=>{
+            return `${v[0]} = ${v[1]}`;
+        });
+        // console.log(query.join(","))
+        this.login_db.prepare(`UPDATE dayoffinfo SET ${query.join(",")} WHERE id='${user}' AND year='${year}'`).run();
+        return;
 
     }
 
@@ -124,7 +144,7 @@ class sql{
         }
     }
 
-    init(user,data){
+    init(user,year){
         // {
         //     "annual":0,
         //     "personal":0,
@@ -142,8 +162,19 @@ class sql{
         //     "year":0,
         // }
         // ["annual","personal","care","sick","wedding","funeral","birth","pcheckup","miscarriage","paternity","maternity","other","total","year"]
-        this.login_db.prepare(`INSERT INTO dayoffinfo (id) VALUES ('${user}');`).run();
-        log.logFormat(`${user}'s dayoffinfo has been initialize.`,new Date());
+
+        try{
+            if(year != undefined){
+                this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${user}' AND year='${year}';`).all()[0];
+                this.login_db.prepare(`DELETE FROM dayoffinfo WHERE id='${user}' AND year='${year}';`).run();
+                this.login_db.prepare(`INSERT INTO dayoffinfo (id,year) VALUES ('${user}','${year}');`).run();
+            }else{
+                throw new Error("cant find the user");
+            }
+        }catch(e){
+            this.login_db.prepare(`INSERT INTO dayoffinfo (id) VALUES ('${user}');`).run();
+            log.logFormat(`${user}'s dayoffinfo has been initialize.`,new Date());
+        }
 
     }
 
@@ -182,9 +213,9 @@ class sql{
         return {"mgroup":query["mgroup"],"name":name,"num":`${currentYear}${count["COUNT(*)"]}`};
     }
 
-    showQuery(user,state=0){
+    showQuery(user,state=0,search_query="",limit_query=""){
         const mgroup = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0]["mgroup"];
-        const query = this.login_db.prepare(`SELECT serialnum,name,type,start,end,reason,totalTime FROM requestquery WHERE mgroup=${mgroup} AND state=${state}`).all();
+        const query = this.login_db.prepare(`SELECT serialnum,name,type,start,end,reason,totalTime FROM requestquery WHERE mgroup=${mgroup} AND state=${state} ${search_query} ${limit_query};`).all();
         return query;
     }
 
@@ -222,6 +253,35 @@ class sql{
         if(query) return query["permit"];
         return null
     }
+
+    clockinAction(user,type,day){
+        const now = Date.parse(day);
+        const year = now.getFullYear();
+        const month = now.getMonth()+1>9?(now.getMonth()+1):'0'+(now.getMonth()+1).toString();
+        const date = now.getDate()>9?(now.getDate()):'0'+(now.getDate()).toString();
+        const hour = now.getHours()>9?(now.getHours()):'0'+(now.getHours()).toString();
+        const min = now.getMinutes()>9?(now.getMinutes()):'0'+(now.getMinutes()).toString();
+
+        const datetime = `${year}-${month}-${date} ${hour}:${min}`;
+        if(type==0){
+            return;
+        }
+        const count = this.login_db.prepare(`SELECT COUNT(*) FROM clockinrecord WHERE year=${year}`).all()[0];
+        this.login_db.prepare(`INSERT INTO clockinrecord (serialnum,id,type,date,time) VALUES ('${year}${count["COUNT(*)"]}','${user}','${type}','${datetime.split(" ")[0]}','${datetime.split(" ")[1]}');`).run();
+        
+    }
+
+    showPersonalQuery(user,year){
+        const query = this.login_db.prepare(`SELECT serialnum,name,type,start,end,reason,totalTime FROM requestquery WHERE id='${user}' AND year='${year}'`).all();
+        return query;
+    }
+
+    deleteAccount(user){
+        this.login_db.prepare(`DELETE FROM userinfo WHERE id='${user}'`).run();
+        return;
+    }
+
+    
 
 }
 
