@@ -37,14 +37,9 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
     if (ret==null){
         res.sendStatus(403);
     }else{
-        var date = day?day:new Date()
-        if(type==0){
-            if(day==undefined||day==null){
-                
-            }
-
-            return;
-        }
-        sqlPlugin.clockinAction()
+        var date = day?new Date(day):new Date();
+        // date.setDate(date.getHours() + 8);
+        const returns = sqlPlugin.clockinAction(account,type,date);
+        res.json(returns);
     }
 }

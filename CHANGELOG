@@ -25,3 +25,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 - /approved can now search via year and user, it can also add limits
+
+
+## [Alpha 0.2.0] 2025-01-27
+
+### Added
+- Endpoint to Clock-in and Clock-out
+- Endpoint to serach a user's annual dayoff quota
+
+### Changed
+- Dockerfile to correct timezone.

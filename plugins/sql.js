@@ -208,7 +208,7 @@ class sql{
         const count = this.login_db.prepare(`SELECT COUNT(*) FROM requestquery WHERE year=${currentYear}`).all()[0];
         const name = query["name"];
         // console.log(count)
-        this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason) VALUES ('${currentYear}${count["COUNT(*)"]}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},'${reason}');`).run();
+        this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason) VALUES ('${currentYear}${count["COUNT(*)"].toString().padStart(4,'0')}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},'${reason}');`).run();
         log.logFormat(`${user} just request a new dayoff.`,new Date())
         return {"mgroup":query["mgroup"],"name":name,"num":`${currentYear}${count["COUNT(*)"]}`};
     }
@@ -254,8 +254,7 @@ class sql{
         return null
     }
 
-    clockinAction(user,type,day){
-        const now = Date.parse(day);
+    clockinAction(user,type,now){
         const year = now.getFullYear();
         const month = now.getMonth()+1>9?(now.getMonth()+1):'0'+(now.getMonth()+1).toString();
         const date = now.getDate()>9?(now.getDate()):'0'+(now.getDate()).toString();
@@ -264,11 +263,12 @@ class sql{
 
         const datetime = `${year}-${month}-${date} ${hour}:${min}`;
         if(type==0){
-            return;
+            // TODO
+            return this.login_db.prepare(`SELECT * FROM clockinrecord WHERE id='${user}' AND date='${datetime.split(" ")[0]}'`).all()[0];;
         }
-        const count = this.login_db.prepare(`SELECT COUNT(*) FROM clockinrecord WHERE year=${year}`).all()[0];
-        this.login_db.prepare(`INSERT INTO clockinrecord (serialnum,id,type,date,time) VALUES ('${year}${count["COUNT(*)"]}','${user}','${type}','${datetime.split(" ")[0]}','${datetime.split(" ")[1]}');`).run();
-        
+        // const count = this.login_db.prepare(`SELECT COUNT(*) FROM clockinrecord WHERE year=${year}`).all()[0];
+        this.login_db.prepare(`INSERT INTO clockinrecord (id,type,date,time) VALUES ('${user}','${type}','${datetime.split(" ")[0]}','${datetime.split(" ")[1]}');`).run();
+        return {"status":200};
     }
 
     showPersonalQuery(user,year){
@@ -281,8 +281,43 @@ class sql{
         return;
     }
 
-    
+    calculateAnnualQuota(user){
+        const joinTime = new Date(this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0]["joinTime"]);
+        const months = calculate(joinTime);
+        const years = months/12;
+        if(months<6) return 0;
+        if(months>=6&&months<12){
+            return 3;
+        }else if(years>=1&&years<2){
+            return 7;
+        }else if(years>=2&&years<3){
+            return 10;
+        }else if(years>=3&&years<5){
+            return 14;
+        }else if(years>=5&&years<10){
+            return 15;
+        }else if(years>=10){
+            const w = Math.floor(years)+6;
+            return (w>=30?30:w);
+        }
 
+    }
+
+
+}
+
+function calculate(startDate) {
+    if (!(startDate instanceof Date) || isNaN(startDate.getTime())) {
+        throw new Error("Invalid date. Please provide a valid startDate as a Date object.");
+    }
+
+    const endDate = new Date();
+    let months = (endDate.getFullYear() - startDate.getFullYear()) * 12;
+    months += endDate.getMonth() - startDate.getMonth();
+    if (endDate.getDate() < startDate.getDate()) {
+        months -= 1;
+    }
+    return months;
 }
 
 module.exports = sql;

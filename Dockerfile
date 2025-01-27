@@ -56,4 +56,5 @@ RUN npm update -g
 RUN npm install
 COPY . .
 EXPOSE 3000
+ENV TZ Asia/Taipei
 CMD [ "node","main.js" ]
