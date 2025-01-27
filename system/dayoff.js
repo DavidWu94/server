@@ -19,18 +19,13 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
     let ret = sqlPlugin.checkHash(account,cookie);
     if (ret==null){
       res.sendStatus(403);
+      return;
+    } 
+    const dayoffdata = sqlPlugin.getEmployeeDayOffList(user,year);
+    if(dayoffdata){
+      res.json(dayoffdata);
     }else{
-      // if(ret["accountType"]=="admin"){
-  
-      // }
-      
-      const dayoffdata = sqlPlugin.getEmployeeDayOffList(user,year);
-      if(dayoffdata){
-        res.json(dayoffdata);
-      }
-      else{
-        res.sendStatus(500);
-      }
+      res.sendStatus(500);
     }
     // res.sendStatus(403);
 }

@@ -2,11 +2,12 @@ const sql = require("../plugins/sql");
 const valid = require("../plugins/checkvalid");
 const fs = require("fs");
 const download = require("../plugins/dayoff_reader");
+const logger = require("../plugins/logger");
 
 /**
  * 
  * @param {sql} sqlPlugin 
- * @param {*} log 
+ * @param {logger} log 
  * @param {*} req 
  * @param {*} res 
  */
@@ -28,18 +29,21 @@ module.exports = async (sqlPlugin,log,mailer,req,res)=>{
     let ret = sqlPlugin.checkHash(account,cookie);
     if (ret==null){
         res.sendStatus(403);
-    }else{
-        var rocYear = req.url.replace("/api/","");
-        if (parseInt(rocYear)>1911){
-            rocYear = (parseInt(rocYear)-1911).toString();
-        }
-        const filePath = `./api/office_calendar_${rocYear}.json`;
-    
-        if (!fs.existsSync(filePath)) {
-            console.log("Can't find file.");
-            await download(rocYear)
-        }
-        const data = require(`../api/office_calendar_${rocYear}.json`)
-        res.json(data);
+        return;
     }
+    
+    log.logFormat(`${account} is requesting a working day json file.`);
+    var rocYear = req.url.replace("/api/","");
+    if (parseInt(rocYear)>1911){
+        rocYear = (parseInt(rocYear)-1911).toString();
+    }
+    const filePath = `./api/office_calendar_${rocYear}.json`;
+
+    if (!fs.existsSync(filePath)) {
+        log.logFormat("Can't find file.");
+        await download(rocYear)
+    }
+    const data = require(`../api/office_calendar_${rocYear}.json`);
+    res.json(data);
+    
 }

@@ -1,10 +1,11 @@
 const valid = require("../plugins/checkvalid");
 const sql = require("../plugins/sql");
+const logger = require("../plugins/logger");
 
 /**
  * 
  * @param {sql} sqlPlugin 
- * @param {*} log 
+ * @param {logger} log 
  * @param {*} req 
  * @param {*} res 
  */
@@ -22,14 +23,10 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
       return;
     }
     let ret = sqlPlugin.checkHash(account,cookie);
-    if (ret==null){
+    if (ret==null||ret["accountType"]=="empolyee"){
       res.sendStatus(403);
-    }else{
-      if(ret["accountType"]=="empolyee"){
-        res.sendStatus(403);
-      }else{
-        sqlPlugin.deleteAccount(user);
-        res.sendStatus(200);
-      }
+      return;
     }
+    sqlPlugin.deleteAccount(user);
+    res.sendStatus(200); 
 }

@@ -1,7 +1,7 @@
 // const mysql = require('mysql');
 const crypto = require('crypto');
 const logger = require("./logger.js");
-const log = new logger(`./logs/${new Date().toDateString()}.log`);
+const log = new logger(`./logs/${new Date().toISOString().split('T')[0]}.log`);
 
 class sql{
 
@@ -216,6 +216,7 @@ class sql{
     showQuery(user,state=0,search_query="",limit_query=""){
         const mgroup = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0]["mgroup"];
         const query = this.login_db.prepare(`SELECT serialnum,name,type,start,end,reason,totalTime FROM requestquery WHERE mgroup=${mgroup} AND state=${state} ${search_query} ${limit_query};`).all();
+        log.logFormat(`showquery executed with query: SELECT serialnum,name,type,start,end,reason,totalTime FROM requestquery WHERE mgroup=${mgroup} AND state=${state} ${search_query} ${limit_query};`);
         return query;
     }
 

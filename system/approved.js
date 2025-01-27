@@ -1,9 +1,11 @@
 const sql = require("../plugins/sql");
 const valid = require("../plugins/checkvalid");
+const logger = require("../plugins/logger");
+
 /**
  * 
  * @param {sql} sqlPlugin 
- * @param {*} log 
+ * @param {logger} log 
  * @param {*} req 
  * @param {*} res 
  */
@@ -41,8 +43,8 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
     let ret = sqlPlugin.checkHash(account,cookie);
     if (ret==null){
         res.sendStatus(403);
-    }else{
-        const ret = sqlPlugin.showQuery(account,1,search_query,limit_query);
-        res.send({"data":ret});
+        return;
     }
+    const retu = sqlPlugin.showQuery(account,1,search_query,limit_query);
+    res.send({"data":retu});
 }

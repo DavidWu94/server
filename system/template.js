@@ -1,9 +1,13 @@
 const sql = require("../plugins/sql");
 const valid = require("../plugins/checkvalid");
+const mailer = require("../plugins/mailer");
+const logger = require("../plugins/logger");
+
 /**
  * 
  * @param {sql} sqlPlugin 
- * @param {*} log 
+ * @param {logger} log 
+ * @param {mailer} mailer
  * @param {*} req 
  * @param {*} res 
  */

@@ -1,11 +1,12 @@
 const sql = require("../plugins/sql");
 const valid = require("../plugins/checkvalid");
 const express = require('express');
+const logger = require("../plugins/logger");
 
 /**
  * 
  * @param {sql} sqlPlugin 
- * @param {*} log 
+ * @param {logger} log 
  * @param {express.Request} req 
  * @param {express.Response} res 
  */
@@ -36,10 +37,12 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
     let ret = sqlPlugin.checkHash(account,cookie);
     if (ret==null){
         res.sendStatus(403);
-    }else{
-        var date = day?new Date(day):new Date();
-        // date.setDate(date.getHours() + 8);
-        const returns = sqlPlugin.clockinAction(account,type,date);
-        res.json(returns);
+        return;
     }
+    var date = day?new Date(day):new Date();
+    // date.setDate(date.getHours() + 8);
+    log.logFormat(`${account} tries to ${type==0?"lookup clocking history":type==1?"clock-in":"clock-out"}.`)
+    const returns = sqlPlugin.clockinAction(account,type,date);
+    res.json(returns);
+
 }

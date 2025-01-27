@@ -4,12 +4,13 @@ const fs = require("fs");
 const valid = require("../plugins/checkvalid");
 const caculateTime = require("../plugins/dayoff_calculate");
 // const upload = require('../plugins/multer');
+const logger = require("../plugins/logger");
 
 /**
  * 
  * @param {sql} sqlPlugin 
- * @param {*} log 
- * @param {mail} mailer 
+ * @param {logger} log 
+ * @param {mailer} mailer
  * @param {*} req 
  * @param {*} res 
  */
@@ -50,23 +51,22 @@ module.exports = async (sqlPlugin,log,mailer,req,res)=>{
 
     let ret1 = sqlPlugin.checkHash(account,cookie);
     if (ret1==null){
-		res.sendStatus(403);
+		  res.sendStatus(403);
       return;
-    }else{
-      const ret = sqlPlugin.newRequest(account,type,start,end,totalTime,reason);
+    }
+    const ret = sqlPlugin.newRequest(account,type,start,end,totalTime,reason);
 
-      if (!ret){
-        res.sendStatus(501);
-        return;
-      }
-      if(permission==0){
-        sqlPlugin.setPermit(ret["num"],1);
-        res.send("已成功請假");
-      }else{
-        var man = ["jeff@eucan.com.tw","catherine@eucan.com.tw"]
-        mailer.send(man[ret["mgroup"]],"請假審核要求",`您好，\n員工 ${ret["name"]}於剛才發送請假要求。\n詳細內容請登入請假系統審核。\n\n<此信為系統自動發送，請勿回覆>`)
-        res.send("已向主管提出請假申請，請點擊上一頁回到請假頁面")
-      }
+    if (!ret){
+      res.sendStatus(501);
+      return;
+    }
+    if(permission==0){
+      sqlPlugin.setPermit(ret["num"],1);
+      res.send("已成功請假");
+    }else{
+      var man = ["jeff@eucan.com.tw","catherine@eucan.com.tw"]
+      mailer.send(man[ret["mgroup"]],"請假審核要求",`您好，\n員工 ${ret["name"]}於剛才發送請假要求。\n詳細內容請登入請假系統審核。\n\n<此信為系統自動發送，請勿回覆>`)
+      res.send("已向主管提出請假申請，請點擊上一頁回到請假頁面")
     }
 }
 
