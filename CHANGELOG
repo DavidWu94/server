@@ -44,3 +44,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 - Log files' name format.
+
+## [Alpha 0.2.2] 2025-01-30
+
+### Changed
+- Fixed the bug that clockin searching only returns 1 record.
+- /quota also returns the seniority of the employee.

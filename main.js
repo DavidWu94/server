@@ -113,6 +113,6 @@ app.listen(PORT, () => {
   log.logFormat("Server online.");
   const mailerStatus = mailer.verify();
   if(!mailerStatus){
-    console.error("")
+    // console.error("Mailer Verify Failed!");
   }
 });

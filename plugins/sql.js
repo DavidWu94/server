@@ -264,8 +264,7 @@ class sql{
 
         const datetime = `${year}-${month}-${date} ${hour}:${min}`;
         if(type==0){
-            // TODO
-            return this.login_db.prepare(`SELECT * FROM clockinrecord WHERE id='${user}' AND date='${datetime.split(" ")[0]}'`).all()[0];;
+            return this.login_db.prepare(`SELECT * FROM clockinrecord WHERE id='${user}' AND date='${datetime.split(" ")[0]}'`).all();
         }
         // const count = this.login_db.prepare(`SELECT COUNT(*) FROM clockinrecord WHERE year=${year}`).all()[0];
         this.login_db.prepare(`INSERT INTO clockinrecord (id,type,date,time) VALUES ('${user}','${type}','${datetime.split(" ")[0]}','${datetime.split(" ")[1]}');`).run();
@@ -283,24 +282,28 @@ class sql{
     }
 
     calculateAnnualQuota(user){
+        // TODO: Add year and month elapse
         const joinTime = new Date(this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0]["joinTime"]);
-        const months = calculate(joinTime);
+        const elapse = calculate(joinTime);
+        const months = elapse['m'], days = elapse['d'];
         const years = months/12;
-        if(months<6) return 0;
+        var quota;
+        if(months<6) quota = 0;
         if(months>=6&&months<12){
-            return 3;
+            quota = 3;
         }else if(years>=1&&years<2){
-            return 7;
+            quota = 7;
         }else if(years>=2&&years<3){
-            return 10;
+            quota = 10;
         }else if(years>=3&&years<5){
-            return 14;
+            quota = 14;
         }else if(years>=5&&years<10){
-            return 15;
+            quota = 15;
         }else if(years>=10){
             const w = Math.floor(years)+6;
-            return (w>=30?30:w);
+            quota = (w>=30?30:w);
         }
+        return {"quota":quota,"years":Math.floor(years),"month":(months-(Math.floor(years)*12)),"days":days};
 
     }
 
@@ -313,12 +316,18 @@ function calculate(startDate) {
     }
 
     const endDate = new Date();
+
     let months = (endDate.getFullYear() - startDate.getFullYear()) * 12;
     months += endDate.getMonth() - startDate.getMonth();
-    if (endDate.getDate() < startDate.getDate()) {
+    let days = endDate.getDate() - startDate.getDate();
+
+    if (days < 0) {
         months -= 1;
+        const previousMonth = new Date(endDate.getFullYear(), endDate.getMonth(), 0); // Last day of previous month
+        days += previousMonth.getDate(); // Add days from previous month
     }
-    return months;
+
+    return { "m":months,"d":days };
 }
 
 module.exports = sql;
