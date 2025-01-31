@@ -303,7 +303,7 @@ class sql{
             const w = Math.floor(years)+6;
             quota = (w>=30?30:w);
         }
-        return {"quota":quota,"years":Math.floor(years),"month":(months-(Math.floor(years)*12)),"days":days};
+        return {"quota":quota*24,"years":Math.floor(years),"month":(months-(Math.floor(years)*12)),"days":days};
 
     }
 
