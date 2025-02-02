@@ -204,11 +204,12 @@ class sql{
      */
     newRequest(user,type,start,end,totalTime,reason){
         const query = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0];
-        const currentYear = new Date().getFullYear()
+        const currentYear = new Date().getFullYear();
+        const month = parseInt(start.split("-")[1]);
         const count = this.login_db.prepare(`SELECT COUNT(*) FROM requestquery WHERE year=${currentYear}`).all()[0];
         const name = query["name"];
         // console.log(count)
-        this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason) VALUES ('${currentYear}${count["COUNT(*)"].toString().padStart(4,'0')}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},'${reason}');`).run();
+        this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason,month) VALUES ('${currentYear}${count["COUNT(*)"].toString().padStart(4,'0')}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},'${reason}','${month}');`).run();
         log.logFormat(`${user} just request a new dayoff.`,new Date())
         return {"mgroup":query["mgroup"],"name":name,"num":`${currentYear}${count["COUNT(*)"]}`};
     }
@@ -222,6 +223,7 @@ class sql{
 
     setPermit(num,state){
         const query = this.login_db.prepare(`SELECT * FROM requestquery WHERE serialnum='${num}'`).all()[0];
+        const year = num.substring(0,4);
         
         const table = {
             "特休假":"annual",
@@ -238,7 +240,14 @@ class sql{
             "其他":"other"
         };
         
-        if(state==1) this.login_db.prepare(`UPDATE dayoffinfo SET ${table[query["type"]]}=${table[query["type"]]}+${query["totalTime"]} WHERE id='${query["id"]}';`).run();
+        if(state==1) {
+            if( this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${query["id"]}' AND year='${year}';`).all()){
+                this.init(query["id"],year);
+                this.login_db.prepare(`UPDATE dayoffinfo SET ${table[query["type"]]}=${table[query["type"]]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`).run();
+            }else{
+                this.login_db.prepare(`UPDATE dayoffinfo SET ${table[query["type"]]}=${table[query["type"]]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`).run();
+            }
+        }
         this.login_db.prepare(`UPDATE requestquery SET state=${state} WHERE serialnum='${num}';`).run();
         log.logFormat(`Dayoff ticket #${num} has been set to ${state?"accepted":"denied"}.`);
         return this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${query["id"]}'`).all()[0]["email"];
@@ -305,6 +314,11 @@ class sql{
         }
         return {"quota":quota*24,"years":Math.floor(years),"month":(months-(Math.floor(years)*12)),"days":days};
 
+    }
+
+    showQueryInMonth(year,month){
+        const query = this.login_db.prepare(`SELECT name,start,end FROM requestquery WHERE state=0 AND year='${year}' AND month='${month}`).all();
+        return query;
     }
 
 
