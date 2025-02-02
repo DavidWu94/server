@@ -2,7 +2,7 @@ const ExcelJS = require('exceljs');
 const sql = require("./sql");
 
 function check_working_day(year, month, day) {
-  const file = require(`./api/office_calendar_${year-1911}.json`);
+  const file = require(`../api/office_calendar_${year-1911}.json`);
   return file[month][day];
 }
 
