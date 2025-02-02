@@ -317,7 +317,7 @@ class sql{
     }
 
     showQueryInMonth(year,month){
-        const query = this.login_db.prepare(`SELECT name,start,end FROM requestquery WHERE state=0 AND year='${year}' AND month='${month}`).all();
+        const query = this.login_db.prepare(`SELECT name,start,end FROM requestquery WHERE state=0 AND year='${year}' AND month='${month}'`).all();
         return query;
     }
 
