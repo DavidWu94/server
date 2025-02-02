@@ -11,6 +11,7 @@ services:
       - "./proofs:/app/proofs/"
       - "./logs:/app/logs"
       - "./api:/app/api"
+      - "./calendars:/app/calendars"
     networks:
       backend: 
         ipv4_address: "192.168.8.100"
