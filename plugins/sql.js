@@ -281,7 +281,7 @@ class sql{
     }
 
     showPersonalQuery(user,year){
-        const query = this.login_db.prepare(`SELECT serialnum,name,type,start,end,reason,totalTime FROM requestquery WHERE id='${user}' AND year='${year}'`).all();
+        const query = this.login_db.prepare(`SELECT serialnum,name,type,start,end,reason,totalTime,state FROM requestquery WHERE id='${user}' AND year='${year}'`).all();
         return query;
     }
 

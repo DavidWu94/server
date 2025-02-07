@@ -32,8 +32,10 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
         return;
     }
     calen(year,month,sqlPlugin);
-    res.json({
-        "status":200
+    res.download(`./calendars/${year}-${month}calendar.xlsx`, (err) => {
+        if (err) {
+            log.logFormat(`Error sending file /calendars/${year}-${month}calendar.xlsx: ` + err);
+            res.sendStatus(500);
+        }
     });
-  
 }
