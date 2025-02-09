@@ -39,7 +39,7 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
         res.sendStatus(403);
         return;
     }
-    var date = day?new Date(day):new Date();
+    var date = (`${type}`=="0"&&day)?new Date(day):new Date();
     // date.setDate(date.getHours() + 8);
     log.logFormat(`${account} tries to ${type==0?"lookup clocking history":type==1?"clock-in":"clock-out"}.`)
     const returns = sqlPlugin.clockinAction(account,type,date);

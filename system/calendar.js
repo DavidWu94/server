@@ -31,7 +31,9 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
         res.sendStatus(403);
         return;
     }
+    log.logFormat(`${account} is requesting a calendar.`);
     calen(year,month,sqlPlugin);
+    log.logFormat(`Calendar has generated. Sending File...`);
     res.download(`./calendars/${year}-${month}calendar.xlsx`, (err) => {
         if (err) {
             log.logFormat(`Error sending file /calendars/${year}-${month}calendar.xlsx: ` + err);

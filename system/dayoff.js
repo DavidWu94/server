@@ -17,7 +17,7 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
     }
 
     let ret = sqlPlugin.checkHash(account,cookie);
-    if (ret==null){
+    if (ret==null||(dataReceived["user"]&&ret["accountType"]=="empolyee")){
       res.sendStatus(403);
       return;
     } 

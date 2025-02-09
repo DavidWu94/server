@@ -4,17 +4,29 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Alpha 0.3.2] 2025-02-05
+
+### Added
+- log message while sending calendar file.
+
+### Fixed
+- /dayoff searching method now only accept admin users.
+
+### Security
+- /clockin will only accept "day" parameter when you are using search method.
+
+---
 ## [Alpha 0.3.1] 2025-02-05
 
 ### Changed
 - /calendar will now force download the file.
-- /empquery now returns state
+- /empquery now returns state.
 
 ---
 ## [Alpha 0.3.0] 2025-02-02
 
 ### Added
-- dayoff_calendar create method
+- dayoff_calendar create method.
 
 ---
 ## [Alpha 0.2.4] 2025-02-02
