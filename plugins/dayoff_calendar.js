@@ -1,9 +1,9 @@
 const ExcelJS = require('exceljs');
 const sql = require("./sql");
 
-function check_working_day(year, month, day) {
+async function check_working_day(year, month, day) {
   const file = require(`../api/office_calendar_${year-1911}.json`);
-  return file[month][day];
+  return new Promise(res=>{res(file[month][day])});
 }
 
 /**
@@ -12,7 +12,7 @@ function check_working_day(year, month, day) {
  * @param {*} month 
  * @param {sql} sqlPlugin 
  */
-function main(year,month,sqlPlugin){
+async function main(year,month,sqlPlugin){
     const reminders = sqlPlugin.showQueryInMonth(year,month);
 
     const totalDays = new Date(year, month, 0).getDate();
@@ -183,6 +183,9 @@ function main(year,month,sqlPlugin){
         .catch((err) => {
             console.error(err);
         });
+    return new Promise(res=>{
+        res();
+    })
 }
 
 module.exports = main;

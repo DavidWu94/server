@@ -10,7 +10,7 @@ const calen = require("../plugins/dayoff_calendar");
  * @param {*} req 
  * @param {*} res 
  */
-module.exports = (sqlPlugin,log,mailer,req,res)=>{
+module.exports = async (sqlPlugin,log,mailer,req,res)=>{
     /**
      * @type {object}
      */
@@ -32,9 +32,9 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
         return;
     }
     log.logFormat(`${account} is requesting a calendar.`);
-    calen(year,month,sqlPlugin);
+    await calen(year,month,sqlPlugin);
     log.logFormat(`Calendar has generated. Sending File...`);
-    res.download(`./calendars/${year}-${month}calendar.xlsx`, (err) => {
+    res.sendFile(`/app/calendars/${year}-${month}calendar.xlsx`, (err) => {
         if (err) {
             log.logFormat(`Error sending file /calendars/${year}-${month}calendar.xlsx: ` + err);
             res.sendStatus(500);

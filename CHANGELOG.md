@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Alpha 0.3.2] 2025-02-05
+## [Alpha 0.3.3] 2025-02-09
+
+### Changed
+- /calendar now uses async function. Require further tests.
+
+---
+## [Alpha 0.3.2] 2025-02-09
 
 ### Added
 - log message while sending calendar file.
