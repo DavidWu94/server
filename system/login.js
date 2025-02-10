@@ -25,7 +25,7 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
         return;
     }
 
-    let ret = sqlPlugin.login(account,password,cookie);
+    let ret = sqlPlugin.login(account,password,cookie?cookie:"NULL");
     if(ret.msg=="success"){
         // log.logFormat(`${account} logged in successfully.`);
         if(account=='root'){

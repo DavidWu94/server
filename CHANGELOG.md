@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Beta 0.4.0] 2025-02-10
+
+### Fixed
+- /login can't login if the cookie is null
+
+### Changed
+- The structor of the system
+
+### Removed
+- run.sh
+
+---
 ## [Alpha 0.3.4] 2025-02-10
 
 ### Fixed
