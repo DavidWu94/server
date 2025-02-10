@@ -61,6 +61,7 @@ module.exports = async (sqlPlugin,log,mailer,req,res)=>{
       return;
     }
     if(permission==0){
+      log.logFormat("此假單無須審核，正在自動通過");
       sqlPlugin.setPermit(ret["num"],1);
       res.send("已成功請假");
     }else{

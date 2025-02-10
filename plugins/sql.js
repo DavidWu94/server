@@ -217,7 +217,7 @@ class sql{
         // console.log(count)
         this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason,month) VALUES ('${currentYear}${count["COUNT(*)"].toString().padStart(4,'0')}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},'${reason}','${month}');`).run();
         log.logFormat(`${user} just request a new dayoff.`,new Date())
-        return {"mgroup":query["mgroup"],"name":name,"num":`${currentYear}${count["COUNT(*)"]}`};
+        return {"mgroup":query["mgroup"],"name":name,"num":`${currentYear}${count["COUNT(*)"].toString().padStart(4,'0')}`};
     }
 
     showQuery(user,state=0,search_query="",limit_query=""){
@@ -265,7 +265,7 @@ class sql{
      * @returns {number|null} 1 means require a permission
      */
     getPermission(user){
-        const query = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0];
+        const query = this.login_db.prepare(`SELECT permit FROM userinfo WHERE id='${user}'`).all()[0];
         if(query) return query["permit"];
         return null
     }
