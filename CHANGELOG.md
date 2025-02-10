@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Alpha 0.3.4] 2025-02-10
+
+### Fixed
+- /quota's returned hours changes from 24hrs/day to 8hrs/day
+
+### Security
+- Added SQL injection detection for hash checking and login.
+
+---
 ## [Alpha 0.3.3] 2025-02-09
 
 ### Changed

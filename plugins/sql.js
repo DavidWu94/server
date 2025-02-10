@@ -19,6 +19,9 @@ class sql{
      * @returns {object}
      */
     login(user,pwd,cookie){
+        if(user.match(/['"?><:;\\|)(*&^%$#@!~`]/)||cookie.match(/['"?><:;\\|)(*&^%$#@!~`]/)||cookie.match(/['"?><:;\\|)(*&^%$#@!~`]/)){
+            return {msg:"wrong type"};
+        }
         const currentTime = new Date();
         const sqldata = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0];
         const loginHashData = this.login_db.prepare(`SELECT * FROM logininfo WHERE id='${user}';`).all()[0];
@@ -26,7 +29,7 @@ class sql{
         
         if (sqldata==undefined){
             log.logFormat(`Someone failed to log in with an incorrect account.`,currentTime);
-            return {msg:"wrong account"}
+            return {msg:"wrong account"};
         };
         // cookie here must be stripped.
         // accepted types: null, string.
@@ -123,6 +126,9 @@ class sql{
      * @returns 
      */
     checkHash(user,cookie){
+        if(user.match(/['"?><:;\\|)(*&^%$#@!~`]/)||cookie.match(/['"?><:;\\|)(*&^%$#@!~`]/)){
+            return null;
+        }
         const sqldata = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0];
         const loginHashData = this.login_db.prepare(`SELECT * FROM logininfo WHERE id='${user}';`).all()[0];
         const current = new Date();
@@ -312,7 +318,7 @@ class sql{
             const w = Math.floor(years)+6;
             quota = (w>=30?30:w);
         }
-        return {"quota":quota*24,"years":Math.floor(years),"month":(months-(Math.floor(years)*12)),"days":days};
+        return {"quota":quota*8,"years":Math.floor(years),"month":(months-(Math.floor(years)*12)),"days":days};
 
     }
 

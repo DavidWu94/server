@@ -25,7 +25,6 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
         return;
     }
 
-    // FIXME: Prevent SQL Injection.
     let ret = sqlPlugin.login(account,password,cookie);
     if(ret.msg=="success"){
         // log.logFormat(`${account} logged in successfully.`);
