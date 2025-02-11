@@ -10,7 +10,7 @@ const write = require("../plugins/clockin_excel");
  * @param {*} req 
  * @param {*} res 
  */
-module.exports = (sqlPlugin,log,mailer,req,res)=>{
+module.exports = async (sqlPlugin,log,mailer,req,res)=>{
     /**
      * @type {object}
      */
@@ -32,8 +32,8 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
         return;
     }
 
-    const data = sqlPlugin.clockinRecord();
-    write(data,year,month);
+    const data = await sqlPlugin.clockinRecord();
+    await write(data,year,month);
     
     res.sendFile(`/app/clock/${year}-${month}clockin_record.xlsx`, (err) => {
         if (err) {
