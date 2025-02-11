@@ -32,7 +32,7 @@ module.exports = async (sqlPlugin,log,mailer,req,res)=>{
         return;
     }
 
-    const data = await sqlPlugin.clockinRecord();
+    const data = await sqlPlugin.clockinRecord(year,month);
     await write(data,year,month);
     
     res.sendFile(`/app/clock/${year}-${month}clockin_record.xlsx`, (err) => {

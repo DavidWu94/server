@@ -334,7 +334,7 @@ class sql{
      * @param {string} month 
      */
     async clockinRecord(year,month){
-        const query = this.login_db.prepare(`SELECT * FROM clockinrecord WHERE date LIKE '${year}-${month}-%'`).all();
+        const query = this.login_db.prepare(`SELECT * FROM clockinrecord WHERE date LIKE '${year}-${month}-%';`).all();
         return new Promise(res=>{res(query)});
     }
 
