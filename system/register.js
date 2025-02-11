@@ -27,9 +27,9 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
     const type = dataReceived["type"]?dataReceived["type"]:"employee";
     const mgroup = dataReceived["mgroup"];
     // permit:1 == NEED permition
-    const permit = dataReceived["permit"]?1:0;
+    const permit = dataReceived["permit"];
 
-    if(!valid(dataReceived,["account","cookie","user","pwd","mail","name","date","mgroup"])){
+    if(!valid(dataReceived,["account","cookie","user","pwd","mail","name","date","mgroup","permit"])){
         res.sendStatus(400);
         return;
     }

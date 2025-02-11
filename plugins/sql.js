@@ -281,8 +281,9 @@ class sql{
         if(type==0){
             return this.login_db.prepare(`SELECT * FROM clockinrecord WHERE id='${user}' AND date='${datetime.split(" ")[0]}'`).all();
         }
+        const name = this.login_db.prepare(`SELECT name FROM userinfo WHERE id='${user}';`).all()[0]["name"];
         // const count = this.login_db.prepare(`SELECT COUNT(*) FROM clockinrecord WHERE year=${year}`).all()[0];
-        this.login_db.prepare(`INSERT INTO clockinrecord (id,type,date,time) VALUES ('${user}','${type}','${datetime.split(" ")[0]}','${datetime.split(" ")[1]}');`).run();
+        this.login_db.prepare(`INSERT INTO clockinrecord (id,name,type,date,time) VALUES ('${user}','${name}','${type}','${datetime.split(" ")[0]}','${datetime.split(" ")[1]}');`).run();
         return {"status":200};
     }
 
@@ -324,6 +325,16 @@ class sql{
 
     showQueryInMonth(year,month){
         const query = this.login_db.prepare(`SELECT name,start,end FROM requestquery WHERE state=1 AND year='${year}' AND month='${month}'`).all();
+        return query;
+    }
+
+    /**
+     * 
+     * @param {string} year 
+     * @param {string} month 
+     */
+    clockinRecord(year,month){
+        const query = this.login_db.prepare(`SELECT * FROM clockinrecord WHERE date LIKE '${year}-${month}-%'`).all();
         return query;
     }
 

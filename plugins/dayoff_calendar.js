@@ -176,7 +176,7 @@ async function main(year,month,sqlPlugin){
     // ---------------------------
     // Write the Excel File
     // ---------------------------
-    workbook.xlsx.writeFile(`./calendars/${year}-${month}calendar.xlsx`)
+    workbook.xlsx.writeFile(`/app/calendars/${year}-${month}calendar.xlsx`)
         .then(() => {
             console.log('Excel file "calendar.xlsx" has been created.');
         })

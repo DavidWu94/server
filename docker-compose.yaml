@@ -12,6 +12,7 @@ services:
       - "./logs:/app/logs"
       - "./api:/app/api"
       - "./calendars:/app/calendars"
+      - "./clock:/app/clock"
     networks:
       backend: 
         ipv4_address: "192.168.8.100"
