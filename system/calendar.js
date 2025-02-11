@@ -34,5 +34,5 @@ module.exports = async (sqlPlugin,log,mailer,req,res)=>{
     log.logFormat(`${account} is requesting a calendar.`);
     await calen(year,month,sqlPlugin);
     log.logFormat(`Calendar has generated. Sending File /app/calendars/${year}-${month}calendar.xlsx...`);
-    res.download(`/app/calendars/${year}-${month}calendar.xlsx`,"休假行事曆.xlsx");
+    res.download(`/app/calendars/${year}-${month}calendar.xlsx`,`${year}-${month}calendar.xlsx`);
 }
