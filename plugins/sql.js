@@ -247,7 +247,7 @@ class sql{
         };
         
         if(state==1) {
-            if( this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${query["id"]}' AND year='${year}';`).all()){
+            if( this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${query["id"]}' AND year='${year}';`).all().length!=0){
                 log.logFormat(`Updating dayoffinfo with query: UPDATE dayoffinfo SET ${table[query["type"]]}=${table[query["type"]]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`);
                 this.login_db.prepare(`UPDATE dayoffinfo SET ${table[query["type"]]}=${table[query["type"]]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`).run();
             }else{
@@ -284,9 +284,15 @@ class sql{
         if(type==0){
             return this.login_db.prepare(`SELECT * FROM clockinrecord WHERE id='${user}' AND date='${datetime.split(" ")[0]}'`).all();
         }
-        const name = this.login_db.prepare(`SELECT name FROM userinfo WHERE id='${user}';`).all()[0]["name"];
-        // const count = this.login_db.prepare(`SELECT COUNT(*) FROM clockinrecord WHERE year=${year}`).all()[0];
-        this.login_db.prepare(`INSERT INTO clockinrecord (id,name,type,date,time) VALUES ('${user}','${name}','${type}','${datetime.split(" ")[0]}','${datetime.split(" ")[1]}');`).run();
+        const data = this.login_db.prepare(`SELECT * FROM clockinrecord WHERE date='${datetime.split(" ")[0]}' AND id='${user}';`).all();
+        if(data.length!=0){
+            // exists, use UPDATE
+            this.login_db.prepare(`UPDATE clockinrecord SET clock${type==1?"in":"out"}='${datetime.split(" ")[1]}' WHERE id='${user}' AND date='${datetime.split(" ")[0]}';`).run();
+        }else{
+            // use INSERT
+            const name = this.login_db.prepare(`SELECT name FROM userinfo WHERE id='${user}';`).all()[0]["name"];
+            this.login_db.prepare(`INSERT INTO clockinrecord (id,name,date,clock${type==1?"in":"out"}) VALUES ('${user}','${name}','${datetime.split(" ")[0]}','${datetime.split(" ")[1]}');`).run();
+        }
         return {"status":200};
     }
 
@@ -382,6 +388,10 @@ class sql{
         let queryString = amount_array.join(", ");
         this.login_db.prepare(`UPDATE dayoffinfo SET ${queryString} WHERE id='${user}' AND year='${year}';`).run();
         return;
+    }
+
+    modifyTicket(user,num,type,start,end,totalTime,state){
+        // TODO: implement this shit
     }
 
 }

@@ -24,7 +24,7 @@ requestquery
 
 clockinrecord
 
-`CREATE TABLE clockinrecord (id TEXT NOT NULL,name TEXT NOT NULL,type TEXT NOT NULL,date DATETIME DEFAULT (strftime('%Y-%m-%d', 'now', '+8 hours')),time DATETIME DEFAULT (strftime('%H:%M', 'now', '+8 hours')));`
+`CREATE TABLE clockinrecord (id TEXT NOT NULL,name TEXT NOT NULL,date DATETIME DEFAULT (strftime('%Y-%m-%d', 'now', '+8 hours')),clockin DATETIME,clockout DATETIME);`
 
 <!-- forget password db:
 `CREATE TABLE logininfo (id TEXT PRIMARY KEY,createTime DATETIME DEFAULT datetime('now','+1 hour'))` -->
