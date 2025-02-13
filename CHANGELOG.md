@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Beta 0.5.0] 2025-02-13
+
+### Added
+- /sync can reset dayoff time base on tickets.
+
+### Fixed
+- setPermit's logic on init a dayoffinfo.
+
+### Changed
+- /calendar and /clrecord is under maintainance.
+
+---
 ## [Beta 0.4.2] 2025-02-11
 
 ### Fixed

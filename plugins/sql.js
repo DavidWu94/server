@@ -248,9 +248,12 @@ class sql{
         
         if(state==1) {
             if( this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${query["id"]}' AND year='${year}';`).all()){
-                this.init(query["id"],year);
+                log.logFormat(`Updating dayoffinfo with query: UPDATE dayoffinfo SET ${table[query["type"]]}=${table[query["type"]]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`);
                 this.login_db.prepare(`UPDATE dayoffinfo SET ${table[query["type"]]}=${table[query["type"]]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`).run();
             }else{
+                log.logFormat("Initializing the data...");
+                this.init(query["id"],year);
+                log.logFormat(`Updating dayoffinfo with query: UPDATE dayoffinfo SET ${table[query["type"]]}=${table[query["type"]]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`);
                 this.login_db.prepare(`UPDATE dayoffinfo SET ${table[query["type"]]}=${table[query["type"]]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`).run();
             }
         }
@@ -338,6 +341,48 @@ class sql{
         return new Promise(res=>{res(query)});
     }
 
+    syncTickets(user,year){
+        const tickets = this.login_db.prepare(`SELECT * FROM requestquery WHERE id='${user}' AND year='${year}' AND state=1;`).all();
+        const table = {
+            "特休假":"annual",
+            "事假":"personal",
+            "家庭照顧假":"care",
+            "普通傷病假":"sick",
+            "婚假":"wedding",
+            "喪假":"funeral",
+            "分娩假":"birth",
+            "產檢假":"pcheckup",
+            "流產假":"miscarriage",
+            "陪產假":"paternity",
+            "產假":"maternity",
+            "其他":"other"
+        };
+        const amount = {
+            "annual":0,
+            "personal":0,
+            "care":0,
+            "sick":0,
+            "wedding":0,
+            "funeral":0,
+            "birth":0,
+            "pcheckup":0,
+            "miscarriage":0,
+            "paternity":0,
+            "maternity":0,
+            "other":0
+        };
+        for(let ticket of tickets){
+            amount[table[ticket["type"]]] += ticket["totalTime"];
+        }
+        this.init(user,year);
+        var amount_array = [];
+        for(let type of Object.keys(amount)){
+            amount_array.push(`${type}=${amount[type]}`)
+        }
+        let queryString = amount_array.join(", ");
+        this.login_db.prepare(`UPDATE dayoffinfo SET ${queryString} WHERE id='${user}' AND year='${year}';`).run();
+        return;
+    }
 
 }
 
