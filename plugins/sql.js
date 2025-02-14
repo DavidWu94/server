@@ -210,26 +210,32 @@ class sql{
      */
     newRequest(user,type,start,end,totalTime,reason){
         const query = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0];
+        // const userinfo = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${query["id"]}'`).all()[0];
+        const checkpoint = new Date(`${end.split("-")[0]}-${query["joinTime"].substring(5)}`);
+        const endDate = new Date(end.split(" ")[0]);
+        const year = checkpoint>endDate?(parseInt(end.split("-")[0])-1).toString():end.split("-")[0];
+        // console.log(year)
         const currentYear = new Date().getFullYear();
         const month = parseInt(start.split("-")[1]);
-        const count = this.login_db.prepare(`SELECT COUNT(*) FROM requestquery WHERE year=${currentYear}`).all()[0];
+        const count = this.login_db.prepare(`SELECT COUNT(*) FROM requestquery WHERE serialnum LIKE '${currentYear}%'`).all()[0];
         const name = query["name"];
         // console.log(count)
-        this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason,month) VALUES ('${currentYear}${count["COUNT(*)"].toString().padStart(4,'0')}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},'${reason}','${month}');`).run();
+        console.log(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason,month,year) VALUES ('${currentYear}${count["COUNT(*)"].toString().padStart(4,'0')}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},'${reason}','${month}','${year}');`)
+        this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason,month,year) VALUES ('${currentYear}${count["COUNT(*)"].toString().padStart(4,'0')}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},'${reason}','${month}','${year}');`).run();
         log.logFormat(`${user} just request a new dayoff.`,new Date())
         return {"mgroup":query["mgroup"],"name":name,"num":`${currentYear}${count["COUNT(*)"].toString().padStart(4,'0')}`};
     }
 
     showQuery(user,state=0,search_query="",limit_query=""){
-        const mgroup = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0]["mgroup"];
-        const query = this.login_db.prepare(`SELECT serialnum,name,type,start,end,reason,totalTime FROM requestquery WHERE mgroup=${mgroup} AND state=${state} ${search_query} ${limit_query};`).all();
-        log.logFormat(`showquery executed with query: SELECT serialnum,name,type,start,end,reason,totalTime FROM requestquery WHERE mgroup=${mgroup} AND state=${state} ${search_query} ${limit_query};`);
+        // const mgroup = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0]["mgroup"];
+        const query = this.login_db.prepare(`SELECT serialnum,name,type,start,end,reason,totalTime FROM requestquery WHERE state=${state} ${search_query} ${limit_query};`).all();
+        log.logFormat(`showquery executed with query: SELECT serialnum,name,type,start,end,reason,totalTime FROM requestquery WHERE state=${state} ${search_query} ${limit_query};`);
         return query;
     }
 
     setPermit(num,state){
         const query = this.login_db.prepare(`SELECT * FROM requestquery WHERE serialnum='${num}'`).all()[0];
-        const year = num.substring(0,4);
+        const year = query["year"];
         
         const table = {
             "特休假":"annual",
@@ -287,6 +293,7 @@ class sql{
         const data = this.login_db.prepare(`SELECT * FROM clockinrecord WHERE date='${datetime.split(" ")[0]}' AND id='${user}';`).all();
         if(data.length!=0){
             // exists, use UPDATE
+            if(data[0][`clock${type==1?"in":"out"}`]) return null;
             this.login_db.prepare(`UPDATE clockinrecord SET clock${type==1?"in":"out"}='${datetime.split(" ")[1]}' WHERE id='${user}' AND date='${datetime.split(" ")[0]}';`).run();
         }else{
             // use INSERT
