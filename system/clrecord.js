@@ -35,11 +35,12 @@ module.exports = async (sqlPlugin,log,mailer,req,res)=>{
     const data = await sqlPlugin.clockinRecord(year,month);
     await write(data,year,month);
     
-    res.sendFile(`/app/clock/${year}-${month}clockin_record.xlsx`, (err) => {
-        if (err) {
-            log.logFormat(`Error sending file /app/clock/${year}-${month}clockin_record.xlsx` + err);
-            res.sendStatus(500);
-        }
-    });
+    res.sendStatus(200);
+    // res.sendFile(`/app/clock/${year}-${month}clockin_record.xlsx`, (err) => {
+    //     if (err) {
+    //         log.logFormat(`Error sending file /app/clock/${year}-${month}clockin_record.xlsx` + err);
+    //         res.sendStatus(500);
+    //     }
+    // });
   
 }

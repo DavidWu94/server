@@ -31,7 +31,7 @@ app.all('/',(req,res)=>{
   res.send("System online.");
 });
 
-const posts = ['login','users','session',"register",'dayoff','request','query','permit','init','approved','empquery','delete',"modify","quota","clockin","sync"];
+const posts = ['login','users','session',"register",'dayoff','request','query','permit','init','approved','empquery','delete',"modify","quota","clockin","sync","calendar","clrecord"];
 (()=>{
   posts.forEach(v=>{
     const utils = require(`./system/${v}.js`).bind(null,sqlPlugin,log,mailer);
@@ -72,7 +72,7 @@ const deprecated = ["upload","multer","admin"];
 
 
 /* ====================================== UNDERMAINTAINENCE ================================================= */
-const maintainence = ["calendar","clrecord"];
+const maintainence = [];
 (()=>{
   maintainence.forEach(v=>{
     app.all(`/${v}`,(req,res)=>{
