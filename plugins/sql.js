@@ -217,13 +217,15 @@ class sql{
         // console.log(year)
         const currentYear = new Date().getFullYear();
         const month = parseInt(start.split("-")[1]);
-        const count = this.login_db.prepare(`SELECT COUNT(*) FROM requestquery WHERE serialnum LIKE '${currentYear}%'`).all()[0];
+        const serials = this.login_db.prepare(`SELECT serialnum FROM requestquery WHERE serialnum LIKE '${currentYear}%' ORDER BY serialnum ASC`).all();
+        const count = serials[serials.length-1]?`${currentYear}${(parseInt(serials[serials.length-1]["serialnum"].substring(4))+1).toString().padStart(4,'0')}`:`${currentYear}0000`;
+        // const count = this.login_db.prepare(`SELECT COUNT(*) FROM requestquery WHERE serialnum LIKE '${currentYear}%'`).all()[0];
         const name = query["name"];
         // console.log(count)
-        console.log(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason,month,year) VALUES ('${currentYear}${count["COUNT(*)"].toString().padStart(4,'0')}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},'${reason}','${month}','${year}');`)
-        this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason,month,year) VALUES ('${currentYear}${count["COUNT(*)"].toString().padStart(4,'0')}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},'${reason}','${month}','${year}');`).run();
+        console.log(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason,month,year) VALUES ('${count}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},'${reason}','${month}','${year}');`)
+        this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason,month,year) VALUES ('${count}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},'${reason}','${month}','${year}');`).run();
         log.logFormat(`${user} just request a new dayoff.`,new Date())
-        return {"mgroup":query["mgroup"],"name":name,"num":`${currentYear}${count["COUNT(*)"].toString().padStart(4,'0')}`};
+        return {"mgroup":query["mgroup"],"name":name,"num":count};
     }
 
     showQuery(user,state=0,search_query="",limit_query=""){
@@ -390,15 +392,49 @@ class sql{
         this.init(user,year);
         var amount_array = [];
         for(let type of Object.keys(amount)){
-            amount_array.push(`${type}=${amount[type]}`)
+            // console.log(type);
+            if(type!="undefined")
+                amount_array.push(`${type}=${amount[type]}`)
         }
         let queryString = amount_array.join(", ");
+        log.logFormat(`Syncing data with query: UPDATE dayoffinfo SET ${queryString} WHERE id='${user}' AND year='${year}';`)
         this.login_db.prepare(`UPDATE dayoffinfo SET ${queryString} WHERE id='${user}' AND year='${year}';`).run();
         return;
     }
 
-    modifyTicket(user,num,type,start,end,totalTime,state){
-        // TODO: implement this shit
+    modifyTicket(num,action,type,start,end,totalTime,state){
+        const ticket = this.login_db.prepare(`SELECT * FROM requestquery WHERE serialnum='${num}';`).all()[0];
+        const user = ticket["id"];
+        const query = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0];
+        // const userinfo = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${query["id"]}'`).all()[0];
+        const checkpoint = new Date(`${end.split("-")[0]}-${query["joinTime"].substring(5)}`);
+        const endDate = new Date(end.split(" ")[0]);
+        const year = checkpoint>endDate?(parseInt(end.split("-")[0])-1).toString():end.split("-")[0];
+        const table = {
+            "特休假":"annual",
+            "事假":"personal",
+            "家庭照顧假":"care",
+            "普通傷病假":"sick",
+            "婚假":"wedding",
+            "喪假":"funeral",
+            "分娩假":"birth",
+            "產檢假":"pcheckup",
+            "流產假":"miscarriage",
+            "陪產假":"paternity",
+            "產假":"maternity",
+            "其他":"other"
+        };
+        if(action==0){
+            // Delete
+            this.login_db.prepare(`DELETE FROM requestquery WHERE serialnum='${num}';`).run();
+            log.logFormat(`Ticket #${num} has been DELETED.`);
+            this.syncTickets(user,ticket["year"]);
+            return;
+        }
+        this.login_db.prepare(`UPDATE requestquery SET type='${table[type]}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}' WHERE serialnum='${num}';`).run();
+        log.logFormat(`Ticket #${num} has been MODIFIED: UPDATE requestquery SET type='${table[type]}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}' WHERE serialnum='${num}';`);
+        this.syncTickets(user,ticket["year"]);
+        return;
     }
 
 }
