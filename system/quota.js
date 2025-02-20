@@ -18,6 +18,7 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
     const account = dataReceived["account"];
     const cookie = dataReceived["cookie"];
     const user = dataReceived["user"];
+    const year = dataReceived["year"];
 
     if(!valid(dataReceived,["account","cookie"])){
         res.sendStatus(400);

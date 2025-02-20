@@ -315,10 +315,11 @@ class sql{
         return;
     }
 
-    calculateAnnualQuota(user){
-        // TODO: Add year and month elapse
-        const joinTime = new Date(this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0]["joinTime"]);
-        const elapse = calculate(joinTime);
+    calculateAnnualQuota(user,year){
+        const db_jt = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0]["joinTime"];
+        const joinTime = new Date(db_jt);
+        const endTime = new Date(`${year}-${db_jt.split("-")[1]}-${db_jt.split("-")[2]}`);
+        const elapse = calculate(joinTime,endTime);
         const months = elapse['m'], days = elapse['d'];
         const years = months/12;
         var quota;
@@ -439,12 +440,12 @@ class sql{
 
 }
 
-function calculate(startDate) {
+function calculate(startDate,endDate) {
     if (!(startDate instanceof Date) || isNaN(startDate.getTime())) {
         throw new Error("Invalid date. Please provide a valid startDate as a Date object.");
     }
 
-    const endDate = new Date();
+    // const endDate = new Date();
 
     let months = (endDate.getFullYear() - startDate.getFullYear()) * 12;
     months += endDate.getMonth() - startDate.getMonth();
