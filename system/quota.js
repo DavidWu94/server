@@ -31,6 +31,6 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
         return;
     }
     var search_user = user?user:account;
-    const r = sqlPlugin.calculateAnnualQuota(search_user);
+    const r = sqlPlugin.calculateAnnualQuota(search_user,year);
     res.json(r);
 }
