@@ -8,22 +8,26 @@
   },
   "author": "",
   "dependencies": {
-    "adm-zip":"^0.5.16",
+    "@types/express": "^5.0.0",
+    "adm-zip": "^0.5.16",
     "axios": "^1.7.9",
-    "better-sqlite3":"^10.0.0",
-    "body-parser":"^1.20.3",
-    "dotenv":"^16.4.5",
-    "cors":"^2.8.5",
-    "crypto":"^1.0.1",
-    "express":"^4.21.1",
-    "fs":"^0.0.1-security",
-    "multer":"^1.4.5-lts.1",
-    "nodemailer":"^6.9.15",
-    "path":"^0.12.7",
-    "request":"^2.88.2",
-    "selenium":"^2.20.0",
-    "selenium-webdriver": "^4.27.0",
-    "exceljs": "^4.4.0"
+    "better-sqlite3": "^10.0.0",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.4.5",
+    "exceljs": "^4.4.0",
+    "express": "^4.21.1",
+    "fs": "^0.0.1-security",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.15",
+    "path": "^0.12.7",
+    "request": "^2.88.2",
+    "selenium": "^2.20.0",
+    "selenium-webdriver": "^4.27.0"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
 }
