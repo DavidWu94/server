@@ -461,34 +461,6 @@ export class sql{
         const checkpoint = new Date(`${end.split("-")[0]}-${query["joinTime"].substring(5)}`);
         const endDate = new Date(end.split(" ")[0]);
         const year = checkpoint>endDate?(parseInt(end.split("-")[0])-1).toString():end.split("-")[0];
-        const table = {
-            "特休假":"annual",
-            "事假":"personal",
-            "家庭照顧假":"care",
-            "普通傷病假":"sick",
-            "婚假":"wedding",
-            "喪假":"funeral",
-            "分娩假":"birth",
-            "產檢假":"pcheckup",
-            "流產假":"miscarriage",
-            "陪產假":"paternity",
-            "產假":"maternity",
-            "其他":"other"
-        };
-        type tabletp = {
-            "特休假":"annual",
-            "事假":"personal",
-            "家庭照顧假":"care",
-            "普通傷病假":"sick",
-            "婚假":"wedding",
-            "喪假":"funeral",
-            "分娩假":"birth",
-            "產檢假":"pcheckup",
-            "流產假":"miscarriage",
-            "陪產假":"paternity",
-            "產假":"maternity",
-            "其他":"other"
-        };
         if(action==0){
             // Delete
             this.login_db.prepare(`DELETE FROM requestquery WHERE serialnum='${num}';`).run();
@@ -496,8 +468,8 @@ export class sql{
             this.syncTickets(user,ticket["year"]);
             return;
         }
-        this.login_db.prepare(`UPDATE requestquery SET type='${table[(type as keyof tabletp)]}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}' WHERE serialnum='${num}';`).run();
-        log.logFormat(`Ticket #${num} has been MODIFIED: UPDATE requestquery SET (type as keyof tabletp)='${table[(type as keyof tabletp)]}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}' WHERE serialnum='${num}';`);
+        this.login_db.prepare(`UPDATE requestquery SET type='${type}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}' WHERE serialnum='${num}';`).run();
+        log.logFormat(`Ticket #${num} has been MODIFIED: UPDATE requestquery SET (type as keyof tabletp)='${type}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}' WHERE serialnum='${num}';`);
         this.syncTickets(user,ticket["year"]);
         return;
     }
