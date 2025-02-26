@@ -55,6 +55,7 @@ COPY ["package.json", "package-lock.json*", "./"]
 RUN npm update -g
 RUN npm install
 COPY . .
+RUN npx tsc
 EXPOSE 3000
 ENV TZ Asia/Taipei
 CMD [ "node","main.js" ]

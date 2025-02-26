@@ -6,7 +6,7 @@ import { sql } from "../plugins/sql";
 import { caculateTime } from "../plugins/dayoff_calculate";
 
 
-export async function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Response,req:Request):Promise<void>{
+module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Response,req:Request):Promise<void>{
     const dataReceived:{[key:string]:any} = req.body;
 
     const account = dataReceived["account"];

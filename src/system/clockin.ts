@@ -4,7 +4,7 @@ import { mailer } from "../plugins/mailer";
 import logger from "../plugins/logger";
 import { sql } from "../plugins/sql";
 
-export function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Response,req:Request):void{
+module.exports = function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Response,req:Request):void{
     const dataReceived:{[key:string]:any} = req.body;
 
     const account = dataReceived["account"];

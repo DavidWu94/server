@@ -7,7 +7,7 @@ import { main } from "../plugins/dayoff_calendar";
 // const calen = require("../plugins/dayoff_calendar");
 
 
-export async function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Response,req:Request):Promise<void>{
+module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Response,req:Request):Promise<void>{
     const dataReceived:{[key:string]:any} = req.body;
 
     const account = dataReceived["account"];

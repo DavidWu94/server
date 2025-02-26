@@ -7,7 +7,7 @@ import fs from 'fs';
 import { downloadJSON } from "../plugins/dayoff_reader";
 // import { digit } from "../types/types";
 
-export async function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Response,req:Request):Promise<void>{
+module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Response,req:Request):Promise<void>{
     const dataReceived:{[key:string]:any} = req.body;
 
     const account = dataReceived["account"];
