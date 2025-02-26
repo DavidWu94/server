@@ -1,7 +1,10 @@
-const fs = require("fs");
+// const fs = require("fs");
+import fs from 'fs';
 
 class logger{
-    constructor(fileName){
+    private loggingFile:string;
+
+    public constructor(fileName:string){
         // this.format = "[%Y/%M/%D %H:%m:%s] %d"
         this.loggingFile = fileName;
     }
@@ -11,12 +14,12 @@ class logger{
      * @param {String} data 
      * @param {Object|undefined} DATE Require `new Date()`
      */
-    logFormat(data,DATE) {
+    logFormat(data:string,DATE?:Date) {
         /**
          * @type {Date()}
          */
         var now;
-        if(DATE && typeof(DATE) == Object)
+        if(DATE && typeof(DATE) == Date())
             now = DATE;
         else
             now = new Date();
@@ -36,4 +39,4 @@ class logger{
 
 }
 
-module.exports = logger;
+export = logger;

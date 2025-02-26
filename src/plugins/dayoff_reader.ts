@@ -14,16 +14,18 @@
  *   5. 在詳細/預覽頁，尋找 class="el-button json" 的按鈕後，改用其父元素 <a> 的 href 進行檔案下載
  */
 
-const { Builder, By, until } = require('selenium-webdriver');
-const firefox = require('selenium-webdriver/firefox');
-const axios = require('axios');
-const fs = require('fs');
+// const { Builder, By, until } = require('selenium-webdriver');
+import { By,until,Builder } from "selenium-webdriver";
+import firefox from'selenium-webdriver/firefox';
+import axios from 'axios';
+import fs from 'fs';
+import { digit,calendar } from "../types/types";
 
-async function sleep(ms) {
+async function sleep(ms:number):Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function scrapeAndDownload(rocYear) {
+async function scrapeAndDownload(rocYear:digit) {
   // 建立 Firefox WebDriver
   const options = new firefox.Options();
   options.addArguments("--headless");
@@ -138,22 +140,23 @@ async function scrapeAndDownload(rocYear) {
   }
 }
 
-async function rewriteJSON(rocYear) {
+async function rewriteJSON(rocYear:digit) :Promise<void>{
   let rawdata = fs.readFileSync(`./api/office_calendar_${rocYear}.json`);
-  let rd= JSON.parse(rawdata);
+  let rd = JSON.parse((String)(rawdata as unknown));
   // console.log(punishments);
-  let newData = {}
+  let newData:calendar = {};
   for(let d of rd){
     let year = parseInt(d["西元日期"].substring(0,4));
     let month = parseInt(d["西元日期"].substring(4,6));
     let date = parseInt(d["西元日期"].substring(6));
     var dayoff_status = (d["是否放假"]=="0")?0:1;
+    let comment = d["備註"];
     // if(d["是否放假"]=="0") continue;
     try{
-      newData[month][date] = dayoff_status;
+      newData[month][date] = {"status":dayoff_status,"comment":comment};
     }catch{
       newData[month] = {};
-      newData[month][date] = dayoff_status;
+      newData[month][date] = {"status":dayoff_status,"comment":comment};
     }
   }
 
@@ -162,7 +165,7 @@ async function rewriteJSON(rocYear) {
   return new Promise(res=>res());
 }
 
-async function downloadJSON(rocYearArg) {
+export async function downloadJSON(rocYearArg:digit) :Promise<void>{
   await scrapeAndDownload(rocYearArg);
   await rewriteJSON(rocYearArg);
   return new Promise(res=>res());
@@ -178,4 +181,4 @@ async function downloadJSON(rocYearArg) {
 //     }
 //   }
 // })();
-module.exports = downloadJSON;
+// module.exports = downloadJSON;

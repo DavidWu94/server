@@ -1,13 +1,17 @@
-const fs = require('fs');
-const path = require('path');
-const download = require("./dayoff_reader");
+// const fs = require('fs');
+import fs from 'fs';
+import path from 'path';
+// const path = require('path');
+import { downloadJSON } from './dayoff_reader';
+import { digit } from '../types/types';
+// const download = require("./dayoff_reader");
 
 /**
  * 將 Gregorian 年轉換為 ROC 年
  * @param {number} gregorianYear - 公元年
  * @returns {number} - 民國年
  */
-function convertGregorianToROCYear(gregorianYear) {
+function convertGregorianToROCYear(gregorianYear:number) {
     return gregorianYear - 1911;
 }
 
@@ -16,22 +20,22 @@ function convertGregorianToROCYear(gregorianYear) {
  * @param {number} rocYear - 民國年
  * @returns {Promise<Set>} - 包含 'MM-DD' 格式的非工作日
  */
-async function loadNonWorkingDays(rocYear) {
+async function loadNonWorkingDays(rocYear:digit) :Promise<Set<string>>{
     const filePath = `./api/office_calendar_${rocYear}.json`;
 
     if (!fs.existsSync(filePath)) {
         // console.log("Can't find file.");
-        await download(rocYear)
+        await downloadJSON(rocYear);
     }
 
     const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
     // console.log(data)
 
-    const nonWorkingDays = new Set();
+    const nonWorkingDays:Set<string> = new Set();
     for (const month in data) {
         const days = data[month];
         for (const day in days) {
-            if(data[month][day]==0) continue;
+            if(data[month][day]["status"]==0) continue;
             const monthStr = month.padStart(2, '0');
             const dayStr = day.padStart(2, '0');
             nonWorkingDays.add(`${monthStr}-${dayStr}`);
@@ -47,8 +51,8 @@ async function loadNonWorkingDays(rocYear) {
  * @param {Date} endDate 
  * @returns {Set<number>} - 包含所有 ROC 年
  */
-function getROCYearsInRange(startDate, endDate) {
-    const years = new Set();
+function getROCYearsInRange(startDate:Date, endDate:Date) :Set<number>{
+    const years:Set<number> = new Set();
     const startYear = startDate.getFullYear();
     const endYear = endDate.getFullYear();
 
@@ -65,7 +69,7 @@ function getROCYearsInRange(startDate, endDate) {
  * @param {Set} nonWorkingDaysSet 
  * @returns {boolean}
  */
-async function isNonWorkingDay(date, nonWorkingDaysSet) {
+async function isNonWorkingDay(date:Date, nonWorkingDaysSet:Set<string>) :Promise<boolean>{
     const month = (date.getMonth() + 1).toString().padStart(2, '0'); // getMonth() 返回 0-11
     const day = date.getDate().toString().padStart(2, '0');
     const dateStr = `${month}-${day}`;
@@ -77,7 +81,7 @@ async function isNonWorkingDay(date, nonWorkingDaysSet) {
  * @param {Date} date 
  * @returns {number}
  */
-function getDecimalTime(date) {
+function getDecimalTime(date:Date):number {
     return date.getHours() + date.getMinutes() / 60;
 }
 
@@ -89,7 +93,7 @@ function getDecimalTime(date) {
  * @param {number} intervalEnd - 當天的工作區間結束時間（十進制小時）
  * @returns {number} - 計算出的工作時數
  */
-async function calculateWorkingHoursForPeriod(periodStart, periodEnd, intervalStart, intervalEnd) {
+async function calculateWorkingHoursForPeriod(periodStart:number, periodEnd:number, intervalStart:number, intervalEnd:number):Promise<number> {
     if (intervalStart <= periodStart && intervalEnd >= periodEnd) {
         return 4;
     }
@@ -106,13 +110,13 @@ async function calculateWorkingHoursForPeriod(periodStart, periodEnd, intervalSt
  * @param {string} time2 - 結束時間，格式為 "YYYY-MM-DD HH:MM"
  * @returns {number} - 經過的工作時數
  */
-async function caculateTime(time1, time2) {
+export async function caculateTime(time1:string, time2:string) {
     const date1 = new Date(time1);
     const date2 = new Date(time2);
 
-    if (isNaN(date1) || isNaN(date2)) {
-        throw new Error("Invalid date format. Please use 'YYYY-MM-DD HH:MM'.");
-    }
+    // if (isNaN(date1) || isNaN(date2)) {
+    //     throw new Error("Invalid date format. Please use 'YYYY-MM-DD HH:MM'.");
+    // }
 
     if (date2 < date1) {
         throw new Error("time2 必須大於或等於 time1");
@@ -197,11 +201,11 @@ async function caculateTime(time1, time2) {
     return new Promise(res=>{res(totalHours)});
 }
 
-async function fetch_all_nwd(rocYears) {
-    const allNonWorkingDays = new Set();
-    for(rocYear of rocYears){
+async function fetch_all_nwd(rocYears:Set<number>):Promise<Set<string>> {
+    const allNonWorkingDays:Set<string> = new Set();
+    for(let rocYear of rocYears){
         const nonWorkingDays = await loadNonWorkingDays(rocYear);
-        for(day of nonWorkingDays){
+        for(let day of nonWorkingDays){
             allNonWorkingDays.add(day);
         }
     }
@@ -210,5 +214,3 @@ async function fetch_all_nwd(rocYears) {
     })
 }
 
-
-module.exports = caculateTime;

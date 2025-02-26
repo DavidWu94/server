@@ -1,10 +1,16 @@
-const nodemailer = require("nodemailer");
-const dotenv = require('dotenv');
+// import SMTPPool,{Options} from 'nodemailer/lib/smtp-pool';
+import nodemailer,{Transporter} from 'nodemailer';
+import dotenv from 'dotenv';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
+// import SMTPConnection from 'nodemailer/lib/smtp-connection';
+// const dotenv = require('dotenv');
 dotenv.config();
 
-class mailer{
+export class mailer{
+    private option:SMTPTransport.Options;
+    private transporter:Transporter
 
-    constructor(){
+    public constructor(){
         /**
          * @type {nodemailer.Transporter}
          */
@@ -23,7 +29,7 @@ class mailer{
         this.transporter = nodemailer.createTransport(this.option);
     }
 
-    verify(){
+    verify():void{
         this.transporter.verify(function (error, success) {
             if (error) {
                 console.error(error);
@@ -54,7 +60,7 @@ class mailer{
         this.transporter = nodemailer.createTransport(this.option);
     }
 
-    async send(mail,title,text){
+    async send(mail:string,title:string,text:string):Promise<any>{
         var message = {
             from: `"祐肯企業請假系統訊息" <${process.env.USER_MAIL}>`, // listed in rfc822 message header
             to: `${mail}`, // listed in rfc822 message header
@@ -62,9 +68,7 @@ class mailer{
             text: text,
         };
         const ret = await this.transporter.sendMail(message);
-        return ret
+        return new Promise(res=>{res(ret)});
     }
 
 }
-
-module.exports = mailer;

@@ -1,12 +1,14 @@
-// const mysql = require('mysql');
-const crypto = require('crypto');
-const logger = require("./logger.js");
-const log = new logger(`./logs/${new Date().toISOString().split('T')[0]}.log`);
+import crypto from "crypto";
+import Database from "better-sqlite3";
+import logger from './logger'
+import  { userinfo,dayoffinfo,clockinrecord,requestquery,logininfo,digit } from "../types/types";
+// const logger = require("./logger.js");
+const log:logger = new logger(`./logs/${new Date().toISOString().split('T')[0]}.log`);
 
-class sql{
-
-    constructor(){
-        this.login_db = require('better-sqlite3')('./databases/loginDatabase.db');
+export class sql{
+    private login_db:Database.Database;
+    public constructor(){
+        this.login_db = new Database('./databases/loginDatabase.db');
         this.login_db.pragma('journal_mode = WAL');
         log.logFormat("Database is connected with server.",new Date());
     }
@@ -18,13 +20,15 @@ class sql{
      * @param {string|undefined} cookie 
      * @returns {object}
      */
-    login(user,pwd,cookie){
-        if(user.match(/['"?><:;\\|)(*&^%$#@!~`]/)||cookie.match(/['"?><:;\\|)(*&^%$#@!~`]/)||cookie.match(/['"?><:;\\|)(*&^%$#@!~`]/)){
-            return {msg:"wrong type"};
+    login(user:string,pwd:string|undefined,cookie:string|undefined):{msg:string,accountType?:string,sessionKey?:string,name?:string}{
+        if(cookie!==undefined){
+            if(user.match(/['"?><:;\\|)(*&^%$#@!~`]/)||cookie.match(/['"?><:;\\|)(*&^%$#@!~`]/)||cookie.match(/['"?><:;\\|)(*&^%$#@!~`]/)){
+                return {msg:"wrong type"};
+            }
         }
-        const currentTime = new Date();
-        const sqldata = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0];
-        const loginHashData = this.login_db.prepare(`SELECT * FROM logininfo WHERE id='${user}';`).all()[0];
+        const currentTime:Date = new Date();
+        const sqldata:userinfo|undefined = (this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0] as userinfo|undefined);
+        const loginHashData:logininfo|undefined = (this.login_db.prepare(`SELECT * FROM logininfo WHERE id='${user}';`).all()[0] as logininfo|undefined);
 
         
         if (sqldata==undefined){
@@ -33,10 +37,10 @@ class sql{
         };
         // cookie here must be stripped.
         // accepted types: null, string.
-        var hash = "";
-        var expired = false;
+        var hash:string = "";
+        var expired:boolean = false;
         if(cookie&&loginHashData!=undefined){   // if u got a cookie, there must be ur data in the database.
-            const ret = this.checkHash(user,cookie);
+            const ret:null|object = this.checkHash(user,cookie);
             if (ret){
                 log.logFormat(`${user} has logined with cookie successfully.`);
                 return {msg:"success",accountType:sqldata["type"],sessionKey:hash,name:sqldata["name"]};
@@ -73,14 +77,15 @@ class sql{
      * 
      * @returns {Array<object>}
      */
-    getAllUsers(){
-        const data = this.login_db.prepare(`SELECT * FROM userinfo;`).all();
+    getAllUsers():userinfo[]{
+        const data = (this.login_db.prepare(`SELECT * FROM userinfo;`).all() as userinfo[]);
         return data;
     }
 
-    getEmployeeDayOffList(user,year){
+    getEmployeeDayOffList(user:string,year:string):null|dayoffinfo{
         try{
-            const dayoffData = this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${user}' AND year='${year}';`).all()[0];
+            const dayoffData = (this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${user}' AND year='${year}';`).all()[0] as dayoffinfo|undefined);
+            if(dayoffData===undefined) return null;
             // console.log(dayoffData);
             return dayoffData;
         }catch{
@@ -88,13 +93,13 @@ class sql{
         }
     }
 
-    register(user,password,mail,name,type,jointime,mgroup,permit){
+    register(user:string,password:string,mail:string,name:string,type:string,jointime:string,mgroup:digit,permit:digit):void{
         // id,pwd,type,email,name,type,mgroup
         this.login_db.prepare(`INSERT INTO userinfo (id,pwd,type,email,name,joinTime,mgroup,permit) VALUES ('${user}','${password}','${type}','${mail}','${name}',(strftime('%Y-%m-%d', '${jointime}')),${mgroup},${permit});`).run();
         return;
     }
 
-    modify(user,year,dayoff){
+    modify(user:string,year:digit,dayoff:string){
         const table = {
             "特休假":"annual",
             "事假":"personal",
@@ -109,8 +114,8 @@ class sql{
             "產假":"maternity",
             "其他":"other"
         };
-        const entries = Object.entries(dayoff)
-        const query = entries.map((v,i,a)=>{
+        const entries:[string, string][] = Object.entries(dayoff)
+        const query:string[] = entries.map((v,i,a)=>{
             return `${v[0]} = ${v[1]}`;
         });
         // console.log(query.join(","))
@@ -125,13 +130,13 @@ class sql{
      * @param {string} cookie 
      * @returns 
      */
-    checkHash(user,cookie){
+    checkHash(user:string,cookie:string):{msg:string,accountType:string,sessionKey:string}|null{
         if(user.match(/['"?><:;\\|)(*&^%$#@!~`]/)||cookie.match(/['"?><:;\\|)(*&^%$#@!~`]/)){
             return null;
         }
-        const sqldata = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0];
-        const loginHashData = this.login_db.prepare(`SELECT * FROM logininfo WHERE id='${user}';`).all()[0];
-        const current = new Date();
+        const sqldata = (this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0] as userinfo);
+        const loginHashData = (this.login_db.prepare(`SELECT * FROM logininfo WHERE id='${user}';`).all()[0] as logininfo);
+        const current:Date = new Date();
         const lastLogin = Date.parse(loginHashData["createTime"]);
         const DateLastLogin = new Date(lastLogin);
 
@@ -150,7 +155,7 @@ class sql{
         }
     }
 
-    init(user,year){
+    init(user:string,year:digit){
         // {
         //     "annual":0,
         //     "personal":0,
@@ -190,13 +195,15 @@ class sql{
      * @param {*} year 
      * @returns 
      */
-    dayoff(user,year){
+    dayoff(user:string,year:digit):dayoffinfo|null{
         try{
-            const sqldata = this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${user}' AND year='${year}'`).all()[0];
+            const sqldata = (this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${user}' AND year='${year}'`).all()[0] as dayoffinfo| undefined);
             // console.log(sqldata);
+            if (sqldata===undefined) return null;
             return sqldata;
         }catch(e){
             console.warn(e);
+            return null;
         }
     }
 
@@ -208,37 +215,52 @@ class sql{
      * @param {*} end 
      * @returns 
      */
-    newRequest(user,type,start,end,totalTime,reason){
-        const query = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0];
+    newRequest(user:string,type:string,start:string,end:string,totalTime:digit,reason:string):{mgroup:digit,name:string,num:string}{
+        const query:userinfo = (this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0] as userinfo);
         // const userinfo = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${query["id"]}'`).all()[0];
-        const checkpoint = new Date(`${end.split("-")[0]}-${query["joinTime"].substring(5)}`);
-        const endDate = new Date(end.split(" ")[0]);
-        const year = checkpoint>endDate?(parseInt(end.split("-")[0])-1).toString():end.split("-")[0];
+        const checkpoint:Date = new Date(`${end.split("-")[0]}-${query["joinTime"].substring(5)}`);
+        const endDate:Date = new Date(end.split(" ")[0]);
+        const year:string = checkpoint>endDate?(parseInt(end.split("-")[0])-1).toString():end.split("-")[0];
         // console.log(year)
-        const currentYear = new Date().getFullYear();
-        const month = parseInt(start.split("-")[1]);
-        const serials = this.login_db.prepare(`SELECT serialnum FROM requestquery WHERE serialnum LIKE '${currentYear}%' ORDER BY serialnum ASC`).all();
-        const count = serials[serials.length-1]?`${currentYear}${(parseInt(serials[serials.length-1]["serialnum"].substring(4))+1).toString().padStart(4,'0')}`:`${currentYear}0000`;
+        const currentYear:number = new Date().getFullYear();
+        const month:number = parseInt(start.split("-")[1]);
+        const serials:requestquery[]|[] = (this.login_db.prepare(`SELECT serialnum FROM requestquery WHERE serialnum LIKE '${currentYear}%' ORDER BY serialnum ASC`).all() as requestquery[]|[]);
+        const count:string = serials[serials.length-1]?`${currentYear}${(parseInt(serials[serials.length-1]["serialnum"].substring(4))+1).toString().padStart(4,'0')}`:`${currentYear}0000`;
         // const count = this.login_db.prepare(`SELECT COUNT(*) FROM requestquery WHERE serialnum LIKE '${currentYear}%'`).all()[0];
-        const name = query["name"];
+        const name:string = query["name"];
         // console.log(count)
-        console.log(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason,month,year) VALUES ('${count}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},'${reason}','${month}','${year}');`)
+        // console.log(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason,month,year) VALUES ('${count}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},'${reason}','${month}','${year}');`)
         this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason,month,year) VALUES ('${count}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},'${reason}','${month}','${year}');`).run();
         log.logFormat(`${user} just request a new dayoff.`,new Date())
         return {"mgroup":query["mgroup"],"name":name,"num":count};
     }
 
-    showQuery(user,state=0,search_query="",limit_query=""){
+    showQuery(user:string,state:number=0,search_query:string="",limit_query:string=""):requestquery[]|[]{
         // const mgroup = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0]["mgroup"];
-        const query = this.login_db.prepare(`SELECT serialnum,name,type,start,end,reason,totalTime FROM requestquery WHERE state=${state} ${search_query} ${limit_query};`).all();
+        const query:requestquery[]|[] = (this.login_db.prepare(`SELECT serialnum,name,type,start,end,reason,totalTime FROM requestquery WHERE state=${state} ${search_query} ${limit_query};`).all() as requestquery[]|[]);
         log.logFormat(`showquery executed with query: SELECT serialnum,name,type,start,end,reason,totalTime FROM requestquery WHERE state=${state} ${search_query} ${limit_query};`);
         return query;
     }
 
-    setPermit(num,state){
-        const query = this.login_db.prepare(`SELECT * FROM requestquery WHERE serialnum='${num}'`).all()[0];
-        const year = query["year"];
+    setPermit(num:string,state:number):string{
+        const query = (this.login_db.prepare(`SELECT * FROM requestquery WHERE serialnum='${num}'`).all()[0] as requestquery);
+        const year:string = query["year"];
         
+        type tabletp = {
+            "特休假":"annual",
+            "事假":"personal",
+            "家庭照顧假":"care",
+            "普通傷病假":"sick",
+            "婚假":"wedding",
+            "喪假":"funeral",
+            "分娩假":"birth",
+            "產檢假":"pcheckup",
+            "流產假":"miscarriage",
+            "陪產假":"paternity",
+            "產假":"maternity",
+            "其他":"other"
+        };
+
         const table = {
             "特休假":"annual",
             "事假":"personal",
@@ -256,18 +278,18 @@ class sql{
         
         if(state==1) {
             if( this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${query["id"]}' AND year='${year}';`).all().length!=0){
-                log.logFormat(`Updating dayoffinfo with query: UPDATE dayoffinfo SET ${table[query["type"]]}=${table[query["type"]]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`);
-                this.login_db.prepare(`UPDATE dayoffinfo SET ${table[query["type"]]}=${table[query["type"]]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`).run();
+                log.logFormat(`Updating dayoffinfo with query: UPDATE dayoffinfo SET ${table[(query["type"] as keyof tabletp)]}=${table[(query["type"] as keyof tabletp)]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`);
+                this.login_db.prepare(`UPDATE dayoffinfo SET ${table[(query["type"] as keyof tabletp)]}=${table[(query["type"] as keyof tabletp)]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`).run();
             }else{
                 log.logFormat("Initializing the data...");
                 this.init(query["id"],year);
-                log.logFormat(`Updating dayoffinfo with query: UPDATE dayoffinfo SET ${table[query["type"]]}=${table[query["type"]]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`);
-                this.login_db.prepare(`UPDATE dayoffinfo SET ${table[query["type"]]}=${table[query["type"]]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`).run();
+                log.logFormat(`Updating dayoffinfo with query: UPDATE dayoffinfo SET ${table[(query["type"] as keyof tabletp)]}=${table[(query["type"] as keyof tabletp)]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`);
+                this.login_db.prepare(`UPDATE dayoffinfo SET ${table[(query["type"] as keyof tabletp)]}=${table[(query["type"] as keyof tabletp)]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`).run();
             }
         }
         this.login_db.prepare(`UPDATE requestquery SET state=${state} WHERE serialnum='${num}';`).run();
         log.logFormat(`Dayoff ticket #${num} has been set to ${state?"accepted":"denied"}.`);
-        return this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${query["id"]}'`).all()[0]["email"];
+        return (this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${query["id"]}'`).all()[0] as userinfo)["email"];
     }
 
     /**
@@ -275,54 +297,54 @@ class sql{
      * @param {*} user 
      * @returns {number|null} 1 means require a permission
      */
-    getPermission(user){
-        const query = this.login_db.prepare(`SELECT permit FROM userinfo WHERE id='${user}'`).all()[0];
+    getPermission(user:string):userinfo["permit"]|null{
+        const query = (this.login_db.prepare(`SELECT permit FROM userinfo WHERE id='${user}'`).all()[0] as userinfo|undefined);
         if(query) return query["permit"];
         return null
     }
 
-    clockinAction(user,type,now){
-        const year = now.getFullYear();
-        const month = now.getMonth()+1>9?(now.getMonth()+1):'0'+(now.getMonth()+1).toString();
-        const date = now.getDate()>9?(now.getDate()):'0'+(now.getDate()).toString();
-        const hour = now.getHours()>9?(now.getHours()):'0'+(now.getHours()).toString();
-        const min = now.getMinutes()>9?(now.getMinutes()):'0'+(now.getMinutes()).toString();
+    clockinAction(user:string,type:number,now:Date):clockinrecord[]|{status:digit}|null{
+        const year:number = now.getFullYear();
+        const month:digit = now.getMonth()+1>9?(now.getMonth()+1):'0'+(now.getMonth()+1).toString();
+        const date:digit = now.getDate()>9?(now.getDate()):'0'+(now.getDate()).toString();
+        const hour:digit = now.getHours()>9?(now.getHours()):'0'+(now.getHours()).toString();
+        const min:digit = now.getMinutes()>9?(now.getMinutes()):'0'+(now.getMinutes()).toString();
 
-        const datetime = `${year}-${month}-${date} ${hour}:${min}`;
+        const datetime:string = `${year}-${month}-${date} ${hour}:${min}`;
         if(type==0){
-            return this.login_db.prepare(`SELECT * FROM clockinrecord WHERE id='${user}' AND date='${datetime.split(" ")[0]}'`).all();
+            return (this.login_db.prepare(`SELECT * FROM clockinrecord WHERE id='${user}' AND date='${datetime.split(" ")[0]}'`).all() as clockinrecord[]);
         }
-        const data = this.login_db.prepare(`SELECT * FROM clockinrecord WHERE date='${datetime.split(" ")[0]}' AND id='${user}';`).all();
+        const data:clockinrecord[] = (this.login_db.prepare(`SELECT * FROM clockinrecord WHERE date='${datetime.split(" ")[0]}' AND id='${user}';`).all() as clockinrecord[]);
         if(data.length!=0){
             // exists, use UPDATE
             if(data[0][`clock${type==1?"in":"out"}`]) return null;
             this.login_db.prepare(`UPDATE clockinrecord SET clock${type==1?"in":"out"}='${datetime.split(" ")[1]}' WHERE id='${user}' AND date='${datetime.split(" ")[0]}';`).run();
         }else{
             // use INSERT
-            const name = this.login_db.prepare(`SELECT name FROM userinfo WHERE id='${user}';`).all()[0]["name"];
+            const name:string = (this.login_db.prepare(`SELECT name FROM userinfo WHERE id='${user}';`).all()[0] as userinfo)["name"];
             this.login_db.prepare(`INSERT INTO clockinrecord (id,name,date,clock${type==1?"in":"out"}) VALUES ('${user}','${name}','${datetime.split(" ")[0]}','${datetime.split(" ")[1]}');`).run();
         }
         return {"status":200};
     }
 
-    showPersonalQuery(user,year){
-        const query = this.login_db.prepare(`SELECT serialnum,name,type,start,end,reason,totalTime,state FROM requestquery WHERE id='${user}' AND year='${year}'`).all();
+    showPersonalQuery(user:string,year:string):requestquery[]|[]{
+        const query = (this.login_db.prepare(`SELECT serialnum,name,type,start,end,reason,totalTime,state FROM requestquery WHERE id='${user}' AND year='${year}'`).all() as requestquery[]|[]);
         return query;
     }
 
-    deleteAccount(user){
+    deleteAccount(user:string):void{
         this.login_db.prepare(`DELETE FROM userinfo WHERE id='${user}'`).run();
         return;
     }
 
-    calculateAnnualQuota(user,year){
-        const db_jt = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0]["joinTime"];
-        const joinTime = new Date(db_jt);
-        const endTime = new Date(`${year}-${db_jt.split("-")[1]}-${db_jt.split("-")[2]}`);
-        const elapse = calculate(joinTime,endTime);
+    calculateAnnualQuota(user:string,year:digit):{quota:number,years:number,month:number,days:number}{
+        const db_jt:string = (this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0] as userinfo)["joinTime"];
+        const joinTime:Date = new Date(db_jt);
+        const endTime:Date = new Date(`${year}-${db_jt.split("-")[1]}-${db_jt.split("-")[2]}`);
+        const elapse:{m:number,d:number} = calculate(joinTime,endTime);
         const months = elapse['m'], days = elapse['d'];
         const years = months/12;
-        var quota;
+        var quota:number=0;
         if(months<6) quota = 0;
         if(months>=6&&months<12){
             quota = 3;
@@ -342,8 +364,8 @@ class sql{
 
     }
 
-    showQueryInMonth(year,month){
-        const query = this.login_db.prepare(`SELECT name,start,end FROM requestquery WHERE state=1 AND year='${year}' AND month='${month}'`).all();
+    showQueryInMonth(year:digit,month:digit):requestquery[]|[]{
+        const query = (this.login_db.prepare(`SELECT name,start,end FROM requestquery WHERE state=1 AND year='${year}' AND month='${month}'`).all() as requestquery[]|[]);
         return query;
     }
 
@@ -352,14 +374,28 @@ class sql{
      * @param {string} year 
      * @param {string} month 
      */
-    async clockinRecord(year,month){
-        const query = this.login_db.prepare(`SELECT * FROM clockinrecord WHERE date LIKE '${year}-${month}-%';`).all();
+    async clockinRecord(year:digit,month:digit):Promise<[] | clockinrecord[]>{
+        const query = (this.login_db.prepare(`SELECT * FROM clockinrecord WHERE date LIKE '${year}-${month}-%';`).all() as clockinrecord[]|[]);
         return new Promise(res=>{res(query)});
     }
 
-    syncTickets(user,year){
-        const tickets = this.login_db.prepare(`SELECT * FROM requestquery WHERE id='${user}' AND year='${year}' AND state=1;`).all();
+    syncTickets(user:string,year:digit):void{
+        const tickets = (this.login_db.prepare(`SELECT * FROM requestquery WHERE id='${user}' AND year='${year}' AND state=1;`).all() as requestquery[]|[]);
         const table = {
+            "特休假":"annual",
+            "事假":"personal",
+            "家庭照顧假":"care",
+            "普通傷病假":"sick",
+            "婚假":"wedding",
+            "喪假":"funeral",
+            "分娩假":"birth",
+            "產檢假":"pcheckup",
+            "流產假":"miscarriage",
+            "陪產假":"paternity",
+            "產假":"maternity",
+            "其他":"other"
+        };
+        type tabletp = {
             "特休假":"annual",
             "事假":"personal",
             "家庭照顧假":"care",
@@ -387,15 +423,29 @@ class sql{
             "maternity":0,
             "other":0
         };
+        type atp = {
+            "annual":0,
+            "personal":0,
+            "care":0,
+            "sick":0,
+            "wedding":0,
+            "funeral":0,
+            "birth":0,
+            "pcheckup":0,
+            "miscarriage":0,
+            "paternity":0,
+            "maternity":0,
+            "other":0
+        };
         for(let ticket of tickets){
-            amount[table[ticket["type"]]] += ticket["totalTime"];
+            amount[(table[(ticket["type"] as keyof tabletp)] as keyof atp)] += ticket["totalTime"];
         }
         this.init(user,year);
-        var amount_array = [];
+        var amount_array:string[] = [];
         for(let type of Object.keys(amount)){
             // console.log(type);
             if(type!="undefined")
-                amount_array.push(`${type}=${amount[type]}`)
+                amount_array.push(`${type}=${amount[(type as keyof atp)]}`);
         }
         let queryString = amount_array.join(", ");
         log.logFormat(`Syncing data with query: UPDATE dayoffinfo SET ${queryString} WHERE id='${user}' AND year='${year}';`)
@@ -403,15 +453,29 @@ class sql{
         return;
     }
 
-    modifyTicket(num,action,type,start,end,totalTime,state){
-        const ticket = this.login_db.prepare(`SELECT * FROM requestquery WHERE serialnum='${num}';`).all()[0];
+    modifyTicket(num:string,action:number,type:string,start:string,end:string,totalTime:string,state:digit){
+        const ticket = (this.login_db.prepare(`SELECT * FROM requestquery WHERE serialnum='${num}';`).all()[0] as requestquery);
         const user = ticket["id"];
-        const query = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0];
+        const query = (this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0] as userinfo);
         // const userinfo = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${query["id"]}'`).all()[0];
         const checkpoint = new Date(`${end.split("-")[0]}-${query["joinTime"].substring(5)}`);
         const endDate = new Date(end.split(" ")[0]);
         const year = checkpoint>endDate?(parseInt(end.split("-")[0])-1).toString():end.split("-")[0];
         const table = {
+            "特休假":"annual",
+            "事假":"personal",
+            "家庭照顧假":"care",
+            "普通傷病假":"sick",
+            "婚假":"wedding",
+            "喪假":"funeral",
+            "分娩假":"birth",
+            "產檢假":"pcheckup",
+            "流產假":"miscarriage",
+            "陪產假":"paternity",
+            "產假":"maternity",
+            "其他":"other"
+        };
+        type tabletp = {
             "特休假":"annual",
             "事假":"personal",
             "家庭照顧假":"care",
@@ -432,15 +496,15 @@ class sql{
             this.syncTickets(user,ticket["year"]);
             return;
         }
-        this.login_db.prepare(`UPDATE requestquery SET type='${table[type]}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}' WHERE serialnum='${num}';`).run();
-        log.logFormat(`Ticket #${num} has been MODIFIED: UPDATE requestquery SET type='${table[type]}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}' WHERE serialnum='${num}';`);
+        this.login_db.prepare(`UPDATE requestquery SET type='${table[(type as keyof tabletp)]}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}' WHERE serialnum='${num}';`).run();
+        log.logFormat(`Ticket #${num} has been MODIFIED: UPDATE requestquery SET (type as keyof tabletp)='${table[(type as keyof tabletp)]}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}' WHERE serialnum='${num}';`);
         this.syncTickets(user,ticket["year"]);
         return;
     }
 
 }
 
-function calculate(startDate,endDate) {
+function calculate(startDate:Date,endDate:Date):{m:number,d:number} {
     if (!(startDate instanceof Date) || isNaN(startDate.getTime())) {
         throw new Error("Invalid date. Please provide a valid startDate as a Date object.");
     }
@@ -459,5 +523,3 @@ function calculate(startDate,endDate) {
 
     return { "m":months,"d":days };
 }
-
-module.exports = sql;

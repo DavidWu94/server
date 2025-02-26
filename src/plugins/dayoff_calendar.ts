@@ -1,8 +1,9 @@
-const ExcelJS = require('exceljs');
-const sql = require("./sql");
+import ExcelJS from 'exceljs';
+import { sql } from './sql';
+import {calendar} from '../types/types';
 
-async function check_working_day(year, month, day) {
-  const file = require(`../api/office_calendar_${year-1911}.json`);
+async function check_working_day(year:number, month:number, day:number) :Promise<{status:number,comment:string}>{
+  const file:calendar = require(`../api/office_calendar_${year-1911}.json`) as calendar;
   return new Promise(res=>{res(file[month][day])});
 }
 
@@ -12,12 +13,12 @@ async function check_working_day(year, month, day) {
  * @param {*} month 
  * @param {sql} sqlPlugin 
  */
-async function main(year,month,sqlPlugin){
+export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>{
     const reminders = sqlPlugin.showQueryInMonth(year,month);
 
     const totalDays = new Date(year, month, 0).getDate();
 
-    let dailyReminders = {};
+    let dailyReminders:{[key:number]:string[]} = {};
     for (let d = 1; d <= totalDays; d++) {
         dailyReminders[d] = [];
     }
@@ -34,8 +35,12 @@ async function main(year,month,sqlPlugin){
         
         // Loop through each day in the reminder's span.
         for (let day = startDay; day <= endDay; day++) {
+            let cal = await check_working_day(year, month, day)
             // Check if the day should be skipped.
-            if (check_working_day(year, month, day) === 1) {
+            if (cal["status"] === 1) {
+                if(cal["comment"]!=""){
+                    dailyReminders[day].push(cal["comment"]);
+                }
                 continue;
             }
             
@@ -149,17 +154,18 @@ async function main(year,month,sqlPlugin){
         const row = worksheet.getRow(currentRowNumber);
         for (let col = 0; col < 7; col++) {
             const cell = row.getCell(col + 1);
-            if (week[col] !== null) {
-            // Compose cell text: "Day X" plus any reminder lines.
-            let cellText = `Day ${week[col].day}`;
-            if (week[col].reminders.length > 0) {
-                // Join multiple reminders with a newline.
-                cellText += "\n" + week[col].reminders.join("\n");
-            }
-            cell.value = cellText;
-            cell.alignment = { wrapText: true, vertical: 'top', horizontal: 'left' };
+            let wcl = week[col];
+            if (wcl==null) {
+                cell.value = "";
             } else {
-            cell.value = "";
+                // Compose cell text: "Day X" plus any reminder lines.
+                let cellText = `Day ${wcl.day}`;
+                if (wcl.reminders.length > 0) {
+                    // Join multiple reminders with a newline.
+                    cellText += "\n" + wcl.reminders.join("\n");
+                }
+                cell.value = cellText;
+                cell.alignment = { wrapText: true, vertical: 'top', horizontal: 'left' };
             }
             // Optional: add a border to the cell.
             cell.border = {
@@ -188,4 +194,4 @@ async function main(year,month,sqlPlugin){
     })
 }
 
-module.exports = main;
+// module.exports = main;

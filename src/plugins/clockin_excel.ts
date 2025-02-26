@@ -1,6 +1,8 @@
-const ExcelJS = require('exceljs');
+// const ExcelJS = require('exceljs');
+import ExcelJS from 'exceljs';
+import { clockinrecord, digit } from '../types/types';
 
-async function output_excel(data, year, month) {
+export async function output_excel(data:clockinrecord[], year:digit, month:digit) :Promise<void>{
   // 1. Sort the data array by the 'date' field (ascending).
   data.sort((a, b) => a["date"].localeCompare(b["date"]));
 
@@ -34,5 +36,3 @@ async function output_excel(data, year, month) {
     res();
   });
 }
-
-module.exports = output_excel;

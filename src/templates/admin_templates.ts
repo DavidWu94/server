@@ -1,19 +1,12 @@
-const sql = require("../plugins/sql");
-const valid = require("../plugins/checkvalid");
-const logger = require("../plugins/logger");
+import { Request,Response } from "express";
+import { valid } from "../plugins/checkvalid";
+import { mailer } from "../plugins/mailer";
+import logger from "../plugins/logger";
+import { sql } from "../plugins/sql";
+// import { digit } from "../types/types";
 
-/**
- * 
- * @param {sql} sqlPlugin 
- * @param {logger} log 
- * @param {*} req 
- * @param {*} res 
- */
-module.exports = (sqlPlugin,log,mailer,req,res)=>{
-    /**
-     * @type {object}
-     */
-    const dataReceived = req.body;
+function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Response,req:Request):void{
+    const dataReceived:{[key:string]:any} = req.body;
 
     const account = dataReceived["account"];
     const cookie = dataReceived["cookie"];
@@ -32,5 +25,5 @@ module.exports = (sqlPlugin,log,mailer,req,res)=>{
     res.json({
         "status":200
     });
-  
+    
 }
