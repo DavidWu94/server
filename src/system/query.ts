@@ -3,7 +3,7 @@ import { valid } from "../plugins/checkvalid";
 import { mailer } from "../plugins/mailer";
 import logger from "../plugins/logger";
 import { sql } from "../plugins/sql";
-// import { digit } from "../types/types";
+
 
 export function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Response,req:Request):void{
     const dataReceived:{[key:string]:any} = req.body;
@@ -15,15 +15,12 @@ export function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Response,req:Re
         res.sendStatus(400);
         return;
     }
-    
+
     let ret = sqlPlugin.checkHash(account,cookie);
     if (ret==null){
         res.sendStatus(403);
-        return;
+        return
     }
-    
-    res.json({
-        "status":200
-    });
-    
+    const retu = sqlPlugin.showQuery(account,0);
+    res.send({"data":retu});
 }

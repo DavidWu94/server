@@ -3,13 +3,15 @@ import { valid } from "../plugins/checkvalid";
 import { mailer } from "../plugins/mailer";
 import logger from "../plugins/logger";
 import { sql } from "../plugins/sql";
-// import { digit } from "../types/types";
+
 
 export function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Response,req:Request):void{
     const dataReceived:{[key:string]:any} = req.body;
 
     const account = dataReceived["account"];
     const cookie = dataReceived["cookie"];
+    const user = dataReceived["user"];
+    const year = dataReceived["year"];
 
     if(!valid(dataReceived,["account","cookie"])){
         res.sendStatus(400);
@@ -17,13 +19,11 @@ export function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Response,req:Re
     }
     
     let ret = sqlPlugin.checkHash(account,cookie);
-    if (ret==null){
+    if (ret==null||(user&&ret["accountType"]=="empolyee")){
         res.sendStatus(403);
         return;
     }
-    
-    res.json({
-        "status":200
-    });
-    
+    var search_user = user?user:account;
+    const r = sqlPlugin.calculateAnnualQuota(search_user,year);
+    res.json(r);
 }

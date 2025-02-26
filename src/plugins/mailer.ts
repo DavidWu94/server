@@ -29,16 +29,18 @@ export class mailer{
         this.transporter = nodemailer.createTransport(this.option);
     }
 
-    verify():void{
+    verify():boolean{
+        var ret:boolean = false;
         this.transporter.verify(function (error, success) {
             if (error) {
                 console.error(error);
-                return null;
+                ret = false;
             } else {
                 console.log("Server is ready to take our messages");
-                return true;
+                ret = true;
             }
         });
+        return ret;
     }
 
     relogin(){

@@ -3,13 +3,14 @@ import { valid } from "../plugins/checkvalid";
 import { mailer } from "../plugins/mailer";
 import logger from "../plugins/logger";
 import { sql } from "../plugins/sql";
-// import { digit } from "../types/types";
+
 
 export function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Response,req:Request):void{
     const dataReceived:{[key:string]:any} = req.body;
 
     const account = dataReceived["account"];
     const cookie = dataReceived["cookie"];
+    const year = dataReceived["year"];
 
     if(!valid(dataReceived,["account","cookie"])){
         res.sendStatus(400);
@@ -21,9 +22,9 @@ export function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Response,req:Re
         res.sendStatus(403);
         return;
     }
-    
+    const result = sqlPlugin.showPersonalQuery(account,year);
     res.json({
-        "status":200
+        "data":result
     });
     
 }

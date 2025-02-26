@@ -110,7 +110,7 @@ async function calculateWorkingHoursForPeriod(periodStart:number, periodEnd:numb
  * @param {string} time2 - 結束時間，格式為 "YYYY-MM-DD HH:MM"
  * @returns {number} - 經過的工作時數
  */
-export async function caculateTime(time1:string, time2:string) {
+export async function caculateTime(time1:string, time2:string) :Promise<number>{
     const date1 = new Date(time1);
     const date2 = new Date(time2);
 

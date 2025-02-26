@@ -155,7 +155,7 @@ export class sql{
         }
     }
 
-    init(user:string,year:digit){
+    init(user:string,year?:digit|undefined){
         // {
         //     "annual":0,
         //     "personal":0,
@@ -453,7 +453,7 @@ export class sql{
         return;
     }
 
-    modifyTicket(num:string,action:number,type:string,start:string,end:string,totalTime:string,state:digit){
+    modifyTicket(num:string,action:number,type:string,start:string,end:string,totalTime:number,state:digit){
         const ticket = (this.login_db.prepare(`SELECT * FROM requestquery WHERE serialnum='${num}';`).all()[0] as requestquery);
         const user = ticket["id"];
         const query = (this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0] as userinfo);

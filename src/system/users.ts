@@ -3,7 +3,7 @@ import { valid } from "../plugins/checkvalid";
 import { mailer } from "../plugins/mailer";
 import logger from "../plugins/logger";
 import { sql } from "../plugins/sql";
-// import { digit } from "../types/types";
+
 
 export function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Response,req:Request):void{
     const dataReceived:{[key:string]:any} = req.body;
@@ -12,18 +12,19 @@ export function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Response,req:Re
     const cookie = dataReceived["cookie"];
 
     if(!valid(dataReceived,["account","cookie"])){
-        res.sendStatus(400);
-        return;
+      res.sendStatus(400);
+      return;
     }
-    
+
     let ret = sqlPlugin.checkHash(account,cookie);
-    if (ret==null){
-        res.sendStatus(403);
-        return;
+    if (ret==null||ret["accountType"]!="admin"){
+      res.sendStatus(403);
+      return;
     }
-    
+    var returnList = sqlPlugin.getAllUsers();
+
     res.json({
-        "status":200
+      data:returnList
     });
-    
+    // res.sendStatus(403);
 }
