@@ -4,7 +4,7 @@ import { mailer } from "../plugins/mailer";
 import logger from "../plugins/logger";
 import { sql } from "../plugins/sql";
 
-module.exports = function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Response,req:Request):void{
+module.exports = function utils(sqlPlugin:sql,log:logger,mailer:mailer,req:Request,res:Response):void{
     const dataReceived:{[key:string]:any} = req.body;
 
     const account = dataReceived["account"];
@@ -30,6 +30,10 @@ module.exports = function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Respo
         return;
     }
     var date = (`${type}`=="0"&&day)?new Date(day):new Date();
+    if(type==1 && (date.getHours()<=8 && date.getMinutes()<30)){
+        res.sendStatus(403);
+        return;
+    }
     // date.setDate(date.getHours() + 8);
     log.logFormat(`${account} tries to ${type==0?"lookup clocking history":type==1?"clock-in":"clock-out"}.`)
     const returns = sqlPlugin.clockinAction(account,type,date);

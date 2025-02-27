@@ -5,7 +5,7 @@ import logger from "../plugins/logger";
 import { sql } from "../plugins/sql";
 
 
-module.exports = function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Response,req:Request):void{
+module.exports = function utils(sqlPlugin:sql,log:logger,mailer:mailer,req:Request,res:Response):void{
     const dataReceived:{[key:string]:any} = req.body;
     const account = dataReceived["account"];
     const cookie = dataReceived["cookie"];

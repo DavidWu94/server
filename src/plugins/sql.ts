@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import Database from "better-sqlite3";
 import logger from './logger'
-import  { userinfo,dayoffinfo,clockinrecord,requestquery,logininfo,digit } from "../types/types";
+import  { userinfo,dayoffinfo,clockinrecord,requestquery,logininfo,digit,dayofftype } from "../types/types";
 // const logger = require("./logger.js");
 const log:logger = new logger(`./logs/${new Date().toISOString().split('T')[0]}.log`);
 
@@ -245,22 +245,6 @@ export class sql{
     setPermit(num:string,state:number):string{
         const query = (this.login_db.prepare(`SELECT * FROM requestquery WHERE serialnum='${num}'`).all()[0] as requestquery);
         const year:string = query["year"];
-        
-        type tabletp = {
-            "特休假":"annual",
-            "事假":"personal",
-            "家庭照顧假":"care",
-            "普通傷病假":"sick",
-            "婚假":"wedding",
-            "喪假":"funeral",
-            "分娩假":"birth",
-            "產檢假":"pcheckup",
-            "流產假":"miscarriage",
-            "陪產假":"paternity",
-            "產假":"maternity",
-            "其他":"other"
-        };
-
         const table = {
             "特休假":"annual",
             "事假":"personal",
@@ -278,13 +262,13 @@ export class sql{
         
         if(state==1) {
             if( this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${query["id"]}' AND year='${year}';`).all().length!=0){
-                log.logFormat(`Updating dayoffinfo with query: UPDATE dayoffinfo SET ${table[(query["type"] as keyof tabletp)]}=${table[(query["type"] as keyof tabletp)]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`);
-                this.login_db.prepare(`UPDATE dayoffinfo SET ${table[(query["type"] as keyof tabletp)]}=${table[(query["type"] as keyof tabletp)]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`).run();
+                log.logFormat(`Updating dayoffinfo with query: UPDATE dayoffinfo SET ${table[(query["type"] as keyof dayofftype)]}=${table[(query["type"] as keyof dayofftype)]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`);
+                this.login_db.prepare(`UPDATE dayoffinfo SET ${table[(query["type"] as keyof dayofftype)]}=${table[(query["type"] as keyof dayofftype)]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`).run();
             }else{
                 log.logFormat("Initializing the data...");
                 this.init(query["id"],year);
-                log.logFormat(`Updating dayoffinfo with query: UPDATE dayoffinfo SET ${table[(query["type"] as keyof tabletp)]}=${table[(query["type"] as keyof tabletp)]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`);
-                this.login_db.prepare(`UPDATE dayoffinfo SET ${table[(query["type"] as keyof tabletp)]}=${table[(query["type"] as keyof tabletp)]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`).run();
+                log.logFormat(`Updating dayoffinfo with query: UPDATE dayoffinfo SET ${table[(query["type"] as keyof dayofftype)]}=${table[(query["type"] as keyof dayofftype)]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`);
+                this.login_db.prepare(`UPDATE dayoffinfo SET ${table[(query["type"] as keyof dayofftype)]}=${table[(query["type"] as keyof dayofftype)]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`).run();
             }
         }
         this.login_db.prepare(`UPDATE requestquery SET state=${state} WHERE serialnum='${num}';`).run();
@@ -311,18 +295,30 @@ export class sql{
         const min:digit = now.getMinutes()>9?(now.getMinutes()):'0'+(now.getMinutes()).toString();
 
         const datetime:string = `${year}-${month}-${date} ${hour}:${min}`;
-        if(type==0){
-            return (this.login_db.prepare(`SELECT * FROM clockinrecord WHERE id='${user}' AND date='${datetime.split(" ")[0]}'`).all() as clockinrecord[]);
-        }
         const data:clockinrecord[] = (this.login_db.prepare(`SELECT * FROM clockinrecord WHERE date='${datetime.split(" ")[0]}' AND id='${user}';`).all() as clockinrecord[]);
+        if(type==0){
+            return data;
+        }
+        const name:string = (this.login_db.prepare(`SELECT name FROM userinfo WHERE id='${user}';`).all()[0] as userinfo)["name"];
         if(data.length!=0){
             // exists, use UPDATE
-            if(data[0][`clock${type==1?"in":"out"}`]) return null;
-            this.login_db.prepare(`UPDATE clockinrecord SET clock${type==1?"in":"out"}='${datetime.split(" ")[1]}' WHERE id='${user}' AND date='${datetime.split(" ")[0]}';`).run();
+            // if(data[0][`clock${type==1?"in":"out"}`]) return null;
+            let i:number = 0;
+            for(i;i<data.length;i++){
+                if(data[i][`clock${type==1?"in":"out"}`]) continue
+                else break;
+            }
+            if(i<data.length){
+                // UPDATE
+                this.login_db.prepare(`UPDATE clockinrecord SET clock${type==1?"in":"out"}='${datetime.split(" ")[1]}' WHERE id='${user}' AND num=${i+1} AND date='${datetime.split(" ")[0]}';`).run();
+                return {"status":200};                
+            }
+            this.login_db.prepare(`INSERT INTO clockinrecord (id,name,date,clock${type==1?"in":"out"},num) VALUES ('${user}','${name}','${datetime.split(" ")[0]}','${datetime.split(" ")[1]}',${i+1});`).run();
+            // while() i++;
+            // if(data[])
         }else{
             // use INSERT
-            const name:string = (this.login_db.prepare(`SELECT name FROM userinfo WHERE id='${user}';`).all()[0] as userinfo)["name"];
-            this.login_db.prepare(`INSERT INTO clockinrecord (id,name,date,clock${type==1?"in":"out"}) VALUES ('${user}','${name}','${datetime.split(" ")[0]}','${datetime.split(" ")[1]}');`).run();
+            this.login_db.prepare(`INSERT INTO clockinrecord (id,name,date,clock${type==1?"in":"out"},num) VALUES ('${user}','${name}','${datetime.split(" ")[0]}','${datetime.split(" ")[1]}',1);`).run();
         }
         return {"status":200};
     }
@@ -364,8 +360,8 @@ export class sql{
 
     }
 
-    showQueryInMonth(year:digit,month:digit):requestquery[]|[]{
-        const query = (this.login_db.prepare(`SELECT name,start,end FROM requestquery WHERE state=1 AND year='${year}' AND month='${month}'`).all() as requestquery[]|[]);
+    showQueryInMonth(year:number,month:number):requestquery[]|[]{
+        const query = (this.login_db.prepare(`SELECT name,start,end FROM requestquery WHERE state=1 AND start LIKE '${year}-${month.toString().padStart(2,'0')}%'`).all() as requestquery[]|[]);
         return query;
     }
 
@@ -382,20 +378,6 @@ export class sql{
     syncTickets(user:string,year:digit):void{
         const tickets = (this.login_db.prepare(`SELECT * FROM requestquery WHERE id='${user}' AND year='${year}' AND state=1;`).all() as requestquery[]|[]);
         const table = {
-            "特休假":"annual",
-            "事假":"personal",
-            "家庭照顧假":"care",
-            "普通傷病假":"sick",
-            "婚假":"wedding",
-            "喪假":"funeral",
-            "分娩假":"birth",
-            "產檢假":"pcheckup",
-            "流產假":"miscarriage",
-            "陪產假":"paternity",
-            "產假":"maternity",
-            "其他":"other"
-        };
-        type tabletp = {
             "特休假":"annual",
             "事假":"personal",
             "家庭照顧假":"care",
@@ -438,7 +420,7 @@ export class sql{
             "other":0
         };
         for(let ticket of tickets){
-            amount[(table[(ticket["type"] as keyof tabletp)] as keyof atp)] += ticket["totalTime"];
+            amount[(table[(ticket["type"] as keyof dayofftype)] as keyof atp)] += ticket["totalTime"];
         }
         this.init(user,year);
         var amount_array:string[] = [];
@@ -469,7 +451,7 @@ export class sql{
             return;
         }
         this.login_db.prepare(`UPDATE requestquery SET type='${type}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}' WHERE serialnum='${num}';`).run();
-        log.logFormat(`Ticket #${num} has been MODIFIED: UPDATE requestquery SET (type as keyof tabletp)='${type}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}' WHERE serialnum='${num}';`);
+        log.logFormat(`Ticket #${num} has been MODIFIED: UPDATE requestquery SET type='${type}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}' WHERE serialnum='${num}';`);
         this.syncTickets(user,ticket["year"]);
         return;
     }

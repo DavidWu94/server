@@ -33,7 +33,7 @@ posts.forEach(v=>{
     const utils = require(`./system/${v}.js`).bind(null,sqlPlugin,log,mailers);
     app.post(`/${v}`,(req:Request,res:Response)=>{
         try{
-            utils(res,req);
+            utils(req,res);
         }catch(e){
             log.logFormat((e as string),new Date());
             res.sendStatus(500);

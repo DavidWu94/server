@@ -4,23 +4,38 @@ import { mailer } from "../plugins/mailer";
 import logger from "../plugins/logger";
 import { sql } from "../plugins/sql";
 import { caculateTime } from "../plugins/dayoff_calculate";
+import { dayofftype } from "../types/types";
 
 
-module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Response,req:Request):Promise<void>{
-  const dataReceived:{[key:string]:any} = req.body;
+module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,req:Request,res:Response):Promise<void>{
+    const dataReceived:{[key:string]:any} = req.body;
 	  // console.log(req.account);
     const account = dataReceived["account"];
     const cookie = dataReceived["cookie"];
-    const type = dataReceived["type"];
+    const type = (dataReceived["type"] as keyof dayofftype);
+    const checkObj:dayofftype = {
+      "特休假":"annual",
+      "事假":"personal",
+      "家庭照顧假":"care",
+      "普通傷病假":"sick",
+      "婚假":"wedding",
+      "喪假":"funeral",
+      "分娩假":"birth",
+      "產檢假":"pcheckup",
+      "流產假":"miscarriage",
+      "陪產假":"paternity",
+      "產假":"maternity",
+      "其他":"other"
+    };
     // data below requires front-end format time into 2024-01-01
 	  const reason = dataReceived["reason"]
     const start = dataReceived["start"];
     const end = dataReceived["end"];
 
-	if(!valid(dataReceived,["account","cookie","type","reason","start","end"])){
-		res.sendStatus(400);
-		return;
-	}
+    if(!valid(dataReceived,["account","cookie","type","reason","start","end"])|| Object.keys(checkObj).includes(type)){
+      res.sendStatus(400);
+      return;
+    }
 
     if(!(validTime(start) && validTime(end))){
       res.sendStatus(403);

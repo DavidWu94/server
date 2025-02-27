@@ -59,6 +59,7 @@ export interface clockinrecord extends table{
     id:string,
     name:string,
     date:string,
+    num:number,
     clockin:string|null,
     clockout:string|null
 }
@@ -70,4 +71,19 @@ export interface calendar{
         status:number,
         comment:string
     }}
+}
+
+export type dayofftype = {
+    "特休假":"annual",
+    "事假":"personal",
+    "家庭照顧假":"care",
+    "普通傷病假":"sick",
+    "婚假":"wedding",
+    "喪假":"funeral",
+    "分娩假":"birth",
+    "產檢假":"pcheckup",
+    "流產假":"miscarriage",
+    "陪產假":"paternity",
+    "產假":"maternity",
+    "其他":"other"
 }
