@@ -32,7 +32,7 @@ module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,req
     const start = dataReceived["start"];
     const end = dataReceived["end"];
 
-    if(!valid(dataReceived,["account","cookie","type","reason","start","end"])|| Object.keys(checkObj).includes(type)){
+    if(!valid(dataReceived,["account","cookie","type","reason","start","end"])|| !Object.keys(checkObj).includes(type)){
       res.sendStatus(400);
       return;
     }
