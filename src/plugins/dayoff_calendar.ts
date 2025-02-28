@@ -22,6 +22,12 @@ export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>
     for (let d = 1; d <= totalDays; d++) {
         dailyReminders[d] = [];
     }
+    for (let d = 1; d <= totalDays; d++) {
+        let cal = await check_working_day(year, month.toString(), d.toString());
+        if (cal["status"] === 1 && cal["comment"]) {
+            dailyReminders[d].push(cal["comment"]);
+        }
+    }
 
     // Process each reminder object.
     for (const rem of reminders) {
@@ -38,9 +44,9 @@ export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>
             let cal = await check_working_day(year, month.toString(), day.toString())
             // Check if the day should be skipped.
             if (cal["status"] === 1) {
-                if(cal["comment"]!=""){
-                    dailyReminders[day].push(cal["comment"]);
-                }
+                // if(cal["comment"]){
+                //     dailyReminders[day].push(cal["comment"]);
+                // }
                 continue;
             }
             
