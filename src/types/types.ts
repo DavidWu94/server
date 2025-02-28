@@ -67,7 +67,7 @@ export interface clockinrecord extends table{
 export type digit = string|number
 
 export interface calendar{
-    [key:number]:{[key:number]:{
+    [key:string]:{[key:string]:{
         status:number,
         comment:string
     }}

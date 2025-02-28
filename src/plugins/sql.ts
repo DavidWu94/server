@@ -150,7 +150,7 @@ export class sql{
                 return null;
             }
         }else{  // if elapsed time > 1 hr
-            log.logFormat(`${user} tried to login with cookie but it had expired.`,current);
+            // log.logFormat(`${user} tried to login with cookie but it had expired.`,current);
             return null;
         }
     }
@@ -238,7 +238,7 @@ export class sql{
     showQuery(user:string,state:number=0,search_query:string="",limit_query:string=""):requestquery[]|[]{
         // const mgroup = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0]["mgroup"];
         const query:requestquery[]|[] = (this.login_db.prepare(`SELECT serialnum,name,type,start,end,reason,totalTime FROM requestquery WHERE state=${state} ${search_query} ${limit_query};`).all() as requestquery[]|[]);
-        log.logFormat(`showquery executed with query: SELECT serialnum,name,type,start,end,reason,totalTime FROM requestquery WHERE state=${state} ${search_query} ${limit_query};`);
+        // log.logFormat(`showquery executed with query: SELECT serialnum,name,type,start,end,reason,totalTime FROM requestquery WHERE state=${state} ${search_query} ${limit_query};`);
         return query;
     }
 
@@ -262,12 +262,12 @@ export class sql{
         
         if(state==1) {
             if( this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${query["id"]}' AND year='${year}';`).all().length!=0){
-                log.logFormat(`Updating dayoffinfo with query: UPDATE dayoffinfo SET ${table[(query["type"] as keyof dayofftype)]}=${table[(query["type"] as keyof dayofftype)]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`);
+                // log.logFormat(`Updating dayoffinfo with query: UPDATE dayoffinfo SET ${table[(query["type"] as keyof dayofftype)]}=${table[(query["type"] as keyof dayofftype)]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`);
                 this.login_db.prepare(`UPDATE dayoffinfo SET ${table[(query["type"] as keyof dayofftype)]}=${table[(query["type"] as keyof dayofftype)]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`).run();
             }else{
-                log.logFormat("Initializing the data...");
+                // log.logFormat("Initializing the data...");
                 this.init(query["id"],year);
-                log.logFormat(`Updating dayoffinfo with query: UPDATE dayoffinfo SET ${table[(query["type"] as keyof dayofftype)]}=${table[(query["type"] as keyof dayofftype)]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`);
+                // log.logFormat(`Updating dayoffinfo with query: UPDATE dayoffinfo SET ${table[(query["type"] as keyof dayofftype)]}=${table[(query["type"] as keyof dayofftype)]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`);
                 this.login_db.prepare(`UPDATE dayoffinfo SET ${table[(query["type"] as keyof dayofftype)]}=${table[(query["type"] as keyof dayofftype)]}+${query["totalTime"]} WHERE id='${query["id"]}' AND year='${year}';`).run();
             }
         }
@@ -430,7 +430,7 @@ export class sql{
                 amount_array.push(`${type}=${amount[(type as keyof atp)]}`);
         }
         let queryString = amount_array.join(", ");
-        log.logFormat(`Syncing data with query: UPDATE dayoffinfo SET ${queryString} WHERE id='${user}' AND year='${year}';`)
+        log.logFormat(`Syncing data...`)
         this.login_db.prepare(`UPDATE dayoffinfo SET ${queryString} WHERE id='${user}' AND year='${year}';`).run();
         return;
     }
@@ -451,7 +451,7 @@ export class sql{
             return;
         }
         this.login_db.prepare(`UPDATE requestquery SET type='${type}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}' WHERE serialnum='${num}';`).run();
-        log.logFormat(`Ticket #${num} has been MODIFIED: UPDATE requestquery SET type='${type}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}' WHERE serialnum='${num}';`);
+        log.logFormat(`Ticket #${num} has been MODIFIED: type='${type}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}'`);
         this.syncTickets(user,ticket["year"]);
         return;
     }

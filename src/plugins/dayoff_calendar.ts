@@ -2,7 +2,7 @@ import ExcelJS from 'exceljs';
 import { sql } from './sql';
 import {calendar, digit} from '../types/types';
 
-async function check_working_day(year:number, month:number, day:number) :Promise<{status:number,comment:string}>{
+async function check_working_day(year:number, month:string, day:string) :Promise<{status:number,comment:string}>{
   const file:calendar = require(`../api/office_calendar_${year-1911}.json`) as calendar;
   return new Promise(res=>{res(file[month][day])});
 }
@@ -35,7 +35,7 @@ export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>
         
         // Loop through each day in the reminder's span.
         for (let day = startDay; day <= endDay; day++) {
-            let cal = await check_working_day(year, month, day)
+            let cal = await check_working_day(year, month.toString(), day.toString())
             // Check if the day should be skipped.
             if (cal["status"] === 1) {
                 if(cal["comment"]!=""){
