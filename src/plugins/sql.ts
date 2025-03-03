@@ -231,7 +231,7 @@ export class sql{
         // console.log(count)
         // console.log(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason,month,year) VALUES ('${count}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},'${reason}','${month}','${year}');`)
         this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason,month,year) VALUES ('${count}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},'${reason}','${month}','${year}');`).run();
-        log.logFormat(`${user} just request a new dayoff.`,new Date())
+        log.logFormat(`${user} just request a new dayoff. Ticket id: #${count}.`,new Date())
         return {"mgroup":query["mgroup"],"name":name,"num":count};
     }
 
@@ -430,7 +430,7 @@ export class sql{
                 amount_array.push(`${type}=${amount[(type as keyof atp)]}`);
         }
         let queryString = amount_array.join(", ");
-        log.logFormat(`Syncing data...`)
+        log.logFormat(`Syncing data with query: ${queryString}`);
         this.login_db.prepare(`UPDATE dayoffinfo SET ${queryString} WHERE id='${user}' AND year='${year}';`).run();
         return;
     }
