@@ -425,7 +425,7 @@ export class sql{
                 amount_array.push(`${type}=${amount[(type as keyof atp)]}`);
         }
         let queryString = amount_array.join(", ");
-        log.logFormat(`Syncing data with query: ${queryString}`);
+        log.logFormat(`Syncing ${user}'s data with query: ${queryString}`);
         this.login_db.prepare(`UPDATE dayoffinfo SET ${queryString} WHERE id='${user}' AND year='${year}';`).run();
         return;
     }
@@ -446,7 +446,7 @@ export class sql{
             return;
         }
         this.login_db.prepare(`UPDATE requestquery SET type='${type}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}' WHERE serialnum='${num}';`).run();
-        log.logFormat(`Ticket #${num} has been MODIFIED: type='${type}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}'`);
+        log.logFormat(`Ticket #${num} from ${user} has been MODIFIED: type='${type}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}'`);
         this.syncTickets(user,ticket["year"]);
         return;
     }

@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.0.3] 2025-03-03
+
+### Changed
+- Some log messages.
+
+### Fixed
+- /request's logic.
+- TypeError of the cookie and password in /login
+
+---
 ## [1.0.2] 2025-02-27
 
 ### Changed
