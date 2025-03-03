@@ -6,22 +6,17 @@ import  { userinfo,dayoffinfo,clockinrecord,requestquery,logininfo,digit,dayofft
 const log:logger = new logger(`./logs/${new Date().toISOString().split('T')[0]}.log`);
 
 export class sql{
+
     private login_db:Database.Database;
+
     public constructor(){
         this.login_db = new Database('./databases/loginDatabase.db');
         this.login_db.pragma('journal_mode = WAL');
         log.logFormat("Database is connected with server.",new Date());
     }
 
-    /**
-     * 
-     * @param {string} user 
-     * @param {string|undefined} pwd 
-     * @param {string|undefined} cookie 
-     * @returns {object}
-     */
-    login(user:string,pwd:string|undefined,cookie:string|undefined):{msg:string,accountType?:string,sessionKey?:string,name?:string}{
-        if(cookie!==undefined){
+    login(user:string,pwd:string|null,cookie:string|null):{msg:string,accountType?:string,sessionKey?:string,name?:string}{
+        if(cookie!==null){
             if(user.match(/['"?><:;\\|)(*&^%$#@!~`]/)||cookie.match(/['"?><:;\\|)(*&^%$#@!~`]/)||cookie.match(/['"?><:;\\|)(*&^%$#@!~`]/)){
                 return {msg:"wrong type"};
             }
