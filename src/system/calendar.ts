@@ -21,7 +21,7 @@ module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,req
     }
     
     let ret = sqlPlugin.checkHash(account,cookie);
-    if (ret==null||ret["accountType"]=="empolyee"){
+    if (ret==null||ret["accountType"]=="employee"){
         res.sendStatus(403);
         return;
     }
