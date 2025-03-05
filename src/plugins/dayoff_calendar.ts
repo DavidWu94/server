@@ -2,7 +2,7 @@ import ExcelJS from 'exceljs';
 import { sql } from './sql';
 import {calendar, digit} from '../types/types';
 
-async function check_working_day(year:number, month:string, day:string) :Promise<{status:number,comment:string}>{
+export async function check_working_day(year:number, month:string, day:string) :Promise<{status:number,comment:string}>{
   const file:calendar = require(`../api/office_calendar_${year-1911}.json`) as calendar;
   return new Promise(res=>{res(file[month][day])});
 }

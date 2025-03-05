@@ -3,8 +3,9 @@ import { valid } from "../plugins/checkvalid";
 import { mailer } from "../plugins/mailer";
 import logger from "../plugins/logger";
 import { sql } from "../plugins/sql";
+import { check_working_day } from "../plugins/dayoff_calendar";
 
-module.exports = function utils(sqlPlugin:sql,log:logger,mailer:mailer,req:Request,res:Response):void{
+module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,req:Request,res:Response):Promise<void>{
     const dataReceived:{[key:string]:any} = req.body;
 
     const account = dataReceived["account"];
@@ -30,7 +31,7 @@ module.exports = function utils(sqlPlugin:sql,log:logger,mailer:mailer,req:Reque
         return;
     }
     var date = (`${type}`=="0"&&day)?new Date(day):new Date();
-    if(type==1 && (date.getHours()<=8 && date.getMinutes()<30)){
+    if((type==1 && (date.getHours()<=8 && date.getMinutes()<30))||(type!=0&&(await check_working_day(date.getFullYear(),date.getMonth().toString(),date.getDate().toString()))["status"])){
         res.sendStatus(403);
         return;
     }
