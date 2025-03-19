@@ -172,7 +172,7 @@ export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>
             right: { style: 'thin' }
             };
         }
-        row.height = maxCtn*35; // Adjust row height as needed.
+        row.height = maxCtn*30; // Adjust row height as needed.
         currentRowNumber++;
     }
 
