@@ -1,6 +1,6 @@
 import ExcelJS from 'exceljs';
 import { sql } from './sql';
-import {calendar, digit} from '../types/types';
+import {calendar, digit, requestquery} from '../types/types';
 
 export async function check_working_day(year:number, month:string, day:string) :Promise<{status:number,comment:string}>{
   const file:calendar = require(`../api/office_calendar_${year-1911}.json`) as calendar;
@@ -14,7 +14,7 @@ export async function check_working_day(year:number, month:string, day:string) :
  * @param {sql} sqlPlugin 
  */
 export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>{
-    const reminders = sqlPlugin.showQueryInMonth(year,month);
+    const reminders:requestquery[] = sqlPlugin.showQueryInMonth(year,month);
 
     const totalDays = new Date(year, month, 0).getDate();
 
@@ -53,26 +53,11 @@ export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>
             // Determine the text to mark.
             let text = name;
             if (startDay === endDay) {
-                if (end.getHours() <= 12) {
-                    text += " 上午";
-                } else if(start.getHours()>12){
-                    text += " 下午";
-                }
+                text += `${start.getHours()}:${start.getMinutes()} ~ ${end.getHours()}:${end.getMinutes()}`;
             } else if (day === startDay) {
-                // Start day.
-                if (start.getHours() < 12) {
-                    text += " 上午";
-                } else {
-                    text += " 下午";
-                }
+                text += `${start.getHours()}:${start.getMinutes()} ~ 17:30`;
             } else if (day === endDay) {
-                // End day.
-                // (If the end time is before noon—or exactly 12:00—mark as 上午.)
-                if (end.getHours() < 12 || (end.getHours() === 12 && end.getMinutes() === 0)) {
-                    text += " 上午";
-                } else {
-                    text += " 下午";
-                }
+                text += `08:30 ~ ${end.getHours()}:${end.getMinutes()}`;
             }
             // For intermediate days, leave text as just the name.
             

@@ -31,9 +31,11 @@ module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,req
         return;
     }
     var date = (`${type}`=="0"&&day)?new Date(day):new Date();
-    if((type==1 && (date.getHours()<=8 && date.getMinutes()<30))||(type!=0&&(await check_working_day(date.getFullYear(),date.getMonth().toString(),date.getDate().toString()))["status"])){
-        res.sendStatus(403);
-        return;
+    if(type!=0){
+        if((date.getHours()>=18 && date.getMinutes()>0)||(date.getHours()<=8 && date.getMinutes()<30)||(await check_working_day(date.getFullYear(),date.getMonth().toString(),date.getDate().toString()))["status"]){
+            res.sendStatus(403);
+            return;
+        }
     }
     // date.setDate(date.getHours() + 8);
     log.logFormat(`${account} tries to ${type==0?"lookup clocking history":type==1?"clock-in":"clock-out"}.`)
