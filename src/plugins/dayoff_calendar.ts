@@ -14,6 +14,7 @@ export async function check_working_day(year:number, month:string, day:string) :
  * @param {sql} sqlPlugin 
  */
 export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>{
+    var maxCtn = 0;
     const reminders:requestquery[] = sqlPlugin.showQueryInMonth(year,month);
 
     const totalDays = new Date(year, month, 0).getDate();
@@ -86,6 +87,7 @@ export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>
 
     // Fill in the days.
     for (let day = 1; day <= totalDays; day++) {
+        maxCtn = Math.max(maxCtn, dailyReminders[day].length);
         currentWeek.push({ day, reminders: dailyReminders[day] });
         if (currentWeek.length === 7) {
             weeks.push(currentWeek);
@@ -170,7 +172,7 @@ export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>
             right: { style: 'thin' }
             };
         }
-        row.height = 60; // Adjust row height as needed.
+        row.height = maxCtn*35; // Adjust row height as needed.
         currentRowNumber++;
     }
 

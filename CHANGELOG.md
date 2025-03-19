@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Changed
 - Employees can only do clockin/clockout from 08:30 to 18:00.
 - Calendars is displayed in a different format.
+- Calendars' cell height is now dynamic.
 
 ---
 ## [1.0.4] 2025-03-05
