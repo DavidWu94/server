@@ -52,12 +52,16 @@ export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>
             
             // Determine the text to mark.
             let text = name;
+            let temp = "";
             if (startDay === endDay) {
-                text += `${start.getHours()}:${start.getMinutes()} ~ ${end.getHours()}:${end.getMinutes()}`;
+                temp += `${start.getHours().toString().padStart(2,"0")}:${start.getMinutes().toString().padStart(2,"0")} ~ ${end.getHours().toString().padStart(2,"0")}:${end.getMinutes().toString().padStart(2,"0")}`;
             } else if (day === startDay) {
-                text += `${start.getHours()}:${start.getMinutes()} ~ 17:30`;
+                temp += `${start.getHours().toString().padStart(2,"0")}:${start.getMinutes().toString().padStart(2,"0")} ~ 17:30`;
             } else if (day === endDay) {
-                text += `08:30 ~ ${end.getHours()}:${end.getMinutes()}`;
+                temp += `08:30 ~ ${end.getHours().toString().padStart(2,"0")}:${end.getMinutes().toString().padStart(2,"0")}`;
+            }
+            if(temp!="08:30 ~ 17:30"){
+                text += temp;
             }
             // For intermediate days, leave text as just the name.
             
