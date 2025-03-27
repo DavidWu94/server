@@ -11,20 +11,13 @@ module.exports = function utils(sqlPlugin:sql,log:logger,mailer:mailer,req:Reque
     const cookie = dataReceived["cookie"];
     const user = dataReceived["user"];
     const year = dataReceived["year"];
+    const month = dataReceived["month"];
     const limit = dataReceived["limit"];
 
     var search_query = "";
-    if(user){
-        search_query += `id='${user}'`;
-        if(year){
-            search_query += ` AND year='${year}'`;
-        }
-    }else{
-        if(year){
-            search_query += `year='${year}'`;
-        }
-    }
-    if(search_query) search_query = "AND " + search_query;
+    const query_list = [user?`id='${user}'`:"",year?`year='${user}'`:"",month?`month='${month}'`:""].filter((x)=>x!="");
+    search_query = query_list.join("AND ");
+    if(search_query) search_query = " AND " + search_query;
     var limit_query = "";
     if(limit) limit_query = `ORDER BY serialnum DESC LIMIT ${limit}`;
     if(!valid(dataReceived,["account","cookie"])){
