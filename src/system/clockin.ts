@@ -32,8 +32,9 @@ module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,req
     }
     var date = (`${type}`=="0"&&day)?new Date(day):new Date();
     if(type!=0){
-        if((date.getHours()>=18 && date.getMinutes()>0)||(date.getHours()<=8 && date.getMinutes()<30)||(await check_working_day(date.getFullYear(),date.getMonth().toString(),date.getDate().toString()))["status"]){
-            log.logFormat(`Current time is not allowed to clock-in or clock-out. Current time: ${date.getHours()}:${date.getMinutes()}`);
+        let wk = (await check_working_day(date.getFullYear(),date.getMonth().toString(),date.getDate().toString()))["status"];
+        if((date.getHours()>=18 && date.getMinutes()>0)||(date.getHours()<=8 && date.getMinutes()<30)||wk==1){
+            log.logFormat(`Current time is not allowed to clock-in or clock-out. Current time: ${date.getHours()}:${date.getMinutes()}. Working status: ${wk}`);
             res.sendStatus(403);
             return;
         }
