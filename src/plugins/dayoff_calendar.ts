@@ -9,7 +9,7 @@ export async function check_working_day(year:number, month:string, day:string) :
   const fName = `../api/office_calendar_${year-1911}.json`;
   if(!fs.existsSync(fName)){
     // return new Promise(res=>{res({status:0,comment:""})});
-    await downloadJSON(year);
+    await downloadJSON(year-1911);
   }
   const file:calendar = require(`../api/office_calendar_${year-1911}.json`) as calendar;
   return new Promise(res=>{res(file[month][day])});
