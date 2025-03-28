@@ -59,8 +59,8 @@ export class sql{
                 }
                 this.login_db.prepare(`UPDATE logininfo SET createTime = strftime('%Y-%m-%d %H:%M:%S', 'now', '+8 hours'),sKey='${hash}' WHERE id='${user}';`).run();
             }
-
-            log.logFormat(`${user} has logined with password successfully.`,currentTime);
+            if(user!="monitor")
+                log.logFormat(`${user} has logined with password successfully.`,currentTime);
             return {msg:"success",accountType:sqldata["type"],sessionKey:hash,name:sqldata["name"]};
         }else{ 
             log.logFormat(`${user} Failed to log in with password: ${pwd}`,currentTime);

@@ -6,7 +6,7 @@ import { downloadJSON } from './dayoff_reader';
 
 export async function check_working_day(year:number, month:string, day:string) :Promise<{status:number,comment:string}>{
   // check if file exists
-  const fName = `../api/office_calendar_${year-1911}.json`;
+  const fName = `./api/office_calendar_${year-1911}.json`;
   if(!fs.existsSync(fName)){
     // return new Promise(res=>{res({status:0,comment:""})});
     await downloadJSON(year-1911);
