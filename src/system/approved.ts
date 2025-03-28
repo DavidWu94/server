@@ -15,7 +15,7 @@ module.exports = function utils(sqlPlugin:sql,log:logger,mailer:mailer,req:Reque
     const limit = dataReceived["limit"];
 
     var search_query = "";
-    const query_list = [user?`id='${user}'`:"",year?`year='${user}'`:"",month?`month='${month}'`:""].filter((x)=>x!="");
+    const query_list = [user?`id='${user}'`:"",year?`year='${year}'`:"",month?`month='${month}'`:""].filter((x)=>x!="");
     search_query = query_list.join("AND ");
     if(search_query) search_query = " AND " + search_query;
     var limit_query = "";
