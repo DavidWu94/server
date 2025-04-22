@@ -63,13 +63,13 @@ export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>
             let text = name;
             let temp = "";
             if (startDay === endDay) {
-                temp += `${start.getHours().toString().padStart(2,"0")}:${start.getMinutes().toString().padStart(2,"0")} ~ ${end.getHours().toString().padStart(2,"0")}:${end.getMinutes().toString().padStart(2,"0")}`;
+                temp += `${start.getHours().toString().padStart(2,"0")}:${start.getMinutes().toString().padStart(2,"0")}~${end.getHours().toString().padStart(2,"0")}:${end.getMinutes().toString().padStart(2,"0")}`;
             } else if (day === startDay) {
-                temp += `${start.getHours().toString().padStart(2,"0")}:${start.getMinutes().toString().padStart(2,"0")} ~ 17:30`;
+                temp += `${start.getHours().toString().padStart(2,"0")}:${start.getMinutes().toString().padStart(2,"0")}~17:30`;
             } else if (day === endDay) {
-                temp += `08:30 ~ ${end.getHours().toString().padStart(2,"0")}:${end.getMinutes().toString().padStart(2,"0")}`;
+                temp += `08:30~${end.getHours().toString().padStart(2,"0")}:${end.getMinutes().toString().padStart(2,"0")}`;
             }
-            if(temp!="08:30 ~ 17:30"){
+            if(temp!="08:30~17:30"){
                 text += temp;
             }
             // For intermediate days, leave text as just the name.
@@ -172,6 +172,7 @@ export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>
                 cell.value = cellText;
                 cell.alignment = { wrapText: true, vertical: 'top', horizontal: 'left' };
             }
+            cell.font = { size: 11 };
             // Optional: add a border to the cell.
             cell.border = {
             top: { style: 'thin' },
