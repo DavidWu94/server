@@ -36,7 +36,7 @@ export class sql{
         var expired:boolean = false;
         if(cookie&&loginHashData!=undefined){   // if u got a cookie, there must be ur data in the database.
             const ret:null|object = this.checkHash(user,cookie);
-            if (ret){
+            if (ret&&user!="monitor"){
                 log.logFormat(`${user} has logined with cookie successfully.`);
                 return {msg:"success",accountType:sqldata["type"],sessionKey:hash,name:sqldata["name"]};
             }
