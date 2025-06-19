@@ -107,6 +107,7 @@ export class sql{
             "流產假":"miscarriage",
             "陪產假":"paternity",
             "產假":"maternity",
+            "公假":"official",
             "其他":"other"
         };
         const entries:[string, string][] = Object.entries(dayoff)
@@ -163,6 +164,7 @@ export class sql{
         //     "miscarriage":0,
         //     "paternity":0,
         //     "maternity":0,
+        //     "official":0,
         //     "other":0,
         //     "total":0,
         //     "year":0,
@@ -252,6 +254,7 @@ export class sql{
             "流產假":"miscarriage",
             "陪產假":"paternity",
             "產假":"maternity",
+            "公假":"official",
             "其他":"other"
         };
         
@@ -384,6 +387,7 @@ export class sql{
             "流產假":"miscarriage",
             "陪產假":"paternity",
             "產假":"maternity",
+            "公假":"official",
             "其他":"other"
         };
         const amount = {
@@ -398,6 +402,7 @@ export class sql{
             "miscarriage":0,
             "paternity":0,
             "maternity":0,
+            "official":0,
             "other":0
         };
         type atp = {
