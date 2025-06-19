@@ -417,6 +417,7 @@ export class sql{
             "miscarriage":0,
             "paternity":0,
             "maternity":0,
+            "official":0,
             "other":0
         };
         for(let ticket of tickets){
