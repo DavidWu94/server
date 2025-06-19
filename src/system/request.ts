@@ -25,6 +25,7 @@ module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,req
       "流產假":"miscarriage",
       "陪產假":"paternity",
       "產假":"maternity",
+      "公假":"official",
       "其他":"other"
     };
     // data below requires front-end format time into 2024-01-01

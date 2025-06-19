@@ -35,6 +35,7 @@ export interface dayoffinfo extends table{
     miscarriage:number,
     paternity:number,
     maternity:number,
+    official:number,
     other:number,
     total:number,
     year:string
@@ -85,5 +86,6 @@ export type dayofftype = {
     "流產假":"miscarriage",
     "陪產假":"paternity",
     "產假":"maternity",
+    "公假":"official",
     "其他":"other"
 }
