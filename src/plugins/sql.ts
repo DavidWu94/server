@@ -436,7 +436,7 @@ export class sql{
         return;
     }
 
-    modifyTicket(num:string,action:number,type:string,start:string,end:string,totalTime:number,state:digit){
+    modifyTicket(num:string,action:number,type:string,start:string,end:string,totalTime:number,state:digit,reason:string){
         const ticket = (this.login_db.prepare(`SELECT * FROM requestquery WHERE serialnum='${num}';`).all()[0] as requestquery);
         const user = ticket["id"];
         const query = (this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0] as userinfo);
@@ -451,8 +451,8 @@ export class sql{
             this.syncTickets(user,ticket["year"]);
             return;
         }
-        this.login_db.prepare(`UPDATE requestquery SET type='${type}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}' WHERE serialnum='${num}';`).run();
-        log.logFormat(`Ticket #${num} from ${user} has been MODIFIED: type='${type}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}'`);
+        this.login_db.prepare(`UPDATE requestquery SET type='${type}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}', reason='${reason}' WHERE serialnum='${num}';`).run();
+        // log.logFormat(`Ticket #${num} from ${user} has been MODIFIED: type='${type}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}'`);
         this.syncTickets(user,ticket["year"]);
         return;
     }
