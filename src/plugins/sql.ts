@@ -223,11 +223,9 @@ export class sql{
         const month:number = parseInt(start.split("-")[1]);
         const serials:requestquery[]|[] = (this.login_db.prepare(`SELECT serialnum FROM requestquery WHERE serialnum LIKE '${currentYear}%' ORDER BY serialnum ASC`).all() as requestquery[]|[]);
         const count:string = serials[serials.length-1]?`${currentYear}${(parseInt(serials[serials.length-1]["serialnum"].substring(4))+1).toString().padStart(4,'0')}`:`${currentYear}0000`;
-        // const count = this.login_db.prepare(`SELECT COUNT(*) FROM requestquery WHERE serialnum LIKE '${currentYear}%'`).all()[0];
         const name:string = query["name"];
-        // console.log(count)
-        // console.log(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason,month,year) VALUES ('${count}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},'${reason}','${month}','${year}');`)
-        this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason,month,year) VALUES ('${count}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},'${reason}','${month}','${year}');`).run();
+        const new_reason:string = reason.replace("<","").replace(">","").replace('"','');
+        this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason,month,year) VALUES ('${count}','${user}','${name}','${type}',(strftime('%Y-%m-%d %H:%M', '${start}')),(strftime('%Y-%m-%d %H:%M', '${end}')),${query["mgroup"]},${totalTime},'${new_reason}','${month}','${year}');`).run();
         log.logFormat(`${user} just request a new dayoff. Ticket id: #${count}.`,new Date())
         return {"mgroup":query["mgroup"],"name":name,"num":count};
     }
@@ -289,10 +287,14 @@ export class sql{
         const year:number = now.getFullYear();
         const month:digit = now.getMonth()+1>9?(now.getMonth()+1):'0'+(now.getMonth()+1).toString();
         const date:digit = now.getDate()>9?(now.getDate()):'0'+(now.getDate()).toString();
-        const hour:digit = now.getHours()>9?(now.getHours()):'0'+(now.getHours()).toString();
+        const hour:string = now.getHours()>9?(now.getHours().toString()):'0'+(now.getHours()).toString();
         const min:digit = now.getMinutes()>9?(now.getMinutes()):'0'+(now.getMinutes()).toString();
-
-        const datetime:string = `${year}-${month}-${date} ${hour}:${min}`;
+        var datetime:string;
+        if(parseInt(hour)>=18){
+            datetime = `${year}-${month}-${date} 18:00`;
+        }else{
+            datetime = `${year}-${month}-${date} ${hour}:${min}`;
+        }
         const data:clockinrecord[] = (this.login_db.prepare(`SELECT * FROM clockinrecord WHERE date='${datetime.split(" ")[0]}' AND id='${user}';`).all() as clockinrecord[]);
         if(type==0){
             return data;
@@ -451,7 +453,8 @@ export class sql{
             this.syncTickets(user,ticket["year"]);
             return;
         }
-        this.login_db.prepare(`UPDATE requestquery SET type='${type}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}', reason='${reason}' WHERE serialnum='${num}';`).run();
+        const new_reason:string = reason.replace("<","").replace(">","").replace('"','');
+        this.login_db.prepare(`UPDATE requestquery SET type='${type}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}', reason='${new_reason}' WHERE serialnum='${num}';`).run();
         // log.logFormat(`Ticket #${num} from ${user} has been MODIFIED: type='${type}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}'`);
         this.syncTickets(user,ticket["year"]);
         return;
