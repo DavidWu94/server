@@ -108,6 +108,7 @@ export class sql{
             "陪產假":"paternity",
             "產假":"maternity",
             "公假":"official",
+            "颱風假":"typhoon",
             "其他":"other"
         };
         const entries:[string, string][] = Object.entries(dayoff)
@@ -165,6 +166,7 @@ export class sql{
         //     "paternity":0,
         //     "maternity":0,
         //     "official":0,
+        //     "typhoon":0,
         //     "other":0,
         //     "total":0,
         //     "year":0,
@@ -255,6 +257,7 @@ export class sql{
             "陪產假":"paternity",
             "產假":"maternity",
             "公假":"official",
+            "颱風假":"typhoon",
             "其他":"other"
         };
         
@@ -388,6 +391,7 @@ export class sql{
             "陪產假":"paternity",
             "產假":"maternity",
             "公假":"official",
+            "颱風假":"typhoon",
             "其他":"other"
         };
         const amount = {
@@ -403,6 +407,7 @@ export class sql{
             "paternity":0,
             "maternity":0,
             "official":0,
+            "typhoon":0,
             "other":0
         };
         type atp = {
@@ -418,6 +423,7 @@ export class sql{
             "paternity":0,
             "maternity":0,
             "official":0,
+            "typhoon":0,
             "other":0
         };
         for(let ticket of tickets){
