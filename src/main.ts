@@ -4,6 +4,7 @@ import cors from 'cors';
 import { sql } from './plugins/sql';
 import logger from './plugins/logger';
 import { mailer} from './plugins/mailer';
+import { sqli_detect } from './plugins/anti_SQLI';
 
 const log = new logger(`./logs/${new Date().toISOString().split('T')[0]}.log`);
 const sqlPlugin:sql = new sql();
@@ -32,6 +33,10 @@ const posts: Array<string> = ['login','users','session',"register",'dayoff','req
 posts.forEach(v=>{
     const utils = require(`./system/${v}.js`).bind(null,sqlPlugin,log,mailers);
     app.post(`/${v}`,(req:Request,res:Response)=>{
+        if(sqli_detect(req.body)){ 
+            res.sendStatus(403);
+            return;
+        }
         try{
             utils(req,res);
         }catch(e){

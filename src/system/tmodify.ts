@@ -16,11 +16,12 @@ module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,req
     const num = dataReceived["serialnum"];
     const state = dataReceived["state"];
     const type = dataReceived["type"];
+    const reason = dataReceived["reason"];
     // data below requires front-end format time into 2024-01-01
     const start = dataReceived["start"];
     const end = dataReceived["end"];
 
-    if(!valid(dataReceived,["account","cookie","serialnum","state","action","type","start","end"])){
+    if(!valid(dataReceived,["account","cookie","serialnum","state","action","type","start","end","reason"])){
         res.sendStatus(400);
         return;
     }
@@ -31,7 +32,7 @@ module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,req
         return;
     }
     const totalTime = await caculateTime(start,end);
-    sqlPlugin.modifyTicket(num,action,type,start,end,totalTime,state);
+    sqlPlugin.modifyTicket(num,action,type,start,end,totalTime,state,reason);
     res.json({
         "status":200
     });
