@@ -39,11 +39,7 @@ export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>
     }
 
     // Process each reminder object.
-    for (const rem of reminders) {
-        if (rem.type == "特休假"){
-            continue;
-        }
-        
+    for (const rem of reminders) {     
         const start = new Date(rem.start.replace(" ", "T"));
         const end = new Date(rem.end.replace(" ", "T"));
         const name = rem.name;
@@ -76,7 +72,10 @@ export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>
                 "其他":"其",
             }
             // Determine the text to mark.
-            let text = `${name} (${shortdayoffd[rem.type as keyof shortdayoff]})`;
+            let text = "${name}";
+            if (rem.type != "特休假"){
+                text += `(${shortdayoffd[rem.type as keyof shortdayoff]})`;
+            }
             let temp = "";
             if (startDay === endDay) {
                 temp += `${start.getHours().toString().padStart(2,"0")}:${start.getMinutes().toString().padStart(2,"0")}~${end.getHours().toString().padStart(2,"0")}:${end.getMinutes().toString().padStart(2,"0")}`;
@@ -142,13 +141,13 @@ export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>
 
     // Set up worksheet columns (7 columns: one per day).
     worksheet.columns = [
-        { header: dayNames[0], key: 'sun', width: 20 },
-        { header: dayNames[1], key: 'mon', width: 20 },
-        { header: dayNames[2], key: 'tue', width: 20 },
-        { header: dayNames[3], key: 'wed', width: 20 },
-        { header: dayNames[4], key: 'thu', width: 20 },
-        { header: dayNames[5], key: 'fri', width: 20 },
-        { header: dayNames[6], key: 'sat', width: 20 }
+        { header: dayNames[0], key: 'sun', width: 25 },
+        { header: dayNames[1], key: 'mon', width: 25 },
+        { header: dayNames[2], key: 'tue', width: 25 },
+        { header: dayNames[3], key: 'wed', width: 25 },
+        { header: dayNames[4], key: 'thu', width: 25 },
+        { header: dayNames[5], key: 'fri', width: 25 },
+        { header: dayNames[6], key: 'sat', width: 25 }
     ];
 
     // --- Title Row ---
