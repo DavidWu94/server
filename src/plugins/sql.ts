@@ -364,7 +364,7 @@ export class sql{
     }
 
     showQueryInMonth(year:number,month:number):requestquery[]|[]{
-        const query = (this.login_db.prepare(`SELECT name,start,end FROM requestquery WHERE state=1 AND start LIKE '${year}-${month.toString().padStart(2,'0')}%'`).all() as requestquery[]|[]);
+        const query = (this.login_db.prepare(`SELECT name,start,end,type FROM requestquery WHERE state=1 AND start LIKE '${year}-${month.toString().padStart(2,'0')}%'`).all() as requestquery[]|[]);
         return query;
     }
 
