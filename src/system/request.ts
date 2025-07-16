@@ -17,7 +17,7 @@ module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,req
       "特休假":"annual",
       "事假":"personal",
       "家庭照顧假":"care",
-      "普通傷病假":"sick",
+      "病假":"sick",
       "婚假":"wedding",
       "喪假":"funeral",
       "分娩假":"birth",

@@ -1,6 +1,6 @@
 import ExcelJS from 'exceljs';
 import { sql } from './sql';
-import {calendar, digit, requestquery} from '../types/types';
+import {calendar, dayofftype, digit, requestquery ,shortdayoff} from '../types/types';
 import fs from 'fs';
 import { downloadJSON } from './dayoff_reader';
 
@@ -40,6 +40,9 @@ export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>
 
     // Process each reminder object.
     for (const rem of reminders) {
+        if (rem.type == "特休假"){
+            continue;
+        }
     // Convert the "start" and "end" strings to Date objects.
     // (Replace the space with "T" so that the ISO format is acceptable.)
         const start = new Date(rem.start.replace(" ", "T"));
@@ -58,9 +61,23 @@ export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>
                 // }
                 continue;
             }
-            
+            const shortdayoffd = {
+                "事假":"事",
+                "家庭照顧假":"家",
+                "病假":"病",
+                "婚假":"婚",
+                "喪假":"喪",
+                "分娩假":"娩",
+                "產檢假":"檢",
+                "流產假":"流",
+                "陪產假":"陪",
+                "產假":"產",
+                "公假":"公",
+                "颱風假":"颱",
+                "其他":"其",
+            }
             // Determine the text to mark.
-            let text = name;
+            let text = `${name} (${shortdayoffd[rem.type as keyof shortdayoff]})`;
             let temp = "";
             if (startDay === endDay) {
                 temp += `${start.getHours().toString().padStart(2,"0")}:${start.getMinutes().toString().padStart(2,"0")}~${end.getHours().toString().padStart(2,"0")}:${end.getMinutes().toString().padStart(2,"0")}`;

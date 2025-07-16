@@ -79,7 +79,7 @@ export type dayofftype = {
     "特休假":"annual",
     "事假":"personal",
     "家庭照顧假":"care",
-    "普通傷病假":"sick",
+    "病假":"sick",
     "婚假":"wedding",
     "喪假":"funeral",
     "分娩假":"birth",
@@ -90,4 +90,20 @@ export type dayofftype = {
     "公假":"official",
     "颱風假":"typhoon",
     "其他":"other"
+}
+
+export type shortdayoff = {
+    "事假":"事",
+    "家庭照顧假":"家",
+    "病假":"病",
+    "婚假":"婚",
+    "喪假":"喪",
+    "分娩假":"娩",
+    "產檢假":"檢",
+    "流產假":"流",
+    "陪產假":"陪",
+    "產假":"產",
+    "公假":"公",
+    "颱風假":"颱",
+    "其他":"其",
 }
