@@ -72,7 +72,7 @@ export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>
                 "其他":"其",
             }
             // Determine the text to mark.
-            let text = "${name}";
+            let text = `${name}`;
             if (rem.type != "特休假"){
                 text += `(${shortdayoffd[rem.type as keyof shortdayoff]})`;
             }
@@ -187,7 +187,7 @@ export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>
                 cell.value = cellText;
                 cell.alignment = { wrapText: true, vertical: 'top', horizontal: 'left' };
             }
-            cell.font = { size: 11 };
+            cell.font = { size: 10 };
             // Optional: add a border to the cell.
             cell.border = {
             top: { style: 'thin' },
@@ -196,7 +196,7 @@ export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>
             right: { style: 'thin' }
             };
         }
-        row.height = maxCtn*30; // Adjust row height as needed.
+        row.height = maxCtn*25; // Adjust row height as needed.
         currentRowNumber++;
     }
 
