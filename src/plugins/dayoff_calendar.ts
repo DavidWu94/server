@@ -43,9 +43,7 @@ export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>
         if (rem.type == "特休假"){
             continue;
         }
-        console.log(rem.type)
-    // Convert the "start" and "end" strings to Date objects.
-    // (Replace the space with "T" so that the ISO format is acceptable.)
+        
         const start = new Date(rem.start.replace(" ", "T"));
         const end = new Date(rem.end.replace(" ", "T"));
         const name = rem.name;
