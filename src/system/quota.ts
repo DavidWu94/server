@@ -12,6 +12,7 @@ module.exports = function utils(sqlPlugin:sql,log:logger,mailer:mailer,req:Reque
     const cookie = dataReceived["cookie"];
     const user = dataReceived["user"];
     const year = dataReceived["year"];
+    const month = dataReceived["month"];
 
     if(!valid(dataReceived,["account","cookie"])){
         res.sendStatus(400);
@@ -24,6 +25,6 @@ module.exports = function utils(sqlPlugin:sql,log:logger,mailer:mailer,req:Reque
         return;
     }
     var search_user = user?user:account;
-    const r = sqlPlugin.calculateAnnualQuota(search_user,year);
+    const r = sqlPlugin.calculateAnnualQuota(search_user,year,month);
     res.json(r);
 }

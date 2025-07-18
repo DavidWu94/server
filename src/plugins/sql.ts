@@ -336,12 +336,10 @@ export class sql{
         return;
     }
 
-    calculateAnnualQuota(user:string,year:digit):{quota:number,years:number,month:number,days:number,joinTime:string}{
+    calculateAnnualQuota(user:string,year:digit,month:digit):{quota:number,years:number,month:number,days:number,joinTime:string}{
         const db_jt:string = (this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0] as userinfo)["joinTime"];
         const joinTime:Date = new Date(db_jt);
-        const current_month:number = new Date().getMonth();
-        const current_date:number = new Date().getDate();
-        const endTime:Date = new Date(`${year}-${current_month+1}-${current_date}`);
+        const endTime:Date = month==-1?new Date(`${year}-${db_jt.split("-")[1]}-${db_jt.split("-")[2]}`):new Date(`${year}-${month}-${db_jt.split("-")[2]}`);
         const elapse:{m:number,d:number} = calculate(joinTime,endTime);
         const months = elapse['m'], days = elapse['d'];
         const years = months/12;
