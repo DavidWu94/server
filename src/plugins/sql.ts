@@ -341,7 +341,7 @@ export class sql{
         const joinTime:Date = new Date(db_jt);
         const current_month:number = new Date().getMonth();
         const current_date:number = new Date().getDate();
-        const endTime:Date = new Date(`${year}-${current_month}-${current_date}`);
+        const endTime:Date = new Date(`${year}-${current_month+1}-${current_date}`);
         const elapse:{m:number,d:number} = calculate(joinTime,endTime);
         const months = elapse['m'], days = elapse['d'];
         const years = months/12;
