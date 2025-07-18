@@ -34,7 +34,7 @@ posts.forEach(v=>{
     const utils = require(`./system/${v}.js`).bind(null,sqlPlugin,log,mailers);
     app.post(`/${v}`,(req:Request,res:Response)=>{
         if(sqli_detect(req.body)){ 
-            res.sendStatus(403);
+            res.sendStatus(400);
             return;
         }
         try{

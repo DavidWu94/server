@@ -339,7 +339,7 @@ export class sql{
     calculateAnnualQuota(user:string,year:digit):{quota:number,years:number,month:number,days:number,joinTime:string}{
         const db_jt:string = (this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0] as userinfo)["joinTime"];
         const joinTime:Date = new Date(db_jt);
-        const endTime:Date = new Date(`${year}-${db_jt.split("-")[1]}-${db_jt.split("-")[2]}`);
+        const endTime:Date = new Date();
         const elapse:{m:number,d:number} = calculate(joinTime,endTime);
         const months = elapse['m'], days = elapse['d'];
         const years = months/12;
@@ -359,7 +359,8 @@ export class sql{
             const w = Math.floor(years)+6;
             quota = (w>=30?30:w);
         }
-        return {"quota":quota*8,"years":Math.floor(years),"month":(months-(Math.floor(years)*12)),"days":days,"joinTime":db_jt};
+        const realMonth:number = (months-(Math.floor(years)*12));
+        return {"quota":quota*8,"years":Math.floor(years)+(realMonth<6?0:0.5),"month":realMonth,"days":days,"joinTime":db_jt};
 
     }
 
