@@ -88,7 +88,7 @@ export type dayofftype = {
     "陪產假":"paternity",
     "產假":"maternity",
     "公假":"official",
-    "颱風假":"typhoon",
+    "停班停課":"typhoon",
     "其他":"other"
 }
 
@@ -104,6 +104,6 @@ export type shortdayoff = {
     "陪產假":"陪",
     "產假":"產",
     "公假":"公",
-    "颱風假":"颱",
+    "停班停課":"停",
     "其他":"其",
 }

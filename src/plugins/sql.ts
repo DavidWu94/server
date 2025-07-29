@@ -255,7 +255,7 @@ export class sql{
             "陪產假":"paternity",
             "產假":"maternity",
             "公假":"official",
-            "颱風假":"typhoon",
+            "停班停課":"typhoon",
             "其他":"other"
         };
         
@@ -394,7 +394,7 @@ export class sql{
             "陪產假":"paternity",
             "產假":"maternity",
             "公假":"official",
-            "颱風假":"typhoon",
+            "停班停課":"typhoon",
             "其他":"other"
         };
         const amount = {
