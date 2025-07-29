@@ -68,7 +68,7 @@ export async function main(year:number,month:number,sqlPlugin:sql):Promise<void>
                 "陪產假":"陪",
                 "產假":"產",
                 "公假":"公",
-                "颱風假":"颱",
+                "停班停課":"停",
                 "其他":"其",
             }
             // Determine the text to mark.
