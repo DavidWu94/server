@@ -1,7 +1,8 @@
 import crypto from "crypto";
 import Database from "better-sqlite3";
 import logger from './logger'
-import  { userinfo,dayoffinfo,clockinrecord,requestquery,logininfo,digit,dayofftype } from "../types/types";
+import  { userinfo,dayoffinfo,clockinrecord,requestquery,logininfo,digit,dayofftype, dayoffinfo_ret } from "../types/types";
+import { join } from "path";
 // const logger = require("./logger.js");
 const log:logger = new logger(`./logs/${new Date().toISOString().split('T')[0]}.log`);
 
@@ -77,12 +78,96 @@ export class sql{
         return data;
     }
 
-    getEmployeeDayOffList(user:string,year:string):null|dayoffinfo{
+    getEmployeeDayOffList(user:string,year:string):null|dayoffinfo_ret{
         try{
-            const dayoffData = (this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${user}' AND year='${year}';`).all()[0] as dayoffinfo|undefined);
-            if(dayoffData===undefined) return null;
-            // console.log(dayoffData);
-            return dayoffData;
+            const userinfo = (this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}';`).all()[0] as userinfo);
+            const joinTime = userinfo["joinTime"];
+            if(joinTime.split('-')[0]==year){
+                const rq_all = (this.login_db.prepare(`SELECT * FROM requestquery WHERE id='${user}' AND year='${year}' AND state=1;`).all() as requestquery[]|undefined);
+                const joinMonth = parseInt(userinfo.joinTime.split("-")[1]);
+                const joinDay = parseInt(userinfo.joinTime.split("-")[2]);
+                var first_half:dayoffinfo = {
+                    id: user,
+                    annual: 0,
+                    personal: 0,
+                    care: 0,
+                    sick:0,
+                    wedding:0,
+                    funeral:0,
+                    birth:0,
+                    pcheckup:0,
+                    miscarriage:0,
+                    paternity:0,
+                    maternity:0,
+                    official:0,
+                    typhoon:0,
+                    other:0,
+                    total:0,
+                    year:year
+                };
+                var second_half:dayoffinfo = {
+                    id: user,
+                    annual: 0,
+                    personal: 0,
+                    care: 0,
+                    sick:0,
+                    wedding:0,
+                    funeral:0,
+                    birth:0,
+                    pcheckup:0,
+                    miscarriage:0,
+                    paternity:0,
+                    maternity:0,
+                    official:0,
+                    typhoon:0,
+                    other:0,
+                    total:0,
+                    year:year
+                };
+                const table = {
+                    "特休假":"annual",
+                    "事假":"personal",
+                    "家庭照顧假":"care",
+                    "病假":"sick",
+                    "婚假":"wedding",
+                    "喪假":"funeral",
+                    "分娩假":"birth",
+                    "產檢假":"pcheckup",
+                    "流產假":"miscarriage",
+                    "陪產假":"paternity",
+                    "產假":"maternity",
+                    "公假":"official",
+                    "停班停課":"typhoon",
+                    "其他":"other"
+                };
+                rq_all?.forEach((v:requestquery,i,a)=>{
+                    const reqMonth = parseInt(v.month);
+                    const reqYear = parseInt(v.start.split("-")[0]);
+                    const joinYear = parseInt(userinfo.joinTime.split("-")[0]);
+                    const monthDiff = (reqYear - joinYear) * 12 + (reqMonth - joinMonth);
+                    console.log(`Month diff: ${monthDiff}`);
+                    if (monthDiff < 6) {
+                        (first_half[table[v.type as keyof dayofftype] as keyof dayoffinfo] as number) += v.totalTime;
+                    } else if (monthDiff === 6) {
+                        // Split totalTime between first_half and second_half based on day boundary.
+                        (parseInt(v["start"].split("-")[2]) < joinDay) ? (first_half[table[v.type as keyof dayofftype] as keyof dayoffinfo] as number) += v.totalTime : (second_half[table[v.type as keyof dayofftype] as keyof dayoffinfo] as number) += v.totalTime;
+                    } else {
+                        (second_half[table[v.type as keyof dayofftype] as keyof dayoffinfo] as number) += v.totalTime;
+                    }
+                })
+                // const dayoffData_LF = (this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${user}' AND year='${year}';`).all()[0] as dayoffinfo|undefined);
+                return {"separate":true,"data":[first_half,second_half]};
+            }else{
+                // FIXME: This can be none, if it's none, add one record.
+                const df = (this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${user}' AND year='${year}';`).all() as dayoffinfo[]);
+                if(df.length==0){
+                    this.login_db.prepare(`INSERT INTO dayoffinfo (id,year) VALUES ('${user}',${year});`).run();
+                    return {"separate":false,"data":[(this.login_db.prepare(`SELECT * FROM dayoffinfo WHERE id='${user}' AND year='${year}';`).all()[0] as dayoffinfo)]};
+                }else{
+                    return {"separate":false,"data":[df[0]]};
+                }
+            }
+            
         }catch{
             return null;
         }
@@ -336,17 +421,19 @@ export class sql{
         return;
     }
 
-    calculateAnnualQuota(user:string,year:digit,month:digit):{quota:number,years:number,month:number,days:number,joinTime:string}{
+    calculateAnnualQuota(user:string,year:digit):{separate:boolean,data:{quota:number,years:number,month:number,days:number,joinTime:string}[]} {
         const db_jt:string = (this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${user}'`).all()[0] as userinfo)["joinTime"];
         const joinTime:Date = new Date(db_jt);
+        const month:number = parseInt(db_jt.split("-")[1]);
         const endTime:Date = month==-1?new Date(`${year}-${db_jt.split("-")[1]}-${db_jt.split("-")[2]}`):new Date(`${year}-${month}-${db_jt.split("-")[2]}`);
         const elapse:{m:number,d:number} = calculate(joinTime,endTime);
         const months = elapse['m'], days = elapse['d'];
         const years = months/12;
+        const realMonth:number = (months-(Math.floor(years)*12));
         var quota:number=0;
-        if(months<6) quota = 0;
-        if(months>=6&&months<12){
-            quota = 3;
+        console.log(`Calculating annual quota for ${user} in ${year}-${month}. Join time: ${db_jt}, Elapsed: ${years} years, ${realMonth} months, ${days} days.`);
+        if(years<1){
+            return {separate:true,data:[{"quota":0,"years":Math.floor(years)+(realMonth<6?0:0.5),"month":realMonth,"days":days,"joinTime":db_jt},{"quota":3*8,"years":Math.floor(years)+(realMonth<6?0:0.5),"month":6,"days":days,"joinTime":db_jt}]};
         }else if(years>=1&&years<2){
             quota = 7;
         }else if(years>=2&&years<3){
@@ -359,8 +446,8 @@ export class sql{
             const w = Math.floor(years)+6;
             quota = (w>=30?30:w);
         }
-        const realMonth:number = (months-(Math.floor(years)*12));
-        return {"quota":quota*8,"years":Math.floor(years)+(realMonth<6?0:0.5),"month":realMonth,"days":days,"joinTime":db_jt};
+        // TODO: add separate
+        return {separate:false,data:[{"quota":quota*8,"years":Math.floor(years)+(realMonth<6?0:0.5),"month":realMonth,"days":days,"joinTime":db_jt}]};
 
     }
 

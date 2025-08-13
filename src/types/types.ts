@@ -42,6 +42,11 @@ export interface dayoffinfo extends table{
     year:string
 }
 
+export interface dayoffinfo_ret{
+    separate:boolean,
+    data:Array<dayoffinfo>
+}
+
 export interface requestquery extends table{
     serialnum:string,
     id:string,
