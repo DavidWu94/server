@@ -170,15 +170,3 @@ export async function downloadJSON(rocYearArg:digit) :Promise<void>{
   await rewriteJSON(rocYearArg);
   return new Promise(res=>res());
 }
-
-// 如果從 CLI 執行，例如：node scrape-download-json-firefox.js 112
-// (async()=>{
-//   if (require.main === module) {
-//     const rocYearArg = process.argv[2];
-//     if (!rocYearArg) {
-//       console.error('請提供民國年，範例：node scrape-download-json-firefox.js 112');
-//       process.exit(1);
-//     }
-//   }
-// })();
-// module.exports = downloadJSON;

@@ -39,6 +39,11 @@ module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,req
       return;
     }
 
+    if(dataReceived["reason"].replace(/\ /g,"").length==0){
+      res.sendStatus(400);
+      return;
+    }
+
     if(!(validTime(start) && validTime(end))){
       res.sendStatus(403);
       return;
