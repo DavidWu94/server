@@ -13,7 +13,8 @@ export interface userinfo extends table{
     name:string,
     joinTime:string, 
     mgroup:number,
-    permit:number
+    permit:number,
+    status:number
 }
 
 export interface logininfo extends table{
