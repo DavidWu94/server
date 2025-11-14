@@ -4,14 +4,15 @@ import { mailer } from "../plugins/mailer";
 import logger from "../plugins/logger";
 import { sql } from "../plugins/sql";
 import {output_excel} from "../plugins/clockin_excel";
+import { digit } from "../types/types";
 
 module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,req:Request,res:Response):Promise<void>{
     const dataReceived:{[key:string]:any} = req.body;
 
-    const account = dataReceived["account"];
-    const cookie = dataReceived["cookie"];
-    const year = dataReceived["year"];
-    const month = dataReceived["month"].padStart(2,'0');
+    const account = dataReceived["account"] as string;
+    const cookie = dataReceived["cookie"] as string;
+    const year = dataReceived["year"] as digit;
+    const month = (dataReceived["month"] as digit).toString().padStart(2,'0');
 
     if(!valid(dataReceived,["account","cookie","year","month"])){
         res.sendStatus(400);

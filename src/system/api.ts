@@ -10,8 +10,8 @@ import { downloadJSON } from "../plugins/dayoff_reader";
 module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,req:Request,res:Response):Promise<void>{
     const dataReceived:{[key:string]:any} = req.body;
 
-    const account = dataReceived["account"];
-    const cookie = dataReceived["cookie"];
+    const account = dataReceived["account"] as string;
+    const cookie = dataReceived["cookie"] as string;
 
     if(!valid(dataReceived,["account","cookie"])){
         res.sendStatus(400);

@@ -8,8 +8,8 @@ import { sql } from "../plugins/sql";
 function utils(sqlPlugin:sql,log:logger,mailer:mailer,res:Response,req:Request):void{
     const dataReceived:{[key:string]:any} = req.body;
 
-    const account = dataReceived["account"];
-    const cookie = dataReceived["cookie"];
+    const account = dataReceived["account"] as string;
+    const cookie = dataReceived["cookie"] as string;
 
     if(!valid(dataReceived,["account","cookie"])){
         res.sendStatus(400);

@@ -11,10 +11,10 @@ dotenv.config();
 module.exports = function utils(sqlPlugin:sql,log:logger,mailer:mailer,req:Request,res:Response):void{
     const dataReceived:{[key:string]:any} = req.body;
 
-    const account = dataReceived["account"];
-    const password = dataReceived["pwd"];
-    const cookie = dataReceived["cookie"];
-    const twoFA = dataReceived["twoFA"];
+    const account = dataReceived["account"] as string;
+    const password = dataReceived["pwd"] as string;
+    const cookie = dataReceived["cookie"] as string;
+    const twoFA = dataReceived["twoFA"] as string;
 
     if(!valid(dataReceived,["account","pwd"])){
         res.sendStatus(400);

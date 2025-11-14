@@ -10,8 +10,8 @@ import { dayofftype } from "../types/types";
 module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,req:Request,res:Response):Promise<void>{
     const dataReceived:{[key:string]:any} = req.body;
 	  // console.log(req.account);
-    const account = dataReceived["account"];
-    const cookie = dataReceived["cookie"];
+    const account = dataReceived["account"] as string;
+    const cookie = dataReceived["cookie"] as string;
     const type = (dataReceived["type"] as keyof dayofftype);
     const checkObj:dayofftype = {
       "特休假":"annual",
@@ -30,9 +30,9 @@ module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,req
       "其他":"other"
     };
     // data below requires front-end format time into 2024-01-01
-	  const reason = dataReceived["reason"]
-    const start = dataReceived["start"];
-    const end = dataReceived["end"];
+	  const reason = dataReceived["reason"] as string;
+    const start = dataReceived["start"] as string;
+    const end = dataReceived["end"] as string;
 
     if(!valid(dataReceived,["account","cookie","type","reason","start","end"])|| !Object.keys(checkObj).includes(type)){
       res.sendStatus(400);

@@ -4,12 +4,13 @@ import { mailer } from "../plugins/mailer";
 import logger from "../plugins/logger";
 import { sql } from "../plugins/sql";
 import { check_working_day } from "../plugins/dayoff_calendar";
+import { digit } from "../types/types";
 
 module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,req:Request,res:Response):Promise<void>{
     const dataReceived:{[key:string]:any} = req.body;
 
-    const account = dataReceived["account"];
-    const cookie = dataReceived["cookie"];
+    const account = dataReceived["account"] as string;
+    const cookie = dataReceived["cookie"] as string;
     const day = dataReceived["day"];
 
     /*
@@ -18,7 +19,7 @@ module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,req
         1: clock in
         -1: clock out
     */
-    const type = dataReceived["type"];
+    const type = dataReceived["type"] as digit;
 
     if(!valid(dataReceived,["account","cookie","type"])){
         res.sendStatus(400);
@@ -41,7 +42,7 @@ module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,req
     }
     // date.setDate(date.getHours() + 8);
     log.logFormat(`${account} tries to ${type==0?"lookup clocking history":type==1?"clock-in":"clock-out"}.`)
-    const returns = sqlPlugin.clockinAction(account,type,date);
+    const returns = sqlPlugin.clockinAction(account,parseInt(`${type}`),date);
     res.json(returns);
 
 }

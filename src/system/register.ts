@@ -3,20 +3,21 @@ import { valid } from "../plugins/checkvalid";
 import { mailer } from "../plugins/mailer";
 import logger from "../plugins/logger";
 import { sql } from "../plugins/sql";
+import { digit } from "../types/types";
 
 
 module.exports = function utils(sqlPlugin:sql,log:logger,mailer:mailer,req:Request,res:Response):void{
     const dataReceived:{[key:string]:any} = req.body;
 
-    const account = dataReceived["account"];
-    const cookie = dataReceived["cookie"];
-    const user = dataReceived["user"];
-    const password = dataReceived["pwd"];
-    const mail = dataReceived["mail"];
-    const name = dataReceived["name"];
-    const jointime = dataReceived["date"];
-    const type = dataReceived["type"]?dataReceived["type"]:"employee";
-    const mgroup = dataReceived["mgroup"];
+    const account = dataReceived["account"] as string;
+    const cookie = dataReceived["cookie"] as string;
+    const user = dataReceived["user"] as string;
+    const password = dataReceived["pwd"] as string;
+    const mail = dataReceived["mail"] as string;
+    const name = dataReceived["name"] as string;
+    const jointime = dataReceived["date"] as string;
+    const type = dataReceived["type"]?dataReceived["type"] as string:"employee";
+    const mgroup = dataReceived["mgroup"] as digit;
     // permit:1 == NEED permition
     const permit = dataReceived["permit"];
 

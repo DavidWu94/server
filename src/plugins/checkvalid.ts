@@ -5,6 +5,7 @@ export function valid(data: { [key: string]: any }, keys: string[]): boolean{
     }
     for (let key of keys) {
         if (data[key] === undefined) {
+            console.log("Missing key or undefined value:", key);
             return false; // Key is missing or its value is undefined
         }
     }

@@ -7,9 +7,9 @@ import { sql } from "../plugins/sql";
 
 module.exports = function utils(sqlPlugin:sql,log:logger,mailer:mailer,req:Request,res:Response):void{
     const dataReceived:{[key:string]:any} = req.body;
-    const account = dataReceived["account"];
-    const cookie = dataReceived["cookie"];
-    const user = dataReceived["user"];
+    const account = dataReceived["account"] as string;
+    const cookie = dataReceived["cookie"] as string;
+    const user = dataReceived["user"] as string;
 
     if(!valid(dataReceived,["account","cookie","user"])){
       res.sendStatus(400);
