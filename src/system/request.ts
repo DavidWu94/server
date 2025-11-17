@@ -62,7 +62,10 @@ module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,req
       return;
     }
     const ret = sqlPlugin.newRequest(account,type,start,end,totalTime,reason);
-
+    if(ret==null){
+      res.sendStatus(403);
+      return;
+    }
     if (!ret){
       res.sendStatus(501);
       return;

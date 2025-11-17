@@ -34,7 +34,11 @@ module.exports = async function utils(sqlPlugin:sql,log:logger,mailer:mailer,req
         return;
     }
     const totalTime = await caculateTime(start,end);
-    sqlPlugin.modifyTicket(num.toString(),parseInt(`${action}`),type,start,end,totalTime,state,reason);
+    const result = sqlPlugin.modifyTicket(num.toString(),parseInt(`${action}`),type,start,end,totalTime,state,reason);
+    if(result===null){
+        res.sendStatus(403);
+        return;
+    }
     res.json({
         "status":200
     });

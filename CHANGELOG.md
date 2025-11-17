@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.6.2] 2025-11-17
+
+### Added
+- Annual quota check before requesting dayoff
+
 ## [1.6.1] 2025-11-14
 
 ### Fixed

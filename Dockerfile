@@ -2,6 +2,7 @@ FROM node:20
 
 ENV GECKODRIVER_VERSION=v0.33.0
 
+WORKDIR /app
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends \
         wget \
@@ -42,18 +43,16 @@ RUN apt-get install -y --no-install-recommends \
         xdg-utils \
     && rm -rf /var/lib/apt/lists/*
 
-# Download and install GeckoDriver
 RUN wget -O /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz \
     && tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin/ \
     && chmod +x /usr/local/bin/geckodriver \
     && rm /tmp/geckodriver.tar.gz
 
-# Verify installations
 
-WORKDIR /app
-COPY ["package.json", "package-lock.json*", "./"]
 RUN npm update -g
+COPY ["package.json", "package-lock.json*", "./"]
 RUN npm install
+
 COPY . .
 RUN npx tsc
 EXPOSE 3000

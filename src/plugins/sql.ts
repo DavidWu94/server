@@ -304,19 +304,22 @@ export class sql{
      * @param {*} end 
      * @returns 
      */
-    newRequest(user:string,type:string,start:string,end:string,totalTime:digit,reason:string):{mgroup:digit,name:string,num:string}{
+    newRequest(user:string,type:string,start:string,end:string,totalTime:digit,reason:string):{mgroup:digit,name:string,num:string}|null{
         const query:userinfo = (this.login_db.prepare(`SELECT * FROM userinfo WHERE id= ? `).get(user) as userinfo);
-        // const userinfo = this.login_db.prepare(`SELECT * FROM userinfo WHERE id='${query["id"]}'`).all()[0];
         const checkpoint:Date = new Date(`${end.split("-")[0]}-${query["joinTime"].substring(5)}`);
         const endDate:Date = new Date(end.split(" ")[0]);
         const year:string = checkpoint>endDate?(parseInt(end.split("-")[0])-1).toString():end.split("-")[0];
-        // console.log(year)
         const currentYear:number = new Date().getFullYear();
         const month:number = parseInt(start.split("-")[1]);
         const serials:requestquery[]|[] = (this.login_db.prepare(`SELECT serialnum FROM requestquery WHERE serialnum LIKE ? ORDER BY serialnum ASC`).all(`${currentYear}%`) as requestquery[]|[]);
         const count:string = serials[serials.length-1]?`${currentYear}${(parseInt(serials[serials.length-1]["serialnum"].substring(4))+1).toString().padStart(4,'0')}`:`${currentYear}0000`;
         const name:string = query["name"];
         const new_reason:string = reason.replace("<","").replace(">","").replace('"','');
+        if(this.checkRemainAnnual(user,parseInt(year),parseInt(`${totalTime}`))==false){
+            log.logFormat(`${user} try to request a dayoff but exceed annual quota.`);
+            return null;
+        }
+        
         this.login_db.prepare(`INSERT INTO requestquery (serialnum,id,name,type,start,end,mgroup,totalTime,reason,month,year) VALUES (?,?,?,?,(strftime('%Y-%m-%d %H:%M',?)),(strftime('%Y-%m-%d %H:%M',?)),?,?,?,?,?);`).run(count,user,name,type,start,end,query["mgroup"],totalTime,new_reason,month,year);
         log.logFormat(`${user} just request a new dayoff. Ticket id: #${count}.`,new Date())
         return {"mgroup":query["mgroup"],"name":name,"num":count};
@@ -461,6 +464,22 @@ export class sql{
         return query;
     }
 
+    checkRemainAnnual(user:string,year:digit,adds:number):boolean{
+        const quotaData = this.calculateAnnualQuota(user,year);
+        const used = (this.login_db.prepare(`SELECT annual FROM dayoffinfo WHERE id= ? AND year= ?`).get(user,year) as dayoffinfo)["annual"] as number;
+        if(quotaData.separate){
+            if(used+adds<=24){
+                return true;
+            }
+        }else{
+            const quota = quotaData.data[0]["quota"];
+            if(used+adds<=quota){
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * 
      * @param {string} year 
@@ -541,7 +560,7 @@ export class sql{
         return;
     }
 
-    modifyTicket(num:string,action:number,type:string,start:string,end:string,totalTime:number,state:digit,reason:string){
+    modifyTicket(num:string,action:number,type:string,start:string,end:string,totalTime:number,state:digit,reason:string):number|null{
         const ticket = (this.login_db.prepare(`SELECT * FROM requestquery WHERE serialnum= ?;`).get(num) as requestquery); 
         const user = ticket["id"];
         const query = (this.login_db.prepare(`SELECT * FROM userinfo WHERE id= ?;`).get(user) as userinfo); 
@@ -554,13 +573,18 @@ export class sql{
             this.login_db.prepare(`DELETE FROM requestquery WHERE serialnum= ?;`).run(num); 
             log.logFormat(`Ticket #${num} has been DELETED.`);
             this.syncTickets(user,ticket["year"]);
-            return;
+            return 0;
+        }
+        
+        if(this.checkRemainAnnual(user,parseInt(year),parseInt(`${totalTime}`))==false){
+            log.logFormat(`${user} try to request a dayoff but exceed annual quota.`);
+            return null;
         }
         const new_reason:string = reason.replace("<","").replace(">","").replace('"','');
         this.login_db.prepare(`UPDATE requestquery SET type= ?, start= ?, end= ?, totalTime= ?, state= ?, year= ?, reason= ? WHERE serialnum= ?;`).run(type,start,end,totalTime,state,year,new_reason,num); 
         // log.logFormat(`Ticket #${num} from ${user} has been MODIFIED: type='${type}', start='${start}', end='${end}', totalTime=${totalTime}, state=${state}, year='${year}'`);
         this.syncTickets(user,ticket["year"]);
-        return;
+        return 0;
     }
 
     modifyEmployeeStatus(user:string,status:digit):void{
