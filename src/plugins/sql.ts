@@ -315,7 +315,9 @@ export class sql{
         const count:string = serials[serials.length-1]?`${currentYear}${(parseInt(serials[serials.length-1]["serialnum"].substring(4))+1).toString().padStart(4,'0')}`:`${currentYear}0000`;
         const name:string = query["name"];
         const new_reason:string = reason.replace("<","").replace(">","").replace('"','');
-        if(this.checkRemainAnnual(user,parseInt(year),parseInt(`${totalTime}`))==false){
+        
+        const {m,d} = calculate(new Date(start),new Date(end));
+        if(this.checkRemainAnnual(user,parseInt(year),parseInt(`${totalTime}`),m<6)==false){
             log.logFormat(`${user} try to request a dayoff but exceed annual quota.`);
             return null;
         }
@@ -464,11 +466,12 @@ export class sql{
         return query;
     }
 
-    checkRemainAnnual(user:string,year:digit,adds:number):boolean{
+    checkRemainAnnual(user:string,year:digit,adds:number,first_half:boolean):boolean{
         const quotaData = this.calculateAnnualQuota(user,year);
         const used = (this.login_db.prepare(`SELECT annual FROM dayoffinfo WHERE id= ? AND year= ?`).get(user,year) as dayoffinfo)["annual"] as number;
         if(quotaData.separate){
-            if(used+adds<=24){
+            const q = first_half?0:24
+            if(used+adds<=q){
                 return true;
             }
         }else{
@@ -575,8 +578,8 @@ export class sql{
             this.syncTickets(user,ticket["year"]);
             return 0;
         }
-        
-        if(this.checkRemainAnnual(user,parseInt(year),parseInt(`${totalTime}`))==false){
+        const {m,d} = calculate(new Date(start),new Date(end));
+        if(this.checkRemainAnnual(user,parseInt(year),parseInt(`${totalTime}`),m<6)==false){
             log.logFormat(`${user} try to request a dayoff but exceed annual quota.`);
             return null;
         }
