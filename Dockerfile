@@ -1,10 +1,10 @@
-FROM node:20
+FROM node:20-slim
 
 ENV GECKODRIVER_VERSION=v0.33.0
 
 WORKDIR /app
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
         wget \
         ca-certificates \
         firefox-esr \
@@ -41,9 +41,8 @@ RUN apt-get install -y --no-install-recommends \
         libxtst6 \
         lsb-release \
         xdg-utils \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN wget -O /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz \
+    && rm -rf /var/lib/apt/lists/* \
+    && wget -O /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz \
     && tar -xzf /tmp/geckodriver.tar.gz -C /usr/local/bin/ \
     && chmod +x /usr/local/bin/geckodriver \
     && rm /tmp/geckodriver.tar.gz
